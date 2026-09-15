@@ -40,16 +40,19 @@ export interface ToastMessage {
 
 interface AppContextType {
   cart: CartItem[];
-  addToCart: (item: {
+  addToCart: (params: {
+    product?: any;
+    variant?: any;
+    kit?: any;
+    quantity?: number;
     productId?: string;
     variantId?: string;
     projectKitId?: string;
-    name: string;
-    price: number;
+    name?: string;
+    price?: number;
     originalPrice?: number;
-    image: string;
+    image?: string;
     sku?: string;
-    quantity?: number;
     stock?: number;
     isKit?: boolean;
   }) => void;
@@ -230,11 +233,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     variant,
     kit,
     quantity = 1,
+    productId,
+    variantId,
+    name,
+    price,
+    originalPrice,
+    image,
+    sku,
+    stock: propStock,
   }: {
-    product?: Product;
-    variant?: ProductVariant;
-    kit?: ProjectKit;
+    product?: any;
+    variant?: any;
+    kit?: any;
     quantity?: number;
+    productId?: string;
+    variantId?: string;
+    projectKitId?: string;
+    name?: string;
+    price?: number;
+    originalPrice?: number;
+    image?: string;
+    sku?: string;
+    stock?: number;
+    isKit?: boolean;
   }) => {
     if (kit) {
       const existing = cart.find((item) => item.projectKitId === kit.id);
@@ -248,44 +269,54 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const newItem: CartItem = {
           id: `kit-${kit.id}-${Date.now()}`,
           projectKitId: kit.id,
-          name: kit.title,
-          sku: `KIT-${kit.category.toUpperCase().slice(0, 3)}-${kit.id.slice(4)}`,
-          price: kit.price,
-          originalPrice: kit.mrp,
-          image: kit.images[0] || "/placeholder.png",
+          name: kit.title || kit.name,
+          sku: kit.sku || `KIT-${(kit.category || "ENG").toUpperCase().slice(0, 3)}-${String(kit.id).slice(0, 6)}`,
+          price: Number(kit.price),
+          originalPrice: Number(kit.mrp || kit.price),
+          image: kit.images?.[0] || "/placeholder.png",
           quantity,
           isKit: true,
         };
         setCart((prev) => [...prev, newItem]);
       }
-      addToast(`Added "${kit.title}" project kit to cart`, "success");
+      addToast(`Added "${kit.title || kit.name}" project kit to cart`, "success");
       setIsCartDrawerOpen(true);
       return;
     }
 
-    if (product) {
-      const activeVariant = variant || product.variants[0];
-      const stock = activeVariant.stock ?? 10;
+    const activeVariant = variant || (product?.variants ? product.variants[0] : null);
+    const targetVariantId = activeVariant?.id || variantId;
 
-      if (stock <= 0) {
-        addToast(`"${product.name}" is currently out of stock`, "error");
+    if (activeVariant || product) {
+      const effectiveStock = activeVariant?.stock ?? propStock ?? 10;
+      const effectiveName = activeVariant?.name
+        ? (product ? `${product.name} (${activeVariant.name})` : activeVariant.name)
+        : (product?.name || name || "Product");
+      const effectiveSku = activeVariant?.sku || sku || "SKU-ITEM";
+      const effectivePrice = Number(activeVariant?.price ?? price ?? 0);
+      const effectiveMrp = Number(activeVariant?.mrp ?? originalPrice ?? effectivePrice);
+      const effectiveImage = product?.images?.[0] || image || "/placeholder.png";
+      const effectiveProductId = product?.id || productId || "";
+
+      if (effectiveStock <= 0) {
+        addToast(`"${effectiveName}" is currently out of stock`, "error");
         return;
       }
 
-      if (user) {
+      if (user && targetVariantId) {
         try {
           const res = await fetch("/api/cart", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              variantId: activeVariant.id,
+              variantId: targetVariantId,
               quantity,
             }),
           });
 
           if (res.ok) {
             await refreshCart();
-            addToast(`Added "${product.name}" to cart`, "success");
+            addToast(`Added "${effectiveName}" to cart`, "success");
             setIsCartDrawerOpen(true);
             return;
           } else {
@@ -299,30 +330,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Guest cart
-      const existing = cart.find((item) => item.variantId === activeVariant.id);
+      const existing = cart.find((item) => item.variantId === targetVariantId);
       if (existing) {
         setCart((prev) =>
           prev.map((i) =>
-            i.variantId === activeVariant.id ? { ...i, quantity: i.quantity + quantity } : i
+            i.variantId === targetVariantId ? { ...i, quantity: i.quantity + quantity } : i
           )
         );
       } else {
         const newItem: CartItem = {
-          id: `prod-${activeVariant.id}-${Date.now()}`,
-          productId: product.id,
-          variantId: activeVariant.id,
-          name: `${product.name} (${activeVariant.name})`,
-          sku: activeVariant.sku,
-          price: activeVariant.price,
-          originalPrice: activeVariant.mrp,
-          image: product.images[0] || "/placeholder.png",
+          id: `prod-${targetVariantId || Date.now()}-${Date.now()}`,
+          productId: effectiveProductId,
+          variantId: targetVariantId,
+          name: effectiveName,
+          sku: effectiveSku,
+          price: effectivePrice,
+          originalPrice: effectiveMrp,
+          image: effectiveImage,
           quantity,
-          stock,
+          stock: effectiveStock,
           isKit: false,
         };
         setCart((prev) => [...prev, newItem]);
       }
-      addToast(`Added "${product.name}" to cart`, "success");
+      addToast(`Added "${effectiveName}" to cart`, "success");
       setIsCartDrawerOpen(true);
     }
   };
