@@ -1,0 +1,600 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKED
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PAYMENT_PENDING
+  PAYMENT_SUBMITTED
+  PAYMENT_VERIFIED
+  PAYMENT_FAILED
+  REFUNDED
+}
+
+enum PaymentGateway {
+  UPI
+  CARD
+  NET_BANKING
+  CASH_ON_DELIVERY
+  TEST_MODE
+}
+
+enum ProjectStatus {
+  UPLOADED
+  ANALYZING
+  REQUIREMENTS_READY
+  QUOTE_SENT
+  APPROVED
+  IN_PRODUCTION
+  TESTING
+  READY_FOR_DISPATCH
+  DELIVERED
+  ARCHIVED
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  REVISION_REQUESTED
+  ACCEPTED
+  REJECTED
+}
+
+enum BuildLevel {
+  COMPONENTS_ONLY
+  PROJECT_KIT
+  WORKING_PROTOTYPE
+  COMPLETE_BUILD
+}
+
+enum DocServiceType {
+  REPORT
+  PPT
+  SYNOPSIS
+  CIRCUIT_DIAGRAM
+  POSTER
+  VIVA_PREP
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String?         @unique
+  passwordHash  String?
+  name          String
+  phone         String?         @unique
+  phoneVerified Boolean         @default(false)
+  emailVerified Boolean         @default(false)
+  collegeId     String?
+  college       College?        @relation(fields: [collegeId], references: [id])
+  role          Role            @default(CUSTOMER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  orders        Order[]
+  projects      Project[]
+  reviews       Review[]
+  tickets       SupportTicket[]
+  addresses     UserAddress[]
+  auditLogs     AuditLog[]
+  adminAuditLogs AdminAuditLog[] @relation("AdminAudits")
+  pcbOrders     PCBOrder[]
+  printOrders   PrintOrder[]
+  documentOrders DocumentOrder[]
+  notifications Notification[]
+  cart          Cart?
+  wishlist      Wishlist?
+}
+
+model College {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  code        String    @unique
+  city        String
+  state       String
+  pincode     String
+  campuses    Campus[]
+  users       User[]
+  orders      Order[]
+  createdAt   DateTime  @default(now())
+}
+
+model Campus {
+  id              String                 @id @default(uuid())
+  collegeId       String
+  college         College                @relation(fields: [collegeId], references: [id])
+  name            String
+  pickupLocations CampusPickupLocation[]
+  deliverySlots   CampusDeliverySlot[]
+  orders          Order[]
+  createdAt       DateTime               @default(now())
+}
+
+model CampusPickupLocation {
+  id           String   @id @default(uuid())
+  campusId     String
+  campus       Campus   @relation(fields: [campusId], references: [id])
+  name         String
+  instructions String?
+  isActive     Boolean  @default(true)
+  orders       Order[]
+}
+
+model CampusDeliverySlot {
+  id          String   @id @default(uuid())
+  campusId    String
+  campus      Campus   @relation(fields: [campusId], references: [id])
+  slotName    String
+  cutoffHours Int      @default(2)
+  isActive    Boolean  @default(true)
+  orders      Order[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  icon        String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  logo      String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id           String           @id @default(uuid())
+  name         String
+  slug         String           @unique
+  brandId      String
+  brand        Brand            @relation(fields: [brandId], references: [id])
+  categoryId   String
+  category     Category         @relation(fields: [categoryId], references: [id])
+  description  String
+  details      String?
+  specs        Json
+  pinoutUrl    String?
+  datasheetUrl String?
+  rating       Float            @default(4.5)
+  reviewCount  Int              @default(0)
+  isFeatured   Boolean          @default(false)
+  isBestseller Boolean          @default(false)
+  images       Json
+  variants     ProductVariant[]
+  reviews      Review[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id         String      @id @default(uuid())
+  productId  String
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name       String
+  sku        String      @unique
+  price      Decimal
+  mrp        Decimal
+  discount   Int         @default(0)
+  inventory  Inventory?
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Inventory {
+  id           String         @id @default(uuid())
+  variantId    String         @unique
+  variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  available    Int            @default(0)
+  reserved     Int            @default(0)
+  sold         Int            @default(0)
+  minThreshold Int            @default(5)
+  updatedAt    DateTime       @updatedAt
+}
+
+model ProjectKit {
+  id                String      @id @default(uuid())
+  title             String
+  slug              String      @unique
+  category          String
+  difficulty        String
+  buildTime         String
+  price             Decimal
+  mrp               Decimal
+  description       String
+  circuitDiagramUrl String?
+  sourceCodeUrl     String?
+  assemblyGuideUrl  String?
+  documentationUrl  String?
+  includes          Json
+  optionalAddons    Json
+  images            Json
+  orderItems        OrderItem[]
+  createdAt         DateTime    @default(now())
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String?    @unique
+  user      User?      @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String          @id @default(uuid())
+  cartId    String
+  cart      Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity  Int             @default(1)
+  createdAt DateTime        @default(now())
+}
+
+model Wishlist {
+  id        String         @id @default(uuid())
+  userId    String         @unique
+  user      User           @relation(fields: [userId], references: [id])
+  items     WishlistItem[]
+}
+
+model WishlistItem {
+  id         String   @id @default(uuid())
+  wishlistId String
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  productId  String
+  createdAt  DateTime @default(now())
+}
+
+model UserAddress {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  recipientName   String
+  phone           String
+  alternatePhone  String?
+  collegeName     String
+  campusName      String
+  department      String
+  buildingOrBlock String
+  hostelOrLab     String
+  roomNumber      String
+  landmark        String?
+  isDefault       Boolean  @default(false)
+}
+
+model Order {
+  id               String                @id @default(uuid())
+  orderNumber      String                @unique
+  userId           String
+  user             User                  @relation(fields: [userId], references: [id])
+  collegeId        String?
+  college          College?              @relation(fields: [collegeId], references: [id])
+  campusId         String?
+  campus           Campus?               @relation(fields: [campusId], references: [id])
+  pickupLocationId String?
+  pickupLocation   CampusPickupLocation? @relation(fields: [pickupLocationId], references: [id])
+  deliverySlotId   String?
+  deliverySlot     CampusDeliverySlot?   @relation(fields: [deliverySlotId], references: [id])
+
+  recipientName    String
+  recipientPhone   String
+  campusDetail     String
+
+  status           OrderStatus           @default(PENDING)
+  subtotal         Decimal
+  discount         Decimal               @default(0)
+  shippingFee      Decimal               @default(0)
+  tax              Decimal               @default(0)
+  total            Decimal
+
+  paymentMethod    PaymentGateway        @default(UPI)
+  paymentStatus    PaymentStatus         @default(PAYMENT_PENDING)
+
+  utrNumber         String?
+  utrSubmittedAt    DateTime?
+  paymentVerifiedAt DateTime?
+  paymentVerifiedBy String?
+
+  items            OrderItem[]
+  transactions     PaymentTransaction[]
+  shipment         Shipment?
+  supportTickets   SupportTicket[]
+
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+}
+
+model OrderItem {
+  id           String          @id @default(uuid())
+  orderId      String
+  order        Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId    String?
+  variant      ProductVariant? @relation(fields: [variantId], references: [id])
+  projectKitId String?
+  projectKit   ProjectKit?     @relation(fields: [projectKitId], references: [id])
+
+  productName  String
+  sku          String
+  variantName  String?
+  unitPrice    Decimal
+  quantity     Int
+  totalPrice   Decimal
+  specSnapshot Json?
+}
+
+model PaymentTransaction {
+  id             String         @id @default(uuid())
+  orderId        String
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  transactionRef String         @unique
+  gateway        PaymentGateway
+  amount         Decimal
+  currency       String         @default("INR")
+  status         PaymentStatus
+  gatewayPayload Json?
+  createdAt      DateTime       @default(now())
+}
+
+model Shipment {
+  id                String    @id @default(uuid())
+  orderId           String    @unique
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  carrier           String
+  trackingNumber    String    @unique
+  trackingUrl       String?
+  currentCheckpoint String
+  checkpointHistory Json
+  estimatedDelivery DateTime
+  dispatchedAt      DateTime?
+  deliveredAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  projectCode String        @unique
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  title       String
+  description String?
+  buildLevel  BuildLevel    @default(COMPONENTS_ONLY)
+  status      ProjectStatus @default(UPLOADED)
+  detectedBOM Json?
+  notes       String?
+
+  files       ProjectFile[]
+  quotes      ProjectQuote[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ProjectFile {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fileName  String
+  fileUrl   String
+  fileType  String
+  fileSize  Int
+  mimeType  String
+  createdAt DateTime @default(now())
+}
+
+model ProjectQuote {
+  id                String      @id @default(uuid())
+  projectId         String
+  project           Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version           Int         @default(1)
+  status            QuoteStatus @default(DRAFT)
+
+  componentCost     Decimal     @default(0)
+  pcbCost           Decimal     @default(0)
+  assemblyCost      Decimal     @default(0)
+  printCost         Decimal     @default(0)
+  documentationCost Decimal     @default(0)
+  serviceFee        Decimal     @default(0)
+  deliveryFee       Decimal     @default(0)
+  tax               Decimal     @default(0)
+  discount          Decimal     @default(0)
+  totalCost         Decimal
+
+  breakdown         Json
+  studentRemarks    String?
+  adminRemarks      String?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  changes    Json
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  discountPercent Int
+  maxDiscount     Decimal?
+  minSpend        Decimal  @default(0)
+  validUntil      DateTime
+  usageLimit      Int      @default(100)
+  usageCount      Int      @default(0)
+  isActive        Boolean  @default(true)
+}
+
+model SupportTicket {
+  id           String       @id @default(uuid())
+  ticketNumber String       @unique
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  orderId      String?
+  order        Order?       @relation(fields: [orderId], references: [id])
+  subject      String
+  category     String
+  priority     String       @default("NORMAL")
+  status       TicketStatus @default(OPEN)
+  messages     Json
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id               String   @id @default(uuid())
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  rating           Int
+  title            String
+  comment          String
+  verifiedPurchase Boolean  @default(true)
+  createdAt        DateTime @default(now())
+}
+
+model PCBOrder {
+  id              String   @id @default(uuid())
+  orderNumber     String   @unique
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  projectName     String
+  layers          Int      @default(2)
+  dimensions      String   @default("100x100mm")
+  quantity        Int      @default(5)
+  thickness       String   @default("1.6mm")
+  solderMaskColor String   @default("Green")
+  silkscreenColor String   @default("White")
+  surfaceFinish   String   @default("HASL")
+  copperWeight    String   @default("1oz")
+  gerberFileUrl   String?
+  gerberFileName  String?
+  status          String   @default("REQUESTED")
+  quotedAmount    Decimal?
+  adminNotes      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model PrintOrder {
+  id            String   @id @default(uuid())
+  orderNumber   String   @unique
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  partName      String
+  material      String   @default("PLA")
+  infillPercent Int      @default(20)
+  color         String   @default("Black")
+  layerHeight   String   @default("0.2mm Standard")
+  quantity      Int      @default(1)
+  stlFileUrl    String?
+  stlFileName   String?
+  status        String   @default("REQUESTED")
+  quotedAmount  Decimal?
+  adminNotes    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model DocumentOrder {
+  id               String         @id @default(uuid())
+  orderNumber      String         @unique
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  projectTitle     String
+  docType          DocServiceType @default(REPORT)
+  pageCount        Int?
+  formattingStyle  String         @default("IEEE Standard")
+  deadline         DateTime?
+  referenceFileUrl String?
+  status           String         @default("REQUESTED")
+  quotedAmount     Decimal?
+  adminNotes       String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model AdminAuditLog {
+  id            String   @id @default(uuid())
+  adminId       String?
+  adminUser     User?    @relation("AdminAudits", fields: [adminId], references: [id])
+  action        String
+  target        String
+  previousValue Json?
+  newValue      Json?
+  details       String?
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+}
+
+model OtpVerification {
+  id          String   @id @default(uuid())
+  phone       String
+  otpHash     String
+  purpose     String   @default("LOGIN")
+  expiresAt   DateTime
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  resendAfter DateTime
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([phone, purpose])
+}
+
