@@ -94,7 +94,9 @@ export async function uploadProjectFile(
 
   // 3. Fallback: Private Local Storage (NOT served via /public web root)
   // Stored in private storage directory accessible ONLY through /api/projects/[id]/files/[fileId]
-  const privateStorageDir = path.join(process.cwd(), ".private_storage", customerFolder);
+  // In serverless / Vercel, /tmp is the only writable directory
+  const baseDir = process.env.VERCEL ? path.join("/tmp", ".private_storage") : path.join(process.cwd(), ".private_storage");
+  const privateStorageDir = path.join(baseDir, customerFolder);
   if (!fs.existsSync(privateStorageDir)) {
     fs.mkdirSync(privateStorageDir, { recursive: true });
   }
@@ -135,17 +137,18 @@ export async function getProjectFileBuffer(fileUrl: string, objectKey?: string):
     }
   }
 
-  // Local private storage fallback
+  // Local private storage fallback (checks /tmp for Vercel serverless and local cwd)
   const cleanKey = objectKey || fileUrl.replace("local://", "").replace(/^\/uploads\//, "");
-  const localPath = path.join(process.cwd(), ".private_storage", cleanKey);
-  if (fs.existsSync(localPath)) {
-    return { buffer: fs.readFileSync(localPath), mimeType: "application/octet-stream" };
-  }
+  const pathsToCheck = [
+    path.join("/tmp", ".private_storage", cleanKey),
+    path.join(process.cwd(), ".private_storage", cleanKey),
+    path.join(process.cwd(), "public", "uploads", cleanKey),
+  ];
 
-  // Check legacy uploads path if migrating
-  const legacyPath = path.join(process.cwd(), "public", "uploads", cleanKey);
-  if (fs.existsSync(legacyPath)) {
-    return { buffer: fs.readFileSync(legacyPath), mimeType: "application/octet-stream" };
+  for (const candidate of pathsToCheck) {
+    if (fs.existsSync(candidate)) {
+      return { buffer: fs.readFileSync(candidate), mimeType: "application/octet-stream" };
+    }
   }
 
   return null;
