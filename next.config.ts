@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const isDocker = process.env.DOCKER_BUILD === "true";
+
 const nextConfig: NextConfig = {
-  output: "standalone",
+  ...(isDocker ? { output: "standalone" } : {}),
   devIndicators: false,
   turbopack: {
     root: __dirname,
