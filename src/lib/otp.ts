@@ -187,11 +187,17 @@ export class OtpService {
       console.log(`======================================================\n`);
     }
 
+    const hasSmsConfigured = Boolean(
+      (configuredProvider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) ||
+      (configuredProvider === "TWILIO" && process.env.TWILIO_ACCOUNT_SID) ||
+      (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY)
+    );
+
     return {
       success: true,
       message: `OTP sent successfully to ${validated.formatted}`,
       resendAfterSeconds: OTP_RESEND_COOLDOWN_SECONDS,
-      devOtp: isDev ? otp : undefined,
+      devOtp: (isDev || !hasSmsConfigured) ? otp : undefined,
     };
   }
 
