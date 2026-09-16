@@ -19,6 +19,9 @@ export async function GET(
         items: true,
         shipment: true,
         transactions: true,
+        events: {
+          orderBy: { createdAt: "asc" },
+        },
         user: {
           select: {
             id: true,
@@ -93,6 +96,13 @@ export async function GET(
             checkpoints: (order.shipment.checkpointHistory as any[]) || [],
           }
         : null,
+      events: order.events.map((e) => ({
+        id: e.id,
+        eventType: e.eventType,
+        actor: e.actor,
+        message: e.message,
+        createdAt: e.createdAt.toISOString(),
+      })),
     };
 
     return NextResponse.json({ order: formatted });
