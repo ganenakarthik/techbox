@@ -221,6 +221,44 @@ export async function POST(req: Request) {
         },
       });
 
+      // Emit ORDER_CREATED event
+      await tx.orderEvent.create({
+        data: {
+          orderId: order.id,
+          eventType: "ORDER_CREATED",
+          actor: `CUSTOMER:${user.id}`,
+          message: `Order ${orderNumber} placed for ₹${grandTotal}`,
+          metadata: {
+            itemCount: orderItemsData.length,
+            deliverySpeed,
+            recipientName: recipientName.trim(),
+            campusDetail,
+          },
+        },
+      });
+
+      if (cleanUtr) {
+        await tx.orderEvent.create({
+          data: {
+            orderId: order.id,
+            eventType: "PAYMENT_SUBMITTED",
+            actor: `CUSTOMER:${user.id}`,
+            message: `Bank payment reference UTR ${cleanUtr} submitted`,
+            metadata: { utrNumber: cleanUtr },
+          },
+        });
+      }
+
+      // Persist customer in-app Notification
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          title: `Order Placed: ${orderNumber}`,
+          message: `Your order of ₹${grandTotal} has been placed. Please submit your UPI payment reference to confirm dispatch.`,
+          link: `/orders/${orderNumber}`,
+        },
+      });
+
       // Clear user database cart
       const userCart = await tx.cart.findUnique({ where: { userId: user.id } });
       if (userCart) {

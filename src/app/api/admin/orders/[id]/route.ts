@@ -250,6 +250,45 @@ export async function PATCH(
       });
     }
 
+    // Map OrderStatus to OrderEventType
+    const eventTypeMap: Record<string, string> = {
+      CONFIRMED: "ORDER_CONFIRMED",
+      PACKED: "ORDER_PACKED",
+      SHIPPED: "ORDER_SHIPPED",
+      OUT_FOR_DELIVERY: "ORDER_OUT_FOR_DELIVERY",
+      DELIVERED: "ORDER_DELIVERED",
+      CANCELLED: "ORDER_CANCELLED",
+    };
+
+    const targetEventType = eventTypeMap[newStatus];
+    if (targetEventType) {
+      await prisma.orderEvent.create({
+        data: {
+          orderId: order.id,
+          eventType: targetEventType as any,
+          actor: `OPERATOR:${user.id}`,
+          message: checkpointNote || `Order status updated to ${newStatus.replace(/_/g, " ")}`,
+          metadata: {
+            runnerName,
+            runnerPhone,
+            location,
+            previousStatus: prevStatus,
+            newStatus,
+          },
+        },
+      });
+    }
+
+    // Persist customer in-app notification in PostgreSQL
+    await prisma.notification.create({
+      data: {
+        userId: order.userId,
+        title: `Order Update: ${order.orderNumber} is now ${newStatus.replace(/_/g, " ")}`,
+        message: checkpointNote || `Your order status has been updated to ${newStatus.replace(/_/g, " ")}.`,
+        link: `/orders/${order.orderNumber}`,
+      },
+    });
+
     // Immutable Audit Log
     await logAdminAction({
       adminId: user.id,
@@ -260,7 +299,7 @@ export async function PATCH(
       details: `Operator ${user.name} transitioned order ${order.orderNumber} from ${prevStatus} to ${newStatus}`,
     });
 
-    // Notify customer
+    // Notify customer via email/SMS if configured
     await sendNotification({
       userId: order.userId,
       title: `Order Update: ${order.orderNumber} is now ${newStatus.replace(/_/g, " ")}`,

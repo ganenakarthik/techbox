@@ -93,9 +93,11 @@ export class OtpService {
     }
 
     // 3. Generate secure OTP
-    // In local dev/testing mode, fallback to 123456 or random digits
-    const isDev = process.env.NODE_ENV !== "production" || process.env.OTP_PROVIDER === "DEV";
-    const otp = isDev ? "123456" : this.generateOtp();
+    // In production, NEVER use fallback or hardcoded OTP
+    const isProduction = process.env.NODE_ENV === "production";
+    const configuredProvider = (process.env.OTP_PROVIDER || (isProduction ? "FAST2SMS" : "DEV")).toUpperCase();
+    const isDev = !isProduction && configuredProvider === "DEV";
+    const otp = this.generateOtp();
     const otpHash = this.hashOtp(phone, otp);
 
     const expiresAt = new Date(now.getTime() + OTP_EXPIRY_MINUTES * 60 * 1000);
@@ -110,7 +112,7 @@ export class OtpService {
       },
     });
 
-    // 5. Save new OTP record
+    // 5. Save new OTP record (hash only, never plaintext)
     await prisma.otpVerification.create({
       data: {
         phone,
@@ -125,8 +127,7 @@ export class OtpService {
     });
 
     // 6. Dispatch SMS through configured provider
-    const provider = process.env.OTP_PROVIDER || "DEV";
-    if (provider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) {
+    if (configuredProvider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) {
       try {
         await fetch("https://www.fast2sms.com/dev/bulkV2", {
           method: "POST",
@@ -143,8 +144,43 @@ export class OtpService {
       } catch (smsErr) {
         console.error("Fast2SMS dispatch error:", smsErr);
       }
+    } else if (configuredProvider === "TWILIO" && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+      try {
+        const auth = Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64");
+        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${auth}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            To: `+91${validated.national}`,
+            From: process.env.TWILIO_PHONE_NUMBER || "",
+            Body: `Your TechBox verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
+          }),
+        });
+      } catch (twilioErr) {
+        console.error("Twilio dispatch error:", twilioErr);
+      }
+    } else if (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY) {
+      try {
+        await fetch("https://api.msg91.com/api/v5/otp", {
+          method: "POST",
+          headers: {
+            authkey: process.env.MSG91_AUTH_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            template_id: process.env.MSG91_OTP_TEMPLATE_ID,
+            mobile: `91${validated.national}`,
+            otp,
+          }),
+        });
+      } catch (msgErr) {
+        console.error("MSG91 dispatch error:", msgErr);
+      }
     } else {
-      // In DEV or mock provider mode:
+      // In DEV provider mode:
       console.log(`\n======================================================`);
       console.log(`[DEV OTP SERVICE] Mobile: ${phone} | Purpose: ${purpose}`);
       console.log(`[DEV OTP CODE] >>> ${otp} <<< (Expires in 5 mins)`);

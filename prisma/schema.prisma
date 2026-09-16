@@ -39,6 +39,19 @@ enum PaymentGateway {
   TEST_MODE
 }
 
+enum OrderEventType {
+  ORDER_CREATED
+  PAYMENT_SUBMITTED
+  PAYMENT_VERIFIED
+  PAYMENT_FAILED
+  ORDER_CONFIRMED
+  ORDER_PACKED
+  ORDER_SHIPPED
+  ORDER_OUT_FOR_DELIVERY
+  ORDER_DELIVERED
+  ORDER_CANCELLED
+}
+
 enum ProjectStatus {
   UPLOADED
   ANALYZING
@@ -351,6 +364,7 @@ model Order {
   items            OrderItem[]
   transactions     PaymentTransaction[]
   shipment         Shipment?
+  events           OrderEvent[]
   supportTickets   SupportTicket[]
 
   createdAt        DateTime              @default(now())
@@ -402,6 +416,30 @@ model Shipment {
   deliveredAt       DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+}
+
+model OrderEvent {
+  id        String         @id @default(uuid())
+  orderId   String
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventType OrderEventType
+  actor     String         // e.g. "CUSTOMER:userId", "OPERATOR:adminId", "SYSTEM"
+  message   String
+  metadata  Json?
+  createdAt DateTime       @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+model IdempotencyRecord {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  action    String
+  result    Json?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([key, expiresAt])
 }
 
 model Project {

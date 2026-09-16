@@ -102,6 +102,27 @@ export async function POST(
       });
     }
 
+    // Emit OrderEvent: PAYMENT_SUBMITTED
+    await prisma.orderEvent.create({
+      data: {
+        orderId: order.id,
+        eventType: "PAYMENT_SUBMITTED",
+        actor: `CUSTOMER:${user.id}`,
+        message: `Customer submitted bank transaction reference UTR: ${cleanUtr}`,
+        metadata: { utrNumber: cleanUtr, amount: Number(order.total) },
+      },
+    });
+
+    // Persist customer notification
+    await prisma.notification.create({
+      data: {
+        userId: order.userId,
+        title: `Payment Reference Submitted: ${order.orderNumber}`,
+        message: `We received your UTR ${cleanUtr}. Our operations desk will verify with bank credits shortly.`,
+        link: `/orders/${order.orderNumber}`,
+      },
+    });
+
     return NextResponse.json({
       success: true,
       message: "UTR submitted successfully. Our operations team will verify your payment.",

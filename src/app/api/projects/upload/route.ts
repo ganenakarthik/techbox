@@ -85,25 +85,26 @@ export async function POST(req: Request) {
       );
     }
 
+    const { getCurrentUser } = await import("@/lib/auth");
+    const user = await getCurrentUser();
+
     const buffer = Buffer.from(await file.arrayBuffer());
     const { uploadProjectFile } = await import("@/lib/storage");
-    const uploaded = await uploadProjectFile(buffer, originalName, file.type || "application/octet-stream");
+    const uploaded = await uploadProjectFile(
+      buffer,
+      originalName,
+      file.type || "application/octet-stream",
+      user?.id
+    );
 
     const fileUrl = uploaded.fileUrl;
 
-    // Extract text content if it is a text/csv file
+    // Extract text content only if it is a genuine text/csv file
     let extractedText = "";
     if (ext === ".csv" || ext === ".txt") {
       extractedText = buffer.toString("utf8");
     } else {
-      extractedText = `Extracted from ${originalName}:
-ESP32 DevKit V1 Microcontroller, Qty: 1
-HC-SR04 Ultrasonic Distance Sensor, Qty: 2
-SG90 Micro Servo Motor 9g, Qty: 2
-0.96 inch I2C OLED Display 128x64, Qty: 1
-MB-102 Solderless Breadboard 830 points, Qty: 1
-Male to Female Jumper Wires 40 pcs, Qty: 1
-5V Relay Module 1 Channel, Qty: 1`;
+      extractedText = `Received ${originalName} (${(file.size / 1024).toFixed(1)} KB) — TechBox engineering team will review your project specifications and generate an itemized quote.`;
     }
 
     return NextResponse.json({
