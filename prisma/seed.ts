@@ -22,8 +22,10 @@ async function main() {
     });
 
     for (const camp of col.campuses) {
-      const campus = await prisma.campus.create({
-        data: {
+      const campus = await prisma.campus.upsert({
+        where: { id: camp.id },
+        update: {},
+        create: {
           id: camp.id,
           collegeId: college.id,
           name: camp.name,
@@ -31,23 +33,33 @@ async function main() {
       });
 
       for (const loc of camp.pickupLocations) {
-        await prisma.campusPickupLocation.create({
-          data: {
-            campusId: campus.id,
-            name: loc,
-            instructions: "Meet campus delivery runner with student ID.",
-          },
+        const existingLoc = await prisma.campusPickupLocation.findFirst({
+          where: { campusId: campus.id, name: loc }
         });
+        if (!existingLoc) {
+          await prisma.campusPickupLocation.create({
+            data: {
+              campusId: campus.id,
+              name: loc,
+              instructions: "Meet campus delivery runner with student ID.",
+            },
+          });
+        }
       }
 
       for (const slot of camp.deliverySlots) {
-        await prisma.campusDeliverySlot.create({
-          data: {
-            campusId: campus.id,
-            slotName: slot,
-            cutoffHours: 2,
-          },
+        const existingSlot = await prisma.campusDeliverySlot.findFirst({
+          where: { campusId: campus.id, slotName: slot }
         });
+        if (!existingSlot) {
+          await prisma.campusDeliverySlot.create({
+            data: {
+              campusId: campus.id,
+              slotName: slot,
+              cutoffHours: 2,
+            },
+          });
+        }
       }
     }
   }

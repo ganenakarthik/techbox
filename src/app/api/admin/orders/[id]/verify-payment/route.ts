@@ -138,7 +138,7 @@ export async function PATCH(
         });
 
         return updatedOrder;
-      });
+      }, { maxWait: 15000, timeout: 30000 });
 
       return NextResponse.json({
         success: true,
@@ -193,7 +193,7 @@ export async function PATCH(
         });
 
         return updatedOrder;
-      });
+      }, { maxWait: 15000, timeout: 30000 });
 
       return NextResponse.json({
         success: true,

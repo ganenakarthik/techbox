@@ -272,7 +272,7 @@ export async function POST(req: Request) {
         gateway,
         initialPaymentStatus,
       };
-    });
+    }, { maxWait: 15000, timeout: 30000 });
 
     const whatsappUrl = generateWhatsAppOrderUrl({
       orderNumber: result.orderNumber,
