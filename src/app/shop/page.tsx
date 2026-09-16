@@ -19,8 +19,8 @@ function ShopContent() {
   const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [products, setProducts] = useState<any[]>(() => PRODUCTS);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     let isCancelled = false;
