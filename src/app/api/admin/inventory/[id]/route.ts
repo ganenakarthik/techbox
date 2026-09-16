@@ -15,9 +15,16 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { available, minThreshold, adjustAmount } = body;
+    const {
+      adjustmentType = "MANUAL_ADJUSTMENT",
+      quantity,
+      reason,
+      binLocation,
+      reorderThreshold,
+      minThreshold,
+    } = body;
 
-    // Find inventory by variantId or id
+    // Find inventory by id, variantId, or productId
     let inventory = await prisma.inventory.findFirst({
       where: {
         OR: [{ id }, { variantId: id }, { variant: { productId: id } }],
@@ -33,43 +40,99 @@ export async function PATCH(
       return NextResponse.json({ error: "Inventory record not found" }, { status: 404 });
     }
 
-    const prevAvailable = inventory.available;
-    const prevThreshold = inventory.minThreshold;
+    const prevSnapshot = {
+      available: inventory.available,
+      reserved: inventory.reserved,
+      allocated: inventory.allocated,
+      sold: inventory.sold,
+      damaged: inventory.damaged,
+      incoming: inventory.incoming,
+      binLocation: inventory.binLocation,
+      reorderThreshold: inventory.reorderThreshold,
+    };
 
-    let newAvailable = prevAvailable;
-    if (available !== undefined) {
-      newAvailable = Math.max(0, parseInt(available, 10));
-    } else if (adjustAmount !== undefined) {
-      newAvailable = Math.max(0, prevAvailable + parseInt(adjustAmount, 10));
+    let updateData: any = {};
+    const qty = parseInt(quantity ?? 0, 10);
+
+    switch (adjustmentType) {
+      case "RECEIVE_STOCK":
+        // e.g. "Received 50 ESP32 boards from supplier"
+        updateData.available = inventory.available + Math.max(0, qty);
+        break;
+
+      case "MARK_DAMAGED":
+        // Moves from available to damaged
+        const toDamage = Math.min(inventory.available, Math.max(0, qty));
+        updateData.available = inventory.available - toDamage;
+        updateData.damaged = inventory.damaged + toDamage;
+        break;
+
+      case "WRITE_OFF_DAMAGED":
+        // Disposed of broken boards permanently
+        updateData.damaged = Math.max(0, inventory.damaged - Math.max(0, qty));
+        break;
+
+      case "INCOMING_ORDER":
+        // Purchase order created with vendor
+        updateData.incoming = Math.max(0, inventory.incoming + qty);
+        break;
+
+      case "CYCLE_COUNT_ADJUSTMENT":
+        // Physical audit on shelf
+        if (body.newAvailable !== undefined) {
+          updateData.available = Math.max(0, parseInt(body.newAvailable, 10));
+        }
+        break;
+
+      case "SET_BIN_LOCATION":
+        if (binLocation) {
+          updateData.binLocation = binLocation;
+        }
+        break;
+
+      default:
+        if (body.available !== undefined) {
+          updateData.available = Math.max(0, parseInt(body.available, 10));
+        }
+        if (body.adjustAmount !== undefined) {
+          updateData.available = Math.max(0, inventory.available + parseInt(body.adjustAmount, 10));
+        }
+        break;
     }
 
-    const newThreshold = minThreshold !== undefined ? Math.max(0, parseInt(minThreshold, 10)) : prevThreshold;
+    if (binLocation) updateData.binLocation = binLocation;
+    if (reorderThreshold !== undefined) updateData.reorderThreshold = Math.max(0, parseInt(reorderThreshold, 10));
+    if (minThreshold !== undefined) updateData.minThreshold = Math.max(0, parseInt(minThreshold, 10));
 
     const updated = await prisma.inventory.update({
       where: { id: inventory.id },
-      data: {
-        available: newAvailable,
-        minThreshold: newThreshold,
-      },
+      data: updateData,
     });
 
-    // Record audit log
+    // Record immutable audit log
     await logAdminAction({
       adminId: user.id,
-      action: "UPDATE_INVENTORY",
+      action: `INVENTORY_${adjustmentType}`,
       target: `SKU:${inventory.variant.sku}`,
-      previousValue: { available: prevAvailable, minThreshold: prevThreshold },
-      newValue: { available: newAvailable, minThreshold: newThreshold },
-      details: `Stock updated for ${inventory.variant.product.name} (${inventory.variant.name}) from ${prevAvailable} to ${newAvailable}`,
+      previousValue: prevSnapshot,
+      newValue: {
+        available: updated.available,
+        reserved: updated.reserved,
+        allocated: updated.allocated,
+        damaged: updated.damaged,
+        incoming: updated.incoming,
+        binLocation: updated.binLocation,
+      },
+      details: reason || `Inventory adjustment (${adjustmentType}) performed by ${user.name}`,
     });
 
     return NextResponse.json({
       success: true,
+      message: `Inventory updated for ${inventory.variant.sku}`,
       inventory: updated,
-      message: `Stock updated to ${newAvailable} units`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Inventory update error:", error);
-    return NextResponse.json({ error: "Failed to update inventory" }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

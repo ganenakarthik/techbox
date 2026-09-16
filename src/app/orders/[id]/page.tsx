@@ -22,6 +22,7 @@ import {
   CreditCard,
   Loader2,
   MessageSquare,
+  Phone,
 } from "lucide-react";
 import { generateWhatsAppOrderUrl } from "@/lib/whatsapp";
 
@@ -42,25 +43,37 @@ export default function OrderTrackingPage({
   const [submittingUtr, setSubmittingUtr] = useState(false);
 
   useEffect(() => {
-    async function fetchOrder() {
-      setLoading(true);
+    let interval: NodeJS.Timeout | null = null;
+
+    async function fetchOrder(silent = false) {
+      if (!silent) setLoading(true);
       setError(null);
       try {
         const res = await fetch(`/api/orders/${orderId}`);
         if (res.ok) {
           const data = await res.json();
           setOrder(data.order);
-        } else {
+        } else if (!silent) {
           const err = await res.json();
           setError(err.error || "Order not found");
         }
       } catch {
-        setError("Failed to load order details");
+        if (!silent) setError("Failed to load order details");
       } finally {
-        setLoading(false);
+        if (!silent) setLoading(false);
       }
     }
+
     fetchOrder();
+
+    // Real-time reactive polling every 4 seconds while order is actively being processed
+    interval = setInterval(() => {
+      fetchOrder(true);
+    }, 4000);
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [orderId]);
 
   const handlePrintInvoice = () => {
@@ -362,6 +375,32 @@ export default function OrderTrackingPage({
             </div>
           )}
         </div>
+
+        {/* Campus Runner Contact Card if assigned */}
+        {order.runnerName && (
+          <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/30 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-lg">
+                🏃
+              </div>
+              <div>
+                <div className="text-[10px] text-sky-400 uppercase font-bold tracking-wider">TechBox Campus Runner</div>
+                <div className="text-sm font-bold text-white">{order.runnerName}</div>
+                <div className="text-[11px] text-neutral-400">{order.campusDetail || "Delivering directly to your campus point"}</div>
+              </div>
+            </div>
+
+            {order.runnerPhone && (
+              <a
+                href={`tel:${order.runnerPhone}`}
+                className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-bold text-xs flex items-center justify-center gap-2 transition-colors self-start sm:self-auto"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Call Runner ({order.runnerPhone})</span>
+              </a>
+            )}
+          </div>
+        )}
 
         {order.status === "CANCELLED" ? (
           <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">

@@ -56,6 +56,12 @@ export async function GET(
       recipientName: order.recipientName,
       recipientPhone: order.recipientPhone,
       campusDetail: order.campusDetail,
+      deliveryMethod: order.deliveryMethod || "TECHBOX_CAMPUS_DELIVERY",
+      runnerName: order.runnerName || null,
+      runnerPhone: order.runnerPhone || null,
+      packedAt: order.packedAt ? order.packedAt.toISOString() : null,
+      packedBy: order.packedBy || null,
+      packingNotes: order.packingNotes || null,
       items: order.items.map((i) => ({
         id: i.id,
         productName: i.productName,
@@ -83,6 +89,7 @@ export async function GET(
             estimatedDelivery: order.shipment.estimatedDelivery.toISOString(),
             dispatchedAt: order.shipment.dispatchedAt?.toISOString() || null,
             deliveredAt: order.shipment.deliveredAt?.toISOString() || null,
+            checkpointHistory: (order.shipment.checkpointHistory as any[]) || [],
             checkpoints: (order.shipment.checkpointHistory as any[]) || [],
           }
         : null,

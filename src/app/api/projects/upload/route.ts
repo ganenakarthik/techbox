@@ -86,18 +86,10 @@ export async function POST(req: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "projects");
+    const { uploadProjectFile } = await import("@/lib/storage");
+    const uploaded = await uploadProjectFile(buffer, originalName, file.type || "application/octet-stream");
 
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const safeBaseName = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
-    const safeFileName = `${Date.now()}-${safeBaseName}${ext}`;
-    const filePath = path.join(uploadDir, safeFileName);
-    fs.writeFileSync(filePath, buffer);
-
-    const fileUrl = `/uploads/projects/${safeFileName}`;
+    const fileUrl = uploaded.fileUrl;
 
     // Extract text content if it is a text/csv file
     let extractedText = "";

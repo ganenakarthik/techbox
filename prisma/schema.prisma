@@ -218,14 +218,19 @@ model ProductVariant {
 }
 
 model Inventory {
-  id           String         @id @default(uuid())
-  variantId    String         @unique
-  variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  available    Int            @default(0)
-  reserved     Int            @default(0)
-  sold         Int            @default(0)
-  minThreshold Int            @default(5)
-  updatedAt    DateTime       @updatedAt
+  id               String         @id @default(uuid())
+  variantId        String         @unique
+  variant          ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  available        Int            @default(0)
+  reserved         Int            @default(0)
+  allocated        Int            @default(0)
+  sold             Int            @default(0)
+  damaged          Int            @default(0)
+  incoming         Int            @default(0)
+  binLocation      String?        @default("Warehouse Bay 1-A")
+  minThreshold     Int            @default(5)
+  reorderThreshold Int            @default(10)
+  updatedAt        DateTime       @updatedAt
 }
 
 model ProjectKit {
@@ -331,6 +336,17 @@ model Order {
   utrSubmittedAt    DateTime?
   paymentVerifiedAt DateTime?
   paymentVerifiedBy String?
+
+  packedAt          DateTime?
+  packedBy          String?
+  packingNotes      String?
+
+  deliveryMethod    String?               @default("TECHBOX_CAMPUS_DELIVERY")
+  runnerName        String?
+  runnerPhone       String?
+  dispatchNotes     String?
+  cancellationReason String?
+  refundReason       String?
 
   items            OrderItem[]
   transactions     PaymentTransaction[]

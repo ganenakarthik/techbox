@@ -42,6 +42,23 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Fraud Prevention: Check if this UTR was already submitted for another order
+    const duplicateOrder = await prisma.order.findFirst({
+      where: {
+        utrNumber: cleanUtr,
+        id: { not: order.id },
+      },
+    });
+
+    if (duplicateOrder) {
+      return NextResponse.json(
+        {
+          error: `This UTR/reference number has already been submitted for order ${duplicateOrder.orderNumber}. Each bank transaction reference may only be used once.`,
+        },
+        { status: 400 }
+      );
+    }
+
     // Update order with UTR and move to PAYMENT_SUBMITTED
     const updated = await prisma.order.update({
       where: { id: order.id },

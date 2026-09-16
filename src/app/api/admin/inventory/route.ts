@@ -34,8 +34,13 @@ export async function GET(req: Request) {
       inventoryId: v.inventory?.id,
       available: v.inventory?.available ?? 0,
       reserved: v.inventory?.reserved ?? 0,
+      allocated: v.inventory?.allocated ?? 0,
       sold: v.inventory?.sold ?? 0,
+      damaged: v.inventory?.damaged ?? 0,
+      incoming: v.inventory?.incoming ?? 0,
+      binLocation: v.inventory?.binLocation || "Warehouse Bay 1-A",
       minThreshold: v.inventory?.minThreshold ?? 5,
+      reorderThreshold: v.inventory?.reorderThreshold ?? 10,
       isLowStock: (v.inventory?.available ?? 0) <= (v.inventory?.minThreshold ?? 5),
     }));
 

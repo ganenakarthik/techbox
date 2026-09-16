@@ -71,14 +71,23 @@ export async function POST(req: Request) {
           );
         }
 
-        // Decrement available inventory, increment reserved
-        await tx.inventory.update({
-          where: { variantId: variant.id },
+        // Decrement available inventory atomically with concurrency protection (gte check)
+        const updateResult = await tx.inventory.updateMany({
+          where: {
+            variantId: variant.id,
+            available: { gte: requestedQty },
+          },
           data: {
             available: { decrement: requestedQty },
             reserved: { increment: requestedQty },
           },
         });
+
+        if (updateResult.count === 0) {
+          throw new Error(
+            `Insufficient stock for "${variant.product.name} (${variant.name})". The remaining units were just purchased by another customer.`
+          );
+        }
 
         const unitPrice = Number(variant.price);
         const itemTotal = unitPrice * requestedQty;
