@@ -224,19 +224,19 @@ export default function PcbServicePage() {
           <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626] shadow-2xl space-y-6">
             <div>
               <div className="text-xs text-neutral-400 uppercase tracking-wider">
-                Instant Manufacturing Quote
+                Preliminary Benchmark Estimate
               </div>
               <div className="text-3xl sm:text-4xl font-black text-white mt-1">
-                ₹{estimatedTotal}
+                ₹{estimatedTotal}*
               </div>
-              <div className="text-[11px] text-neutral-400 mt-0.5">
-                For {quantity} pieces of {layers}-Layer {dimensions.width}×{dimensions.height}mm PCBs
+              <div className="text-[11px] text-neutral-400 mt-1">
+                *Reference price for {quantity} pcs of {layers}-Layer {dimensions.width}×{dimensions.height}mm boards. Final quote is calculated after DFM review of trace widths and layer stackup.
               </div>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#222222] text-xs space-y-2">
               <div className="flex justify-between">
-                <span className="text-neutral-400">Material:</span>
+                <span className="text-neutral-400">Base Substrate:</span>
                 <span className="text-white font-medium">FR-4 Standard TG130-140</span>
               </div>
               <div className="flex justify-between">
@@ -244,16 +244,16 @@ export default function PcbServicePage() {
                 <span className="text-white font-medium">1 oz Cu (35μm)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Finish:</span>
+                <span className="text-neutral-400">Surface Finish:</span>
                 <span className="text-white font-medium">{surfaceFinish}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Color:</span>
+                <span className="text-neutral-400">Solder Mask:</span>
                 <span className="text-[#ff6a00] font-semibold">{solderColor}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Campus Delivery:</span>
-                <span className="text-[#22c55e] font-semibold">FREE</span>
+                <span className="text-neutral-400">Engineering Review:</span>
+                <span className="text-[#22c55e] font-semibold">Included</span>
               </div>
             </div>
 
@@ -262,14 +262,14 @@ export default function PcbServicePage() {
               disabled={isSubmitting}
               className="w-full py-3.5 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all disabled:opacity-50"
             >
-              <span>{isSubmitting ? "Submitting for DFM Review..." : "Submit Gerber for Production"}</span>
+              <span>{isSubmitting ? "Submitting for DFM Review..." : "Submit Gerber for Engineering Quote"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
             <div className="flex items-start gap-2 text-[11px] text-neutral-400 pt-2 border-t border-[#1c1c1c]">
               <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0 mt-0.5" />
               <span>
-                Every board undergoes 100% Flying Probe Electrical Testing before dispatch.
+                TechBox hardware engineers perform 100% trace and clearance rule checks before production.
               </span>
             </div>
           </div>

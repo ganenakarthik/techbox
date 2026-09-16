@@ -193,11 +193,20 @@ export class OtpService {
       (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY)
     );
 
+    if (isProduction && !hasSmsConfigured) {
+      return {
+        success: false,
+        error: "SMS_GATEWAY_NOT_CONFIGURED",
+        message: "SMS gateway is not configured in production. Please configure FAST2SMS_API_KEY, TWILIO_ACCOUNT_SID, or MSG91_AUTH_KEY in production environment.",
+        resendAfterSeconds: 0,
+      };
+    }
+
     return {
       success: true,
       message: `OTP sent successfully to ${validated.formatted}`,
       resendAfterSeconds: OTP_RESEND_COOLDOWN_SECONDS,
-      devOtp: (isDev || !hasSmsConfigured) ? otp : undefined,
+      devOtp: isDev ? otp : undefined,
     };
   }
 

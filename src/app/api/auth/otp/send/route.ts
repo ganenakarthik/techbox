@@ -35,9 +35,20 @@ export async function POST(req: Request) {
     const result = await OtpService.sendOtp(phone, purpose);
 
     if (!result.success) {
-      const statusCode = result.error === "RATE_LIMITED" ? 429 : result.error === "COOLDOWN_ACTIVE" ? 429 : 400;
+      const statusCode =
+        result.error === "RATE_LIMITED"
+          ? 429
+          : result.error === "COOLDOWN_ACTIVE"
+          ? 429
+          : result.error === "SMS_GATEWAY_NOT_CONFIGURED"
+          ? 503
+          : 400;
       return NextResponse.json(
-        { error: result.message, resendAfterSeconds: result.resendAfterSeconds },
+        {
+          error: result.message,
+          code: result.error,
+          resendAfterSeconds: result.resendAfterSeconds,
+        },
         { status: statusCode }
       );
     }

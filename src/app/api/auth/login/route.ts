@@ -53,16 +53,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify password
+    // Verify password strictly against database scrypt hash
     const isValid = await verifyPassword(password, user.passwordHash);
 
-    // Fallback check for seeded accounts
-    const isSeedMatch =
-      !isValid &&
-      ((user.email === "admin@techbox.com" && (password === "admin123" || password === "AdminPassword123!")) ||
-        (user.email === "student@campus.edu" && (password === "student123" || password === "StudentPassword123!")));
-
-    if (!isValid && !isSeedMatch) {
+    if (!isValid) {
       return NextResponse.json(
         { error: "Invalid mobile/email or password" },
         { status: 401 }

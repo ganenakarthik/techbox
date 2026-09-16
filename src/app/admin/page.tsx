@@ -28,12 +28,18 @@ export default function AdminDashboardPage() {
   const { user } = useApp();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [accessDenied, setAccessDenied] = useState<boolean>(false);
 
   useEffect(() => {
     async function loadAdminOverview() {
       setLoading(true);
       try {
         const res = await fetch("/api/admin/overview");
+        if (res.status === 403 || res.status === 401) {
+          setAccessDenied(true);
+          setLoading(false);
+          return;
+        }
         if (res.ok) {
           const json = await res.json();
           setData(json);
@@ -46,6 +52,35 @@ export default function AdminDashboardPage() {
     }
     loadAdminOverview();
   }, [user]);
+
+  // Secondary layer of defense: If user is not admin/staff or API returned 403/401
+  if (!loading && (accessDenied || (!user || (user.role !== "ADMIN" && user.role !== "STAFF")))) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 mb-4">
+          <AlertTriangle className="w-8 h-8" />
+        </div>
+        <h1 className="text-2xl font-black text-white">403 — Unauthorized Access</h1>
+        <p className="mt-2 text-sm text-neutral-400 max-w-md">
+          Administrative privileges are strictly restricted to verified TechBox campus operations leads and staff.
+        </p>
+        <div className="mt-6 flex items-center gap-3">
+          <Link
+            href="/login?redirect=/admin"
+            className="px-5 py-2.5 rounded-xl bg-[#ff6a00] text-black font-bold text-xs hover:bg-[#ff7b1a] transition-colors"
+          >
+            Staff Login
+          </Link>
+          <Link
+            href="/shop"
+            className="px-5 py-2.5 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] text-neutral-300 font-semibold text-xs hover:bg-[#222] transition-colors"
+          >
+            Return to Shop
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const metrics = data?.metrics || {
     totalOrders: 0,

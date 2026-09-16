@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { CATEGORIES, BRANDS } from "@/data/mockData";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Search, Filter, SlidersHorizontal, X, Tag, RotateCcw, Loader2 } from "lucide-react";
 
@@ -19,8 +18,23 @@ function ShopContent() {
   const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
-  const [products, setProducts] = useState<any[]>(() => PRODUCTS);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Fetch live categories & brands from PostgreSQL on mount
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data.categories || []))
+      .catch(() => {});
+
+    fetch("/api/brands")
+      .then((res) => res.json())
+      .then((data) => setBrands(data.brands || []))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let isCancelled = false;
@@ -182,7 +196,7 @@ function ShopContent() {
                   <span>All Categories</span>
                   <span className="text-[10px] text-neutral-500">{products.length}</span>
                 </button>
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.slug)}
@@ -209,7 +223,7 @@ function ShopContent() {
                 className="w-full bg-[#141414] border border-[#262626] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
               >
                 <option value="all">All Brands</option>
-                {BRANDS.map((b) => (
+                {brands.map((b) => (
                   <option key={b.id} value={b.name}>
                     {b.name}
                   </option>

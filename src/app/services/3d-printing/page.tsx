@@ -191,31 +191,35 @@ export default function ThreeDPrintingPage() {
           <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626] shadow-2xl space-y-6">
             <div>
               <div className="text-xs text-neutral-400 uppercase tracking-wider">
-                Instant 3D Print Quote
+                Material Rate Benchmark
               </div>
               <div className="text-3xl sm:text-4xl font-black text-white mt-1">
-                ₹{estimatedTotal}
+                ₹{currentMat.ratePerGram}<span className="text-lg font-normal text-neutral-400"> / gram</span>
               </div>
-              <div className="text-[11px] text-neutral-400 mt-0.5">
-                Est. ~{estimatedWeight}g print weight at {infill}% infill
+              <div className="text-[11px] text-neutral-400 mt-1">
+                Baseline rate for {currentMat.name}. Final price is calculated after slicing your CAD model to measure exact filament weight and machine run-time.
               </div>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#222222] text-xs space-y-2">
               <div className="flex justify-between">
-                <span className="text-neutral-400">Material:</span>
+                <span className="text-neutral-400">Selected Material:</span>
                 <span className="text-white font-medium">{material}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Color:</span>
-                <span className="text-[#ff6a00] font-semibold">{color}</span>
+                <span className="text-neutral-400">Rate per Gram:</span>
+                <span className="text-[#ff6a00] font-semibold">₹{currentMat.ratePerGram}/g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Layer Height:</span>
-                <span className="text-white font-medium">0.2mm Standard Quality</span>
+                <span className="text-neutral-400">Target Infill:</span>
+                <span className="text-white font-medium">{infill}% Grid</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Campus Delivery:</span>
+                <span className="text-neutral-400">Slicing & Toolpath Check:</span>
+                <span className="text-[#22c55e] font-semibold">Included</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-neutral-400">Campus Pickup:</span>
                 <span className="text-[#22c55e] font-semibold">FREE</span>
               </div>
             </div>
@@ -227,7 +231,7 @@ export default function ThreeDPrintingPage() {
                   <span>3D Print Order #{submittedOrder} Queued</span>
                 </div>
                 <p className="text-[11px] text-neutral-300">
-                  Our digital fabrication lab is preparing the slice preview and wall infill calculations.
+                  Our digital fabrication lab is slicing your CAD model to compute exact material weight and generate your official quote.
                 </p>
                 <button
                   type="button"
@@ -243,7 +247,7 @@ export default function ThreeDPrintingPage() {
                 onClick={handleSubmitPrint}
                 className="w-full py-3.5 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] disabled:opacity-50 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
               >
-                <span>{isSubmitting ? "Submitting Model..." : "Submit Model for 3D Printing"}</span>
+                <span>{isSubmitting ? "Submitting Model..." : "Submit Model for Slicing & Quote"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -251,7 +255,7 @@ export default function ThreeDPrintingPage() {
             <div className="flex items-start gap-2 text-[11px] text-neutral-400 pt-2 border-t border-[#1c1c1c]">
               <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0 mt-0.5" />
               <span>
-                Support removal and surface deburring included free with every print.
+                Support removal, tolerance checks, and deburring included free with every project print.
               </span>
             </div>
           </div>

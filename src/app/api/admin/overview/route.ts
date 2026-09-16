@@ -5,7 +5,10 @@ import { getCurrentUser } from "@/lib/auth";
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "STAFF")) {
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+    if (user.role !== "ADMIN" && user.role !== "STAFF") {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 

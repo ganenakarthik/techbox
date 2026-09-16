@@ -6,7 +6,10 @@ import { logAdminAction } from "@/lib/audit";
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "STAFF")) {
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+    if (user.role !== "ADMIN" && user.role !== "STAFF") {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
@@ -46,7 +49,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "STAFF")) {
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+    if (user.role !== "ADMIN" && user.role !== "STAFF") {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 

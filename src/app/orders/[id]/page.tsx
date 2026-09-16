@@ -252,7 +252,7 @@ export default function OrderTrackingPage({
             className="py-2.5 px-4 rounded-xl bg-[#22c55e] hover:bg-[#25b85a] text-black text-xs font-bold flex items-center gap-2 transition-all shadow-lg shadow-[#22c55e]/20"
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Send on WhatsApp</span>
+            <span>Send Order Details to TechBox WhatsApp</span>
           </a>
           <button
             onClick={handlePrintInvoice}

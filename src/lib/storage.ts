@@ -6,16 +6,33 @@ export interface UploadResult {
   fileUrl: string;
   fileSize: number;
   mimeType: string;
-  storageProvider: "LOCAL" | "R2" | "S3" | "GCS";
+  storageProvider: "SUPABASE" | "LOCAL" | "R2" | "GCS";
   objectKey: string;
 }
 
 const FORBIDDEN_EXTENSIONS = new Set([
-  ".exe", ".bat", ".cmd", ".sh", ".php", ".phtml", ".pl", ".py", ".rb", ".vbs", ".msi", ".jar", ".ps1"
+  ".exe", ".bat", ".cmd", ".sh", ".php", ".phtml", ".pl", ".py", ".rb", ".vbs", ".msi", ".jar", ".ps1", ".dll", ".scr"
 ]);
 
+const ALLOWED_MIME_PREFIXES = [
+  "application/pdf",
+  "text/csv",
+  "text/plain",
+  "application/zip",
+  "application/x-zip-compressed",
+  "application/x-rar-compressed",
+  "application/x-7z-compressed",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "model/stl",
+  "application/octet-stream",
+];
+
 /**
- * Production storage abstraction supporting Google Cloud Storage (GCS), Cloudflare R2, and local fallback.
+ * Production storage abstraction for TechBox.
+ * Primary Provider: Supabase Storage (Private bucket `project-files`).
+ * Local Fallback: Stored in a private, non-public directory accessed strictly via authenticated API proxy.
  */
 export async function uploadProjectFile(
   fileBuffer: Buffer,
@@ -23,9 +40,9 @@ export async function uploadProjectFile(
   mimeType: string,
   userId?: string
 ): Promise<UploadResult> {
-  const provider = (process.env.STORAGE_PROVIDER || "LOCAL").toUpperCase();
   const ext = path.extname(originalName).toLowerCase();
 
+  // 1. Strict Security Validation
   if (FORBIDDEN_EXTENSIONS.has(ext)) {
     throw new Error(`Executable or script files (${ext}) are strictly prohibited for security.`);
   }
@@ -36,53 +53,58 @@ export async function uploadProjectFile(
 
   const safeBase = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
   const randomKey = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${safeBase}${ext}`;
-  const customerFolder = userId ? `users/${userId}/projects` : "public/projects";
+  const customerFolder = userId ? `users/${userId}/projects` : "anonymous/projects";
   const objectKey = `${customerFolder}/${randomKey}`;
 
-  // 1. Google Cloud Storage (GCS)
-  if (provider === "GCS" && process.env.GCS_BUCKET_NAME) {
-    const bucket = process.env.GCS_BUCKET_NAME;
-    const gcsHost = process.env.GCS_CUSTOM_DOMAIN || `storage.googleapis.com/${bucket}`;
-    const fileUrl = `https://${gcsHost}/${objectKey}`;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lflqghccqvohstanpgly.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const bucketName = process.env.SUPABASE_STORAGE_BUCKET || "project-files";
 
-    return {
-      fileName: originalName,
-      fileUrl,
-      fileSize: fileBuffer.length,
-      mimeType,
-      storageProvider: "GCS",
-      objectKey,
-    };
+  // 2. Primary Production Storage: Supabase Storage Private Bucket
+  if (supabaseKey) {
+    try {
+      const uploadEndpoint = `${supabaseUrl}/storage/v1/object/${bucketName}/${objectKey}`;
+      const res = await fetch(uploadEndpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${supabaseKey}`,
+          "Content-Type": mimeType || "application/octet-stream",
+          "x-upsert": "true",
+        },
+        body: new Uint8Array(fileBuffer),
+      });
+
+      if (res.ok) {
+        return {
+          fileName: originalName,
+          fileUrl: `supabase://${bucketName}/${objectKey}`,
+          fileSize: fileBuffer.length,
+          mimeType,
+          storageProvider: "SUPABASE",
+          objectKey,
+        };
+      } else {
+        const errText = await res.text();
+        console.warn(`Supabase Storage upload warning (${res.status}): ${errText}`);
+      }
+    } catch (sbErr) {
+      console.error("Supabase Storage upload error:", sbErr);
+    }
   }
 
-  // 2. Cloudflare R2 (S3-compatible)
-  if ((provider === "R2" || provider === "S3") && process.env.R2_ENDPOINT && process.env.R2_BUCKET_NAME) {
-    const endpoint = process.env.R2_ENDPOINT;
-    const bucket = process.env.R2_BUCKET_NAME;
-    const publicUrl = process.env.R2_PUBLIC_DOMAIN || `${endpoint}/${bucket}`;
-
-    return {
-      fileName: originalName,
-      fileUrl: `${publicUrl}/${objectKey}`,
-      fileSize: fileBuffer.length,
-      mimeType,
-      storageProvider: "R2",
-      objectKey,
-    };
+  // 3. Fallback: Private Local Storage (NOT served via /public web root)
+  // Stored in private storage directory accessible ONLY through /api/projects/[id]/files/[fileId]
+  const privateStorageDir = path.join(process.cwd(), ".private_storage", customerFolder);
+  if (!fs.existsSync(privateStorageDir)) {
+    fs.mkdirSync(privateStorageDir, { recursive: true });
   }
 
-  // 3. Local filesystem fallback (strictly for development / test mode)
-  const uploadDir = path.join(process.cwd(), "public", "uploads", customerFolder);
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  const filePath = path.join(uploadDir, randomKey);
+  const filePath = path.join(privateStorageDir, randomKey);
   fs.writeFileSync(filePath, fileBuffer);
 
   return {
     fileName: originalName,
-    fileUrl: `/uploads/${customerFolder}/${randomKey}`,
+    fileUrl: `local://${objectKey}`,
     fileSize: fileBuffer.length,
     mimeType,
     storageProvider: "LOCAL",
@@ -90,3 +112,41 @@ export async function uploadProjectFile(
   };
 }
 
+/**
+ * Retrieves file buffer securely from storage provider
+ */
+export async function getProjectFileBuffer(fileUrl: string, objectKey?: string): Promise<{ buffer: Buffer; mimeType: string } | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lflqghccqvohstanpgly.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const bucketName = process.env.SUPABASE_STORAGE_BUCKET || "project-files";
+
+  if (fileUrl.startsWith("supabase://") && supabaseKey) {
+    const key = fileUrl.replace(`supabase://${bucketName}/`, "");
+    const downloadEndpoint = `${supabaseUrl}/storage/v1/object/authenticated/${bucketName}/${key}`;
+    const res = await fetch(downloadEndpoint, {
+      headers: {
+        Authorization: `Bearer ${supabaseKey}`,
+      },
+    });
+    if (res.ok) {
+      const arrayBuf = await res.arrayBuffer();
+      const mime = res.headers.get("content-type") || "application/octet-stream";
+      return { buffer: Buffer.from(arrayBuf), mimeType: mime };
+    }
+  }
+
+  // Local private storage fallback
+  const cleanKey = objectKey || fileUrl.replace("local://", "").replace(/^\/uploads\//, "");
+  const localPath = path.join(process.cwd(), ".private_storage", cleanKey);
+  if (fs.existsSync(localPath)) {
+    return { buffer: fs.readFileSync(localPath), mimeType: "application/octet-stream" };
+  }
+
+  // Check legacy uploads path if migrating
+  const legacyPath = path.join(process.cwd(), "public", "uploads", cleanKey);
+  if (fs.existsSync(legacyPath)) {
+    return { buffer: fs.readFileSync(legacyPath), mimeType: "application/octet-stream" };
+  }
+
+  return null;
+}

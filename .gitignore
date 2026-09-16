@@ -58,3 +58,4 @@ public/uploads/*
 !public/uploads/.gitkeep
 scratch/
 crop.ps1
+.private_storage/

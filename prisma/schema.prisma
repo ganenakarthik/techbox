@@ -480,22 +480,26 @@ model ProjectQuote {
   status            QuoteStatus @default(DRAFT)
 
   componentCost     Decimal     @default(0)
-  pcbCost           Decimal     @default(0)
+  manufacturingCost Decimal     @default(0)
   assemblyCost      Decimal     @default(0)
-  printCost         Decimal     @default(0)
-  documentationCost Decimal     @default(0)
-  serviceFee        Decimal     @default(0)
-  deliveryFee       Decimal     @default(0)
+  testingCost       Decimal     @default(0)
+  shippingCost      Decimal     @default(0)
+  margin            Decimal     @default(0)
+  taxRate           Decimal     @default(0.18)
   tax               Decimal     @default(0)
   discount          Decimal     @default(0)
   totalCost         Decimal
+  currency          String      @default("INR")
 
   breakdown         Json
   studentRemarks    String?
   adminRemarks      String?
+  createdById       String?
 
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
+
+  @@unique([projectId, version])
 }
 
 model AuditLog {
