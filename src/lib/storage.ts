@@ -146,8 +146,8 @@ export async function getProjectFileBuffer(fileUrl: string, objectKey?: string):
   ];
 
   for (const candidate of pathsToCheck) {
-    if (fs.existsSync(candidate)) {
-      return { buffer: fs.readFileSync(candidate), mimeType: "application/octet-stream" };
+    if (fs.existsSync(/*turbopackIgnore: true*/ candidate)) {
+      return { buffer: fs.readFileSync(/*turbopackIgnore: true*/ candidate), mimeType: "application/octet-stream" };
     }
   }
 

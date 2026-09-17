@@ -15,7 +15,7 @@ function ShopContent() {
   const [inStockOnly, setInStockOnly] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("featured");
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
-  const [maxPrice, setMaxPrice] = useState<number>(1000);
+  const [maxPrice, setMaxPrice] = useState<number>(5000);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
   const [products, setProducts] = useState<any[]>([]);
@@ -72,7 +72,7 @@ function ShopContent() {
   // Client-side price slider filter
   const filteredProducts = products.filter((p) => {
     if (!p.variants || p.variants.length === 0) return true;
-    const minPrice = Math.min(...p.variants.map((v: any) => v.price));
+    const minPrice = Math.min(...p.variants.map((v: any) => Number(v.price) || 0));
     return minPrice <= maxPrice;
   });
 

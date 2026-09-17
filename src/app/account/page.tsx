@@ -63,25 +63,17 @@ export default function AccountPage() {
           </p>
         </div>
 
-        {/* Demo Fast Switcher */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => switchRole(user?.role === "ADMIN" ? "CUSTOMER" : "ADMIN")}
-            className="px-3 py-1.5 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-xs font-semibold text-[#ff6a00] flex items-center gap-1.5"
-          >
-            {user?.role === "ADMIN" ? (
-              <>
-                <GraduationCap className="w-3.5 h-3.5" />
-                <span>Switch to Student View</span>
-              </>
-            ) : (
-              <>
-                <ShieldAlert className="w-3.5 h-3.5" />
-                <span>Switch to Admin Portal</span>
-              </>
-            )}
-          </button>
-        </div>
+        {(user?.role === "ADMIN" || user?.role === "STAFF") && (
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin"
+              className="px-3.5 py-2 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-[#ff6a00]/20 transition-all"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Admin Operations Hub</span>
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
