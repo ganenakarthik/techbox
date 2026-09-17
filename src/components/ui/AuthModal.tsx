@@ -1,26 +1,24 @@
-﻿"use client";
+"use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
 import { BRAND } from "@/config/brand";
 import {
   X,
-  Phone,
+  Eye,
+  EyeOff,
   ArrowRight,
   ShieldCheck,
-  RotateCcw,
   Lock,
   Mail,
   User,
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Sparkles,
 } from "lucide-react";
-import { validateAndNormalizeIndianPhone } from "@/lib/phone";
 
-type AuthStep = "PHONE_INPUT" | "OTP_INPUT" | "NEW_USER_SETUP" | "PASSWORD_LOGIN" | "FORGOT_PASSWORD" | "RESET_PASSWORD";
+type AuthTab = "signin" | "signup";
 
 export function AuthModal() {
   const {
@@ -28,269 +26,142 @@ export function AuthModal() {
     setIsAuthModalOpen,
     user,
     logout,
-    sendOtp,
-    verifyOtp,
-    registerWithPhone,
     loginWithPassword,
+    signup,
     addToast,
     authRedirectUrl,
+    setAuthRedirectUrl,
   } = useApp();
 
-  const [step, setStep] = useState<AuthStep>("PHONE_INPUT");
-  const [phone, setPhone] = useState("");
-  const [formattedPhone, setFormattedPhone] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [devOtp, setDevOtp] = useState<string | null>(null);
-  const [resendCooldown, setResendCooldown] = useState(0);
-  const [isExistingUser, setIsExistingUser] = useState(false);
-
-  // New user setup fields
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-
-  // Password login fields
-  const [passwordIdentifier, setPasswordIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-
-  // Forgot / Reset password fields
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [tab, setTab] = useState<AuthTab>("signin");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // Sign In fields
+  const [siEmail, setSiEmail] = useState("");
+  const [siPassword, setSiPassword] = useState("");
 
-  // Reset states when modal opens
+  // Sign Up fields
+  const [suName, setSuName] = useState("");
+  const [suEmail, setSuEmail] = useState("");
+  const [suPassword, setSuPassword] = useState("");
+  const [suConfirm, setSuConfirm] = useState("");
+  const [suPhone, setSuPhone] = useState("");
+
+  // Forgot password
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotSent, setForgotSent] = useState(false);
+
+  // Reset on open
   useEffect(() => {
     if (isAuthModalOpen) {
       setError(null);
-      if (!user) {
-        setStep("PHONE_INPUT");
-        setOtp(["", "", "", "", "", ""]);
-      }
+      setLoading(false);
+      setShowPassword(false);
+      setForgotMode(false);
+      setForgotSent(false);
     }
-  }, [isAuthModalOpen, user]);
-
-  // Resend cooldown timer
-  useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const timer = setInterval(() => {
-      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [resendCooldown]);
+  }, [isAuthModalOpen]);
 
   if (!isAuthModalOpen) return null;
 
-  // Handle Phone input formatting (digits only, max 10)
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    const raw = e.target.value.replace(/\D/g, "").slice(0, 10);
-    setPhone(raw);
-  };
-
-  // Step 1: Send OTP
-  const handleSendOtp = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setError(null);
-
-    const validation = validateAndNormalizeIndianPhone(phone);
-    if (!validation.isValid) {
-      setError(validation.error || "Please enter a valid 10-digit Indian mobile number");
-      return;
-    }
-
-    setLoading(true);
-    const res = await sendOtp(validation.normalized, step === "FORGOT_PASSWORD" ? "RESET_PASSWORD" : "LOGIN");
-    setLoading(false);
-
-    if (res.success) {
-      setFormattedPhone(validation.formatted);
-      setIsExistingUser(Boolean(res.isExistingUser));
-      setResendCooldown(res.resendAfterSeconds || 45);
-      if (res.devOtp) {
-        setDevOtp(res.devOtp);
-      }
-      setStep(step === "FORGOT_PASSWORD" ? "RESET_PASSWORD" : "OTP_INPUT");
-    } else {
-      setError(res.error || "Failed to send verification code. Please try again.");
-    }
-  };
-
-  // Step 2: Handle OTP box inputs
-  const handleOtpChange = (index: number, value: string) => {
-    setError(null);
-    const cleaned = value.replace(/\D/g, "");
-    if (!cleaned) {
-      const nextOtp = [...otp];
-      nextOtp[index] = "";
-      setOtp(nextOtp);
-      return;
-    }
-
-    const nextOtp = [...otp];
-    if (cleaned.length === 6) {
-      // Pasted full OTP
-      for (let i = 0; i < 6; i++) {
-        nextOtp[i] = cleaned[i] || "";
-      }
-      setOtp(nextOtp);
-      otpInputRefs.current[5]?.focus();
-      return;
-    }
-
-    nextOtp[index] = cleaned[0];
-    setOtp(nextOtp);
-
-    // Auto-focus next input
-    if (index < 5 && cleaned[0]) {
-      otpInputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      otpInputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  // Step 2: Verify OTP
-  const handleVerifyOtp = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setError(null);
-
-    const fullOtp = otp.join("");
-    if (fullOtp.length !== 6) {
-      setError("Please enter the complete 6-digit OTP");
-      return;
-    }
-
-    const validation = validateAndNormalizeIndianPhone(phone);
-    setLoading(true);
-    const res = await verifyOtp(validation.normalized, fullOtp, "LOGIN");
-    setLoading(false);
-
-    if (res.success) {
-      if (res.isNewUser) {
-        setStep("NEW_USER_SETUP");
-      }
-      // If existing user, verifyOtp automatically logged them in, updated user state, and closed modal
-    } else {
-      setError(res.error || "Verification failed");
-      if (res.attemptsRemaining !== undefined) {
-        setError(`Incorrect OTP. ${res.attemptsRemaining} attempts remaining.`);
-      }
-    }
-  };
-
-  // Step 3: Complete New User Setup
-  const handleNewUserRegister = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!name.trim()) {
-      setError("Please enter your name");
+    if (!siEmail.trim() || !siPassword) {
+      setError("Please enter your email and password");
       return;
     }
-
-    const validation = validateAndNormalizeIndianPhone(phone);
     setLoading(true);
-    const res = await registerWithPhone({
-      phone: validation.normalized,
-      name: name.trim(),
-      email: email.trim() || undefined,
+    const ok = await loginWithPassword(siEmail.trim(), siPassword);
+    setLoading(false);
+    if (!ok) {
+      setError("Invalid email or password. Please try again.");
+    } else {
+      // redirect handled in AppContext
+      if (authRedirectUrl) {
+        const dest = authRedirectUrl;
+        setAuthRedirectUrl(null);
+        window.location.href = dest;
+      }
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!suName.trim()) { setError("Please enter your full name"); return; }
+    if (!suEmail.trim() || !suEmail.includes("@")) { setError("Please enter a valid email address"); return; }
+    if (suPassword.length < 6) { setError("Password must be at least 6 characters"); return; }
+    if (suPassword !== suConfirm) { setError("Passwords do not match"); return; }
+
+    setLoading(true);
+    const ok = await signup({
+      name: suName.trim(),
+      email: suEmail.trim().toLowerCase(),
+      password: suPassword,
+      phone: suPhone.trim() || undefined,
     });
     setLoading(false);
-
-    if (!res.success) {
-      setError(res.error || "Failed to create account. Please try again.");
-    }
-  };
-
-  // Password Login Handler
-  const handlePasswordLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!passwordIdentifier.trim() || !password) {
-      setError("Please enter mobile/email and password");
-      return;
-    }
-
-    setLoading(true);
-    const ok = await loginWithPassword(passwordIdentifier.trim(), password);
-    setLoading(false);
-
     if (!ok) {
-      setError("Invalid mobile/email or password");
+      setError("Could not create account. Email may already be in use.");
+    } else {
+      if (authRedirectUrl) {
+        const dest = authRedirectUrl;
+        setAuthRedirectUrl(null);
+        window.location.href = dest;
+      }
     }
   };
 
-  // Password Reset Handler
-  const handleResetPassword = async (e: React.FormEvent) => {
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    const fullOtp = otp.join("");
-    if (fullOtp.length !== 6) {
-      setError("Please enter the complete 6-digit OTP");
-      return;
-    }
-    if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
+    if (!forgotEmail.trim()) { setError("Please enter your email address"); return; }
     setLoading(true);
+    // Call password reset API
     try {
-      const validation = validateAndNormalizeIndianPhone(phone);
-      const res = await fetch("/api/auth/password/reset", {
+      const res = await fetch("/api/auth/password/forgot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: validation.normalized,
-          otp: fullOtp,
-          newPassword,
-        }),
+        body: JSON.stringify({ email: forgotEmail.trim().toLowerCase() }),
       });
-      const data = await res.json();
+      setLoading(false);
       if (res.ok) {
-        addToast("Password reset successfully! Logged in.", "success");
-        setIsAuthModalOpen(false);
-        window.location.reload();
+        setForgotSent(true);
       } else {
-        setError(data.error || "Failed to reset password");
+        const data = await res.json();
+        // Always show "sent" to prevent email enumeration
+        setForgotSent(true);
       }
     } catch {
-      setError("Network error resetting password");
-    } finally {
       setLoading(false);
+      setForgotSent(true); // Still show success to prevent enumeration
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={() => setIsAuthModalOpen(false)}
+    >
       <div
-        className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="px-6 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-slate-900 text-base shadow-md shadow-[#ff6a00]/20">
-              P
+            <div className="w-9 h-9 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-white text-base shadow-md shadow-[#ff6a00]/20">
+              {BRAND.displayName[0]}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 tracking-wide">
-                {user ? "Student Account" : `${BRAND.displayName} Authentication`}
-              </h3>
+              <h3 className="text-sm font-bold text-slate-900">{BRAND.displayName}</h3>
               <p className="text-[11px] text-slate-500">
-                {user ? "Secure session active" : "Verified Campus & Engineering Access"}
+                {user ? "Your account" : "Sign in or create account"}
               </p>
             </div>
           </div>
@@ -302,38 +173,35 @@ export function AuthModal() {
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 sm:p-8 bg-white">
-          {/* If already logged in */}
+        <div className="p-6">
+          {/* ── LOGGED IN STATE ── */}
           {user ? (
             <div className="space-y-4">
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-orange-100 border border-orange-300 flex items-center justify-center text-[#ff6a00] font-black text-base">
-                  {user.name ? user.name.slice(0, 2).toUpperCase() : "P"}
+                <div className="w-12 h-12 rounded-full bg-orange-100 border-2 border-orange-200 flex items-center justify-center text-[#ff6a00] font-black text-base">
+                  {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold text-slate-900 truncate">{user.name}</div>
-                  <div className="text-xs text-slate-500 truncate">{user.phone || user.email}</div>
+                  <div className="text-xs text-slate-500 truncate">{user.email || user.phone}</div>
                   <div className="mt-1.5 flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-[#ff6a00] border border-orange-200 font-mono">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-[#ff6a00] border border-orange-200">
                       {user.role}
                     </span>
-                    {user.phoneVerified && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Mobile Verified
-                      </span>
-                    )}
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                      <CheckCircle2 className="w-2.5 h-2.5" /> Verified
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-2 gap-3">
                 <Link
                   href="/account"
                   onClick={() => setIsAuthModalOpen(false)}
                   className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-center text-xs font-bold text-slate-800 transition-colors"
                 >
-                  My Account Hub
+                  My Account
                 </Link>
                 <Link
                   href="/account/orders"
@@ -346,468 +214,332 @@ export function AuthModal() {
 
               <button
                 onClick={logout}
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 text-xs font-semibold transition-colors mt-2"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 text-xs font-semibold transition-colors"
               >
                 Sign Out of {BRAND.displayName}
               </button>
             </div>
-          ) : (
-            <div>
-              {/* Error Banner */}
-              {error && (
-                <div className="p-3 mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 animate-in fade-in">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {/* STEP 1: MOBILE INPUT */}
-              {step === "PHONE_INPUT" && (
-                <div className="space-y-6">
+          ) : forgotMode ? (
+            /* ── FORGOT PASSWORD ── */
+            <div className="space-y-5">
+              {forgotSent ? (
+                <div className="text-center space-y-4 py-4">
+                  <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                  </div>
                   <div>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Welcome to {BRAND.displayName}</h2>
+                    <h3 className="font-bold text-slate-900 text-base">Check your email</h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      Enter your 10-digit mobile number for instant OTP sign-in.
+                      If an account exists for <strong>{forgotEmail}</strong>, we've sent a password reset link.
                     </p>
                   </div>
-
-                  <form onSubmit={handleSendOtp} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-2">
-                        Mobile Number
-                      </label>
-                      <div className="flex items-center rounded-2xl bg-slate-50 border border-slate-300 focus-within:border-[#ff6a00] focus-within:ring-1 focus-within:ring-[#ff6a00] overflow-hidden transition-all">
-                        <div className="px-3.5 py-3 bg-slate-100 border-r border-slate-300 text-xs font-bold text-slate-700 flex items-center gap-1.5 select-none">
-                          <span>ðŸ‡®ðŸ‡³</span>
-                          <span>+91</span>
-                        </div>
-                        <input
-                          type="tel"
-                          autoFocus
-                          value={phone}
-                          onChange={handlePhoneChange}
-                          placeholder="98765 43210"
-                          maxLength={10}
-                          className="w-full bg-transparent px-3.5 py-3 text-sm font-bold text-slate-900 tracking-wider placeholder-slate-400 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading || phone.length < 10}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      {loading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>
-                          <span>Continue</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  </form>
-
-                  {/* Divider */}
-                  <div className="relative flex items-center justify-center my-4">
-                    <div className="border-t border-slate-200 w-full" />
-                    <span className="bg-white px-3 text-[11px] uppercase tracking-wider font-bold text-slate-400">
-                      or
-                    </span>
-                  </div>
-
-                  {/* Alternative Login Options */}
                   <button
-                    onClick={() => {
-                      setError(null);
-                      setStep("PASSWORD_LOGIN");
-                    }}
-                    className="w-full py-2.5 px-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                    onClick={() => { setForgotMode(false); setForgotSent(false); }}
+                    className="text-xs text-[#ff6a00] font-bold hover:underline"
                   >
-                    <Lock className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Login with Password</span>
+                    ← Back to Sign In
                   </button>
-
-                  <p className="text-[11px] text-center text-slate-500 pt-2 leading-relaxed">
-                    By continuing, you agree to {BRAND.displayName}{" "}
-                    <Link href="/terms" className="text-slate-700 underline hover:text-[#ff6a00]">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link href="/privacy" className="text-slate-700 underline hover:text-[#ff6a00]">
-                      Privacy Policy
-                    </Link>.
-                  </p>
                 </div>
-              )}
-
-              {/* STEP 2: OTP VERIFICATION */}
-              {step === "OTP_INPUT" && (
-                <div className="space-y-6">
+              ) : (
+                <>
                   <div>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Verify Mobile Number</h2>
+                    <h2 className="text-xl font-black text-slate-900">Reset Password</h2>
                     <p className="text-xs text-slate-500 mt-1">
-                      Enter the 6-digit OTP sent to{" "}
-                      <span className="text-slate-900 font-mono font-bold">{formattedPhone || `+91 ${phone}`}</span>
+                      Enter your email and we'll send a reset link.
                     </p>
                   </div>
 
-                  {/* DEV OTP Helper Banner */}
-                  {devOtp && (
-                    <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-[#ff6a00]" />
-                        <span>
-                          Dev OTP: <strong className="font-mono text-slate-900 text-sm">{devOtp}</strong>
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const digits = devOtp.split("");
-                          setOtp(digits);
-                          otpInputRefs.current[5]?.focus();
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-[#ff6a00] text-slate-900 font-bold text-[11px] hover:bg-[#ea580c]"
-                      >
-                        Auto-fill
-                      </button>
+                  {error && (
+                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                      <span>{error}</span>
                     </div>
                   )}
 
-                  <form onSubmit={handleVerifyOtp} className="space-y-6">
-                    {/* 6 Digit OTP Input Boxes */}
-                    <div className="flex items-center justify-between gap-2">
-                      {otp.map((digit, idx) => (
-                        <input
-                          key={idx}
-                          ref={(el) => {
-                            otpInputRefs.current[idx] = el;
-                          }}
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={6}
-                          value={digit}
-                          autoFocus={idx === 0}
-                          onChange={(e) => handleOtpChange(idx, e.target.value)}
-                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-11 h-13 sm:w-12 sm:h-14 text-center text-lg font-mono font-black bg-slate-50 border border-slate-300 rounded-2xl text-slate-900 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
-                        />
-                      ))}
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading || otp.join("").length !== 6}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      {loading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <span>Verify & Continue</span>
-                      )}
-                    </button>
-                  </form>
-
-                  {/* Resend and Change Number actions */}
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setError(null);
-                        setOtp(["", "", "", "", "", ""]);
-                        setStep("PHONE_INPUT");
-                      }}
-                      className="text-slate-500 hover:text-slate-900 transition-colors font-medium"
-                    >
-                      Change Number
-                    </button>
-
-                    {resendCooldown > 0 ? (
-                      <span className="text-slate-400 font-mono text-[11px]">
-                        Resend code in {resendCooldown}s
-                      </span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleSendOtp}
-                        disabled={loading}
-                        className="text-[#ff6a00] hover:underline font-bold"
-                      >
-                        Resend OTP
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 3: NEW USER NAME SETUP */}
-              {step === "NEW_USER_SETUP" && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Complete Your Profile</h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Phone verified. Let us know who you are to personalize your lab orders.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleNewUserRegister} className="space-y-4">
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                        Full Name <span className="text-[#ff6a00]">*</span>
-                      </label>
-                      <div className="relative">
-                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                        <input
-                          type="text"
-                          required
-                          autoFocus
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Arjun Sharma"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                        Campus Email <span className="text-slate-400 font-normal">(Optional)</span>
-                      </label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
                       <div className="relative">
                         <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                         <input
                           type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="arjun@campus.edu"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
+                          autoFocus
+                          value={forgotEmail}
+                          onChange={(e) => setForgotEmail(e.target.value)}
+                          placeholder="you@example.com"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
                         />
                       </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading || !name.trim()}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 mt-2 cursor-pointer"
-                    >
-                      {loading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <span>Complete Setup & Enter {BRAND.displayName}</span>
-                      )}
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {/* PASSWORD LOGIN */}
-              {step === "PASSWORD_LOGIN" && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Login with Password</h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Enter your mobile number or email address and password.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handlePasswordLogin} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                        Mobile Number or Email
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        autoFocus
-                        value={passwordIdentifier}
-                        onChange={(e) => setPasswordIdentifier(e.target.value)}
-                        placeholder="9876543210 or student@campus.edu"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-xs font-bold text-slate-700">Password</label>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setError(null);
-                            setStep("FORGOT_PASSWORD");
-                          }}
-                          className="text-[11px] text-[#ff6a00] hover:underline font-semibold"
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                      <input
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
-                      />
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all disabled:opacity-50"
                     >
-                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Sign In</span>}
+                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Send Reset Link</span>}
                     </button>
                   </form>
 
-                  {/* Switch to OTP */}
-                  <div className="pt-2 text-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setError(null);
-                        setStep("PHONE_INPUT");
-                      }}
-                      className="text-xs text-[#ff6a00] hover:underline font-bold"
-                    >
-                      â† Login with Mobile OTP instead
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => { setForgotMode(false); setError(null); }}
+                    className="w-full text-center text-xs text-slate-500 hover:text-slate-900 font-medium"
+                  >
+                    ← Back to Sign In
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            /* ── SIGN IN / SIGN UP ── */
+            <div className="space-y-5">
+              {/* Tabs */}
+              <div className="flex rounded-2xl bg-slate-100 p-1 gap-1">
+                <button
+                  onClick={() => { setTab("signin"); setError(null); }}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
+                    tab === "signin"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => { setTab("signup"); setError(null); }}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
+                    tab === "signup"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  Create Account
+                </button>
+              </div>
+
+              {/* Error Banner */}
+              {error && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                  <span>{error}</span>
                 </div>
               )}
 
-              {/* FORGOT PASSWORD: ENTER MOBILE */}
-              {step === "FORGOT_PASSWORD" && (
-                <div className="space-y-6">
+              {/* ── SIGN IN FORM ── */}
+              {tab === "signin" && (
+                <form onSubmit={handleSignIn} className="space-y-4">
                   <div>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Forgot Password</h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Enter your registered 10-digit mobile number to receive a password reset OTP.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleSendOtp} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-2">
-                        Registered Mobile Number
-                      </label>
-                      <div className="flex items-center rounded-2xl bg-slate-50 border border-slate-300 focus-within:border-[#ff6a00] overflow-hidden">
-                        <div className="px-3.5 py-3 bg-slate-100 border-r border-slate-300 text-xs font-bold text-slate-700">
-                          +91
-                        </div>
-                        <input
-                          type="tel"
-                          autoFocus
-                          value={phone}
-                          onChange={handlePhoneChange}
-                          placeholder="98765 43210"
-                          maxLength={10}
-                          className="w-full bg-transparent px-3.5 py-3 text-sm font-bold text-slate-900 focus:outline-none"
-                        />
-                      </div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                      <input
+                        type="email"
+                        autoFocus
+                        required
+                        value={siEmail}
+                        onChange={(e) => { setSiEmail(e.target.value); setError(null); }}
+                        placeholder="you@example.com"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                      />
                     </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading || phone.length < 10}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm shadow-md shadow-[#ff6a00]/20"
-                    >
-                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Send Reset OTP</span>}
-                    </button>
-                  </form>
-
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setError(null);
-                        setStep("PHONE_INPUT");
-                      }}
-                      className="text-xs text-slate-500 hover:text-slate-900 font-medium"
-                    >
-                      â† Back to Login
-                    </button>
                   </div>
-                </div>
-              )}
 
-              {/* RESET PASSWORD: OTP + NEW PASSWORD */}
-              {step === "RESET_PASSWORD" && (
-                <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Set New Password</h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Enter the reset OTP sent to <strong className="text-slate-900">{phone}</strong> and your new password.
-                    </p>
-                  </div>
-
-                  {devOtp && (
-                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
-                      <span>Dev OTP: <strong>{devOtp}</strong></span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700">Password</label>
                       <button
                         type="button"
-                        onClick={() => setOtp(devOtp.split(""))}
-                        className="text-[11px] font-bold text-[#ff6a00] underline"
+                        onClick={() => { setForgotMode(true); setError(null); setForgotEmail(siEmail); }}
+                        className="text-[11px] text-[#ff6a00] hover:underline font-semibold"
                       >
-                        Autofill
+                        Forgot Password?
                       </button>
                     </div>
-                  )}
-
-                  <form onSubmit={handleResetPassword} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">6-Digit OTP</label>
-                      <div className="flex gap-2">
-                        {otp.map((d, i) => (
-                          <input
-                            key={i}
-                            ref={(el) => { otpInputRefs.current[i] = el; }}
-                            type="text"
-                            maxLength={1}
-                            value={d}
-                            onChange={(e) => handleOtpChange(i, e.target.value)}
-                            onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                            className="w-11 h-12 text-center text-base font-mono font-black bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-[#ff6a00]"
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">New Password</label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         required
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="At least 6 characters"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+                        value={siPassword}
+                        onChange={(e) => { setSiPassword(e.target.value); setError(null); }}
+                        placeholder="••••••••"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
+                  </div>
 
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Confirm Password</label>
-                      <input
-                        type="password"
-                        required
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Re-enter password"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
-                      />
-                    </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <span>Sign In</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
 
+                  <p className="text-center text-xs text-slate-500">
+                    New to {BRAND.displayName}?{" "}
                     <button
-                      type="submit"
-                      disabled={loading || otp.join("").length !== 6 || !newPassword}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm shadow-md shadow-[#ff6a00]/20"
+                      type="button"
+                      onClick={() => { setTab("signup"); setError(null); }}
+                      className="text-[#ff6a00] font-bold hover:underline"
                     >
-                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Reset Password & Login</span>}
+                      Create an account
                     </button>
-                  </form>
-                </div>
+                  </p>
+                </form>
               )}
+
+              {/* ── SIGN UP FORM ── */}
+              {tab === "signup" && (
+                <form onSubmit={handleSignUp} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Full Name <span className="text-[#ff6a00]">*</span>
+                    </label>
+                    <div className="relative">
+                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                      <input
+                        type="text"
+                        autoFocus
+                        required
+                        value={suName}
+                        onChange={(e) => { setSuName(e.target.value); setError(null); }}
+                        placeholder="e.g. Arjun Sharma"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Email Address <span className="text-[#ff6a00]">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                      <input
+                        type="email"
+                        required
+                        value={suEmail}
+                        onChange={(e) => { setSuEmail(e.target.value); setError(null); }}
+                        placeholder="you@example.com"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={suPhone}
+                      onChange={(e) => setSuPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="10-digit mobile"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Password <span className="text-[#ff6a00]">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={suPassword}
+                        onChange={(e) => { setSuPassword(e.target.value); setError(null); }}
+                        placeholder="At least 6 characters"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Confirm Password <span className="text-[#ff6a00]">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        required
+                        value={suConfirm}
+                        onChange={(e) => { setSuConfirm(e.target.value); setError(null); }}
+                        placeholder="Re-enter password"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 mt-1 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <span>Create Account</span>
+                    )}
+                  </button>
+
+                  <p className="text-center text-xs text-slate-500">
+                    Already have an account?{" "}
+                    <button
+                      type="button"
+                      onClick={() => { setTab("signin"); setError(null); }}
+                      className="text-[#ff6a00] font-bold hover:underline"
+                    >
+                      Sign in
+                    </button>
+                  </p>
+                </form>
+              )}
+
+              {/* Trust Badges */}
+              <div className="flex items-center justify-center gap-4 pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Secure & Encrypted</span>
+                </div>
+                <div className="w-px h-3 bg-slate-200" />
+                <p className="text-[11px] text-slate-400">
+                  <Link href="/privacy" className="hover:text-slate-600 underline" onClick={() => setIsAuthModalOpen(false)}>Privacy</Link>
+                  {" · "}
+                  <Link href="/terms" className="hover:text-slate-600 underline" onClick={() => setIsAuthModalOpen(false)}>Terms</Link>
+                </p>
+              </div>
             </div>
           )}
         </div>
