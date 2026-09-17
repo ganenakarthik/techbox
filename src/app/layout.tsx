@@ -5,10 +5,10 @@ import { AppProvider } from "@/context/AppContext";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { FloatingCartBar } from "@/components/cart/FloatingCartBar";
 import { SearchOverlay } from "@/components/ui/SearchOverlay";
 import { AuthModal } from "@/components/ui/AuthModal";
 import { ToastContainer } from "@/components/ui/ToastContainer";
-import { BootSequence } from "@/components/boot/BootSequence";
 import { BRAND } from "@/config/brand";
 
 const geistSans = Geist({
@@ -57,14 +57,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
-      <body className="min-h-full flex flex-col bg-[#080808] text-white">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-white text-slate-900">
         <AppProvider>
-          <BootSequence />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
           <CartDrawer />
+          <FloatingCartBar />
           <SearchOverlay />
           <AuthModal />
           <ToastContainer />

@@ -93,8 +93,11 @@ async function main() {
   // 3. Seed Categories & Brands
   for (const cat of CATEGORIES) {
     await prisma.category.upsert({
-      where: { slug: cat.slug },
-      update: {},
+      where: { id: cat.id },
+      update: {
+        name: cat.name,
+        slug: cat.slug,
+      },
       create: {
         id: cat.id,
         name: cat.name,
@@ -106,8 +109,11 @@ async function main() {
 
   for (const brand of BRANDS) {
     await prisma.brand.upsert({
-      where: { slug: brand.slug },
-      update: {},
+      where: { id: brand.id },
+      update: {
+        name: brand.name,
+        slug: brand.slug,
+      },
       create: {
         id: brand.id,
         name: brand.name,
@@ -123,7 +129,11 @@ async function main() {
 
     const createdProd = await prisma.product.upsert({
       where: { slug: prod.slug },
-      update: {},
+      update: {
+        images: prod.images,
+        pinoutUrl: prod.pinoutUrl,
+        datasheetUrl: prod.datasheetUrl,
+      },
       create: {
         id: prod.id,
         name: prod.name,
@@ -176,7 +186,9 @@ async function main() {
   for (const kit of PROJECT_KITS) {
     await prisma.projectKit.upsert({
       where: { slug: kit.slug },
-      update: {},
+      update: {
+        images: kit.images,
+      },
       create: {
         id: kit.id,
         title: kit.title,

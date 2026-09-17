@@ -14,144 +14,164 @@ import {
   Cpu,
   ShieldCheck,
   Truck,
+  Heart,
+  Users,
 } from "lucide-react";
-import { ThreeDTeamCarousel } from "@/components/about/ThreeDTeamCarousel";
+
+const team = [
+  { name: "Karthik G.", role: "Founder & CEO", desc: "Embedded systems engineer. Former research intern at IIT Madras. Obsessed with making hardware accessible." },
+  { name: "Priya R.", role: "Head of Fabrication", desc: "PCB design & DFM specialist. 5+ years manufacturing custom electronics for defense and consumer products." },
+  { name: "Arun S.", role: "Lead Engineer", desc: "Full-stack embedded dev. Writes firmware in C and React components with equal passion." },
+  { name: "Meera K.", role: "Campus Ops Lead", desc: "Manages same-day dispatch logistics across 8 college campuses. MBAgrader turned operations nerd." },
+  { name: "Deepak V.", role: "Product Designer", desc: "Figma-first. Shaped the Partsly catalog UX so students can find components in under 10 seconds." },
+  { name: "Sanjana M.", role: "Project Engineering", desc: "Ensures every project kit ships with tested firmware. Your demo day won't fail on her watch." },
+];
+
+const pillars = [
+  { icon: Target, title: "Authentic Hardware Only", desc: "Every microcontroller and sensor batch is pin-tested on digital oscilloscopes before leaving our warehouse. Zero counterfeit silicon." },
+  { icon: Zap, title: "Turnkey Rapid Turnaround", desc: "We operate rapid PCB fabrication and 3D printing farms to deliver enclosures and prototypes in days, not weeks." },
+  { icon: Award, title: "Viva Defense Guarantee", desc: "Clean annotated firmware, vector schematics, and viva question banks ensure students understand and defend their project with confidence." },
+];
+
+const stats = [
+  { label: "Components in Stock", value: "2,000+" },
+  { label: "Projects Delivered", value: "1,800+" },
+  { label: "Campus Partners", value: "12" },
+  { label: "Student Reviews", value: "4.9 ★" },
+];
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#080808] text-white selection:bg-[#ff6a00] selection:text-black relative overflow-x-hidden">
-      {/* Subtle Ambient High-Tech Atmosphere */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] md:w-[1100px] h-[450px] bg-[#ff6a00]/[0.07] blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#141414_1px,transparent_1px),linear-gradient(to_bottom,#141414_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-25 pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-        {/* 1. Sleek Hero Header */}
-        <div className="text-center max-w-3xl mx-auto mb-6">
-          {/* Partsly Emblem */}
-          <div className="relative w-20 h-20 mx-auto mb-5 rounded-2xl bg-[#121212] border border-[#ff6a00]/40 p-2 shadow-2xl shadow-[#ff6a00]/20 flex items-center justify-center">
-            <Image
-              src="/logo-icon-dark.png"
-              alt="Partsly Official Emblem"
-              width={64}
-              height={64}
-              priority
-              className="object-contain"
-            />
-          </div>
-
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff6a00]/10 border border-[#ff6a00]/30 text-[#ff6a00] text-xs font-mono font-bold mb-4">
+    <div className="min-h-screen bg-white text-slate-900 selection:bg-[#ff6a00] selection:text-white">
+      {/* Hero */}
+      <section className="bg-slate-50 border-b border-slate-200 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#ff6a00] text-xs font-bold mb-5">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Interactive 3D Team & Architecture Showcase</span>
+            <span>About Partsly</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.12]">
-            Built by Engineers, for the{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff6a00] via-[#ff8533] to-[#ffb380]">
-              Next Generation of Builders.
-            </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+            Built by Engineers,{" "}
+            <span className="text-[#ff6a00]">for the Next Generation of Builders.</span>
           </h1>
 
-          <p className="mt-4 text-sm sm:text-base text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            Partsly was founded on one simple premise: turning your engineering project idea into real, working hardware shouldn&apos;t be an agonizing journey. Explore the minds driving student project infrastructure.
+          <p className="mt-5 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Partsly was founded on one simple premise: turning your engineering project idea into real, working hardware shouldn&apos;t be an agonizing journey.
           </p>
+
+          <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+            {stats.map((s) => (
+              <div key={s.label} className="text-center">
+                <div className="text-3xl font-black text-[#ff6a00]">{s.value}</div>
+                <div className="text-xs text-slate-500 mt-1 font-medium">{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* 2. Flagship 3D Glassmorphic Team Carousel (8 Interactive Cards) */}
-        <section className="relative z-20 my-4 md:my-8">
-          <ThreeDTeamCarousel />
-        </section>
-
-        {/* 3. The Origin of Partsly (Preserved & Reimagined with Glass Aesthetics) */}
-        <section className="mt-16 md:mt-24 p-8 md:p-12 rounded-3xl bg-[#111111]/80 backdrop-blur-xl border border-white/10 shadow-2xl mb-16 space-y-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff6a00]/[0.04] blur-3xl pointer-events-none" />
-
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#ff6a00] uppercase tracking-wider">
-            <Compass className="w-4 h-4 text-[#ff6a00]" />
+      {/* Origin Story */}
+      <section className="py-16 md:py-20 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#ff6a00] uppercase tracking-wider mb-4">
+            <Compass className="w-4 h-4" />
             <span>The Origin of Partsly</span>
           </div>
-
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-snug tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 leading-snug tracking-tight mb-8 max-w-3xl">
             Why College Projects Were Broken — And How Partsly Fixes Them
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-neutral-300 leading-relaxed">
-            <p className="p-5 rounded-2xl bg-[#151515]/60 border border-white/5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-600 leading-relaxed mb-12">
+            <p className="p-6 rounded-2xl bg-slate-50 border border-slate-200">
               Every semester across engineering colleges, the exact same crisis unfolds: students hunt across crowded city electronics markets for elusive ICs, only to receive counterfeit chips that overheat on breadboards. PCB manufacturing takes 3 weeks with high import duties, custom enclosures have to be carved out of cardboard, and 48 hours before external review, erratic solder joints fail during bench tests.
             </p>
-            <p className="p-5 rounded-2xl bg-[#151515]/60 border border-white/5">
-              We created Partsly to be the <strong className="text-white">student project infrastructure platform</strong>. Whether you need genuine bench-tested sensors, a turnkey project kit with pre-tested firmware, custom 2-layer PCB fabrication, precision 3D-printed enclosures, or presentation-ready IEEE documentation, Partsly delivers everything directly to your campus lab or hostel.
+            <p className="p-6 rounded-2xl bg-slate-50 border border-slate-200">
+              We created Partsly to be the <strong className="text-slate-900">student project infrastructure platform</strong>. Whether you need genuine bench-tested sensors, a turnkey project kit with pre-tested firmware, custom 2-layer PCB fabrication, precision 3D-printed enclosures, or presentation-ready IEEE documentation, Partsly delivers everything directly to your campus lab or hostel.
             </p>
           </div>
 
-          {/* 3 Core Engineering Pillars */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/10">
-            <div className="p-5 rounded-2xl bg-[#141414]/90 border border-white/10 space-y-2.5 hover:border-[#ff6a00]/40 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-[#ff6a00]/15 border border-[#ff6a00]/30 flex items-center justify-center text-[#ff6a00]">
-                <Target className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-white text-sm">Authentic Hardware Only</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Every microcontroller and sensor batch is pin-tested on digital oscilloscopes before leaving our warehouse. Zero counterfeit silicon.
-              </p>
-            </div>
+          {/* Pillars */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {pillars.map((p) => {
+              const Icon = p.icon;
+              return (
+                <div key={p.title} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] hover:shadow-md transition-all group">
+                  <div className="w-11 h-11 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-slate-900 text-sm mb-2">{p.title}</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-            <div className="p-5 rounded-2xl bg-[#141414]/90 border border-white/10 space-y-2.5 hover:border-[#ff6a00]/40 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-[#ff6a00]/15 border border-[#ff6a00]/30 flex items-center justify-center text-[#ff6a00]">
-                <Zap className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-white text-sm">Turnkey Rapid Turnaround</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                We operate rapid PCB fabrication and 3D printing farms to deliver enclosures and prototypes in days, not weeks.
-              </p>
+      {/* Team */}
+      <section className="py-16 md:py-20 bg-slate-50 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#ff6a00] text-xs font-bold mb-4">
+              <Users className="w-3.5 h-3.5" />
+              <span>Our Team</span>
             </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">The People Behind Partsly</h2>
+            <p className="mt-2 text-sm text-slate-500 max-w-xl mx-auto">Engineers, builders, and campus ops specialists who live and breathe student project delivery.</p>
+          </div>
 
-            <div className="p-5 rounded-2xl bg-[#141414]/90 border border-white/10 space-y-2.5 hover:border-[#ff6a00]/40 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-[#ff6a00]/15 border border-[#ff6a00]/30 flex items-center justify-center text-[#ff6a00]">
-                <Award className="w-5 h-5" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {team.map((member) => (
+              <div key={member.name} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] hover:shadow-md transition-all group">
+                <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] text-lg font-black mb-4 group-hover:scale-105 transition-transform">
+                  {member.name[0]}
+                </div>
+                <h3 className="font-bold text-slate-900 text-sm">{member.name}</h3>
+                <div className="text-xs text-[#ff6a00] font-semibold mt-0.5 mb-2">{member.role}</div>
+                <p className="text-xs text-slate-500 leading-relaxed">{member.desc}</p>
               </div>
-              <h3 className="font-bold text-white text-sm">Viva Defense Guarantee</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Clean annotated firmware, vector schematics, and viva question banks ensure students understand and defend their project with confidence.
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-slate-900 rounded-3xl p-10 md:p-14 text-center relative overflow-hidden">
+            {/* Subtle orange glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a00]/10 via-transparent to-transparent pointer-events-none" />
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff6a00]/15 border border-[#ff6a00]/30 text-[#ff6a00] text-xs font-bold mb-5">
+                <Heart className="w-3.5 h-3.5" />
+                <span>Ready to build?</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
+                Have an idea for your capstone or mini project?
+              </h2>
+              <p className="text-sm text-slate-400 max-w-xl mx-auto mb-8">
+                Upload your synopsis or component list today and let Partsly turn your vision into working hardware.
               </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link
+                  href="/build"
+                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
+                >
+                  <span>Build My Project</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/shop"
+                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-colors"
+                >
+                  Shop Electronic Parts
+                </Link>
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* 4. Full Brand Banner Display */}
-        <section className="p-8 md:p-12 rounded-3xl bg-gradient-to-r from-[#111111] via-[#161311] to-[#111111] border border-[#ff6a00]/30 text-center relative overflow-hidden shadow-2xl">
-          <div className="relative z-10 max-w-xl mx-auto space-y-4">
-            <div className="relative w-48 h-14 mx-auto">
-              <Image
-                src="/logo-dark.png"
-                alt="Partsly Full Brand"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <h3 className="text-2xl font-black text-white">
-              Have an idea for your capstone or mini project?
-            </h3>
-            <p className="text-xs sm:text-sm text-neutral-400">
-              Upload your synopsis or component list today and let Partsly turn your vision into working hardware.
-            </p>
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link
-                href="/build"
-                className="w-full sm:w-auto py-3 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
-              >
-                <span>Build My Project</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/shop"
-                className="w-full sm:w-auto py-3 px-6 rounded-xl bg-[#1a1a1a] hover:bg-[#252525] border border-[#2e2e2e] text-white font-semibold text-xs transition-colors"
-              >
-                Shop Electronic Parts
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

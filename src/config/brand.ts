@@ -19,11 +19,11 @@ export const BRAND = {
   whatsappNumber: process.env.NEXT_PUBLIC_TECHBOX_WHATSAPP || "917032635858",
   whatsappDisplay: "+91 70326 35858",
 
-  // Logos & Visual Assets
+  // Logos & Visual Assets (Official Black & Orange on Transparent/White)
   logo: "/logo.png",
-  logoDark: "/logo-dark.png",
+  logoDark: "/logo.png",
   logoIcon: "/logo-icon.png",
-  logoIconDark: "/logo-icon-dark.png",
+  logoIconDark: "/logo-icon.png",
   favicon: "/favicon.ico",
 
   // Storage & Session Keys

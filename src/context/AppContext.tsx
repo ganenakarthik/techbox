@@ -56,6 +56,7 @@ interface AppContextType {
     sku?: string;
     stock?: number;
     isKit?: boolean;
+    openDrawer?: boolean;
   }) => void;
   removeFromCart: (id: string) => void;
   updateCartQuantity: (id: string, qty: number) => void;
@@ -242,6 +243,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     image,
     sku,
     stock: propStock,
+    openDrawer = true,
   }: {
     product?: any;
     variant?: any;
@@ -257,6 +259,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     sku?: string;
     stock?: number;
     isKit?: boolean;
+    openDrawer?: boolean;
   }) => {
     if (kit) {
       const existing = cart.find((item) => item.projectKitId === kit.id);
@@ -281,7 +284,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setCart((prev) => [...prev, newItem]);
       }
       addToast(`Added "${kit.title || kit.name}" project kit to cart`, "success");
-      setIsCartDrawerOpen(true);
+      if (openDrawer) setIsCartDrawerOpen(true);
       return;
     }
 
@@ -318,7 +321,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (res.ok) {
             await refreshCart();
             addToast(`Added "${effectiveName}" to cart`, "success");
-            setIsCartDrawerOpen(true);
+            if (openDrawer) setIsCartDrawerOpen(true);
             return;
           } else {
             const err = await res.json();
@@ -355,7 +358,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setCart((prev) => [...prev, newItem]);
       }
       addToast(`Added "${effectiveName}" to cart`, "success");
-      setIsCartDrawerOpen(true);
+      if (openDrawer) setIsCartDrawerOpen(true);
     }
   };
 

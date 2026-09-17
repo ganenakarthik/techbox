@@ -1,366 +1,165 @@
-"use client";
-
-import React, { useRef } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useApp } from "@/context/AppContext";
 import {
   ArrowRight,
-  UploadCloud,
-  Cpu,
-  Boxes,
   Layers,
   Wrench,
   Printer,
   FileText,
   Truck,
   ShieldCheck,
-  CheckCircle2,
   Sparkles,
   Zap,
-  Star,
-  ShoppingBag,
   Clock,
   Code,
-  MapPin,
-  ChevronRight,
-  Users,
 } from "lucide-react";
-import { PRODUCTS, PROJECT_KITS, CATEGORIES } from "@/data/mockData";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProjectDropzone } from "@/components/projects/ProjectDropzone";
+import { HeroBannerSlider } from "@/components/home/HeroBannerSlider";
+import { prisma } from "@/lib/prisma";
 
-export default function HomePage() {
-  const uploadSectionRef = useRef<HTMLDivElement>(null);
+export default async function HomePage() {
+  const prismaProducts = await prisma.product.findMany({
+    where: { isFeatured: true },
+    take: 8,
+    include: {
+      brand: true,
+      category: true,
+      variants: {
+        include: {
+          inventory: true,
+        },
+      },
+    },
+  });
 
-  const scrollToUpload = () => {
-    uploadSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const featuredProducts = prismaProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    brand: p.brand.name,
+    category: p.category.name,
+    description: p.description,
+    details: p.details || "",
+    specs: (typeof p.specs === "object" && p.specs !== null ? p.specs : {}) as Record<string, string>,
+    pinoutUrl: p.pinoutUrl || undefined,
+    datasheetUrl: p.datasheetUrl || undefined,
+    rating: p.rating,
+    reviewCount: p.reviewCount,
+    isFeatured: p.isFeatured,
+    isBestseller: p.isBestseller,
+    images: Array.isArray(p.images) ? (p.images as string[]) : [],
+    tags: [],
+    variants: p.variants.map((v) => ({
+      id: v.id,
+      name: v.name,
+      sku: v.sku,
+      price: Number(v.price),
+      mrp: Number(v.mrp),
+      discount: v.discount,
+      stock: v.inventory?.available || 0,
+    })),
+  }));
 
-  const featuredProducts = PRODUCTS.slice(0, 8);
-  const featuredKits = PROJECT_KITS.slice(0, 4);
+  const prismaKits = await prisma.projectKit.findMany({
+    take: 4,
+  });
+
+  const featuredKits = prismaKits.map((k) => ({
+    id: k.id,
+    title: k.title,
+    slug: k.slug,
+    category: k.category,
+    difficulty: k.difficulty as any,
+    buildTime: k.buildTime,
+    price: Number(k.price),
+    mrp: Number(k.mrp),
+    description: k.description,
+    circuitDiagramUrl: k.circuitDiagramUrl || undefined,
+    sourceCodeUrl: k.sourceCodeUrl || undefined,
+    assemblyGuideUrl: k.assemblyGuideUrl || undefined,
+    includes: Array.isArray(k.includes) ? (k.includes as string[]) : [],
+    optionalAddons: Array.isArray(k.optionalAddons) ? (k.optionalAddons as any[]) : [],
+    images: Array.isArray(k.images) ? (k.images as string[]) : [],
+    rating: 4.8,
+    reviewsCount: 0,
+  }));
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#080808] text-white selection:bg-[#ff6a00] selection:text-black">
-      {/* 1. HERO SECTION - 5-SECOND PROJECT FIRST HOOK */}
-      <section className="relative pt-8 pb-16 md:pt-14 md:pb-24 overflow-hidden border-b border-[#1f1f1f]">
-        {/* Subtle high-tech ambient background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[900px] h-[350px] bg-[#ff6a00]/[0.07] blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#141414_1px,transparent_1px),linear-gradient(to_bottom,#141414_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
+    <div className="flex flex-col min-h-screen bg-white text-slate-900 selection:bg-[#ff6a00] selection:text-white">
+      {/* 1. CLEAN FULL-WIDTH PHOTOGRAPHY BANNER SLIDESHOW */}
+      <HeroBannerSlider />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Campus Active Pill - cleanly positioned at top of hero */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141414] border border-[#2a2a2a] text-xs text-neutral-300 mb-6 shadow-md shadow-black/40">
-              <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
-              <span>Campus & Hostel Delivery Active</span>
-              <strong className="text-white font-semibold">Across Engineering Institutes</strong>
+      {/* 4. POPULAR COLLEGE COMPONENTS & SENSORS (Blinkit-style Instant Add Cards) */}
+      <section className="py-10 sm:py-14 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-extrabold text-[11px] border border-emerald-200">
+                  ⚡ 10-30 MIN CAMPUS DISPATCH
+                </span>
+                <span className="text-xs text-slate-500 font-medium">Zero-DOA Bench Tested</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Popular College Components & Sensors
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Genuine microcontrollers, ultrasonic sensors, servos, OLEDs, and relays ready for fast campus delivery.
+              </p>
             </div>
 
-            {/* Main Statement with enhanced kerning & line spacing */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.16]">
-              Building a college project?{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff6a00] via-[#ff8533] to-[#ffb380] block mt-2 sm:mt-2.5">
-                We&apos;ll figure out what you need.
-              </span>
-            </h1>
-
-            {/* Subtext */}
-            <p className="mt-5 text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-              Upload your project PDF, circuit schematic, or component list. Get verified parts, custom PCBs, 3D enclosures, and working prototypes — delivered directly to your campus.
-            </p>
-
-            {/* CTA Group with Drag-and-Drop Hint */}
-            <div className="mt-8 flex flex-col items-center">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
-                <button
-                  onClick={scrollToUpload}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <UploadCloud className="w-4 h-4 text-black" />
-                  <span>Upload Project File</span>
-                </button>
-
-                <Link
-                  href="/shop"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#171717] hover:bg-[#222222] border border-[#2e2e2e] hover:border-neutral-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all"
-                >
-                  <Cpu className="w-4 h-4 text-[#ff6a00]" />
-                  <span>Shop Components</span>
-                </Link>
-              </div>
-
-              {/* Upload CTA Expectation Hint */}
-              <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 mt-3 font-medium tracking-wide">
-                <Sparkles className="w-3 h-3 text-[#ff6a00] shrink-0" />
-                <span>Supports PDF, KiCad, Schematics, BOM CSV up to 25MB • Instant matching</span>
-              </div>
-            </div>
-
-            {/* Social Proof / Hardware Compatibility Strip */}
-            <div className="mt-8 pt-6 border-t border-[#1a1a1a] flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs">
-              <span className="text-neutral-500 text-[11px] font-semibold uppercase tracking-wider mr-1">
-                Engineered For:
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-[#121212] border border-[#222222] text-neutral-300 font-mono text-[11px]">
-                Arduino
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-[#121212] border border-[#222222] text-neutral-300 font-mono text-[11px]">
-                ESP32 / NodeMCU
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-[#121212] border border-[#222222] text-neutral-300 font-mono text-[11px]">
-                Raspberry Pi
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-[#121212] border border-[#222222] text-neutral-300 font-mono text-[11px]">
-                STM32
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-[#121212] border border-[#222222] text-neutral-300 font-mono text-[11px]">
-                KiCad & EasyEDA
-              </span>
-            </div>
-
-            {/* Quick Micro-Stats */}
-            <div className="mt-8 pt-6 border-t border-[#1a1a1a] grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-xl sm:text-2xl font-black text-white">2,000+</div>
-                <div className="text-[11px] text-neutral-500 mt-0.5">Verified Lab Parts</div>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-black text-[#ff6a00]">24–48h</div>
-                <div className="text-[11px] text-neutral-500 mt-0.5">Campus Delivery</div>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-black text-white">500+</div>
-                <div className="text-[11px] text-neutral-500 mt-0.5">Projects Delivered</div>
-              </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/shop"
+                className="px-4 py-2 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-black transition-all shadow-sm shadow-[#ff6a00]/25 flex items-center gap-1.5"
+              >
+                <span>View Full Catalog</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* 2. THE 6-STEP VALUE CHAIN BANNER */}
-      <section className="bg-[#0e0e0e] border-b border-[#222222] py-4 overflow-x-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-max md:min-w-0">
-          <div className="flex items-center justify-between gap-4 text-xs font-semibold">
-            <span className="text-[#ff6a00] font-black uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 fill-[#ff6a00]" /> Student Engine:
-            </span>
-
-            {[
-              { label: "Components", href: "/shop" },
-              { label: "Project Kits", href: "/projects" },
-              { label: "PCB Manufacturing", href: "/services/pcb" },
-              { label: "Working Prototype", href: "/services/prototypes" },
-              { label: "Documentation", href: "/services/documents" },
-              { label: "Campus Delivery", href: "/checkout" },
-            ].map((step, idx) => (
-              <React.Fragment key={step.label}>
-                <Link
-                  href={step.href}
-                  className="text-neutral-300 hover:text-white flex items-center gap-1 transition-colors"
-                >
-                  <span className="text-[#ff6a00] font-mono text-[11px]">0{idx + 1}.</span>
-                  <span>{step.label}</span>
-                </Link>
-                {idx < 5 && <ChevronRight className="w-3 h-3 text-neutral-600 shrink-0" />}
-              </React.Fragment>
+          {/* Product Grid with Blinkit Quantity Stepper */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* 3. FLAGSHIP PROJECT DROPZONE & ANALYZER */}
-      <section ref={uploadSectionRef} className="py-16 md:py-24 bg-[#0a0a0a] border-b border-[#1f1f1f]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#ff6a00]/10 border border-[#ff6a00]/25 text-[#ff6a00] text-xs font-bold mb-3">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Flagship Feature</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
-              BOM & Document Analyzer
-            </h2>
-            <p className="mt-2 text-sm text-neutral-400">
-              Drag and drop any circuit PDF, parts list image, or Excel BOM. Our multi-stage engine cross-references live inventory to build your kit.
-            </p>
-          </div>
-
-          {/* Interactive Dropzone Component */}
-          <ProjectDropzone />
-        </div>
-      </section>
-
-      {/* 4. DUAL FAST TRACKS: SHOP PARTS vs BUILD PROJECT */}
-      <section className="py-16 bg-[#080808] border-b border-[#1f1f1f]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Card 1: Shop Parts */}
-            <div className="rounded-3xl bg-[#111111] border border-[#262626] p-8 flex flex-col justify-between group hover:border-neutral-500 transition-all relative overflow-hidden">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#1c1c1c] border border-[#2e2e2e] flex items-center justify-center text-[#ff6a00]">
-                  <Cpu className="w-6 h-6" />
-                </div>
-                <div>
-                  <span className="text-xs font-mono text-[#ff6a00] uppercase tracking-wider">Fast-Track 01</span>
-                  <h3 className="text-2xl font-bold text-white mt-1">Shop Individual Components</h3>
-                  <p className="text-sm text-neutral-400 mt-2 leading-relaxed">
-                    Over 2,000+ bench-tested microcontrollers, ultrasonic sensors, relays, OLEDs, DuPont wires, and soldering gear with verified datasheets.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {CATEGORIES.slice(0, 4).map((c) => (
-                    <span
-                      key={c.id}
-                      className="px-2.5 py-1 rounded-lg bg-[#181818] border border-[#2a2a2a] text-xs text-neutral-300"
-                    >
-                      {c.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-[#1f1f1f]">
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-[#ff6a00] transition-colors"
-                >
-                  <span>Browse Components Catalog</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Card 2: Build Project */}
-            <div className="rounded-3xl bg-[#111111] border border-[#ff6a00]/30 p-8 flex flex-col justify-between group hover:border-[#ff6a00] transition-all relative overflow-hidden bg-gradient-to-br from-[#111111] to-[#1a120b]">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#ff6a00]/15 border border-[#ff6a00]/30 flex items-center justify-center text-[#ff6a00]">
-                  <Boxes className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-[#ff6a00] text-black mb-1">
-                    MOST POPULAR FOR SENIORS
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Build My Project Configurator</h3>
-                  <p className="text-sm text-neutral-300 mt-2 leading-relaxed">
-                    Pick your build level: from components-only kits to custom fabricated PCBs, 3D enclosures, and fully bench-tested working prototypes.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs text-neutral-300 pt-2">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#ff6a00]" />
-                    <span>Components Only</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#ff6a00]" />
-                    <span>Project Kit + Code</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#ff6a00]" />
-                    <span>Working Prototype</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#ff6a00]" />
-                    <span>PCB + Enclosure + PPT</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-[#2e2216]">
-                <Link
-                  href="/build"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-[#ff6a00] group-hover:text-white transition-colors"
-                >
-                  <span>Launch 4-Level Build Configurator</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </div>
+          <div className="mt-8 text-center">
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-[#ff6a00] text-slate-800 text-xs font-bold transition-all shadow-2xs"
+            >
+              <span>Explore All 2,000+ Electronic Components in Stock</span>
+              <ArrowRight className="w-4 h-4 text-[#ff6a00]" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 5. MEET THE FOUNDERS SPOTLIGHT */}
-      <section className="py-16 bg-[#0a0a0a] border-b border-[#1f1f1f]">
+      {/* 5. READY-TO-BUILD COLLEGE PROJECT KITS */}
+      <section className="py-10 sm:py-16 bg-slate-50/60 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-8 md:p-12 rounded-3xl bg-[#111111] border border-[#262626] flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="space-y-4 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#ff6a00]/10 text-[#ff6a00] text-xs font-bold">
-                <Users className="w-4 h-4" />
-                <span>The Minds Behind Partsly</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-white">
-                Built by Engineers Who Faced the Same Struggles.
-              </h3>
-              <p className="text-sm text-neutral-400 leading-relaxed">
-                Partsly was created by hardware engineers and researchers to solve the painful experience of sourcing electronics and building final-year projects in college. We guarantee authentic hardware, verified code, and direct campus delivery.
-              </p>
-              <div className="pt-2">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 text-xs font-bold text-[#ff6a00] hover:text-[#ff7a1a] transition-colors"
-                >
-                  <span>Read Founder Story & Team Profiles</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2.5 w-full lg:w-auto max-w-md shrink-0">
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#2a2a2a] hover:border-[#ff6a00]/40 transition-colors">
-                <div className="text-sm font-bold text-white">Vara Prasad</div>
-                <div className="text-[10px] text-[#ff6a00] font-mono mt-0.5 font-semibold">Founder & CEO</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#2a2a2a] hover:border-[#ff6a00]/40 transition-colors">
-                <div className="text-sm font-bold text-white">Mallikarjun</div>
-                <div className="text-[10px] text-[#ff6a00] font-mono mt-0.5 font-semibold">Co-Founder & Hardware</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#262626] hover:border-[#ff6a00]/30 transition-colors">
-                <div className="text-sm font-bold text-white">Nageshwara Rao</div>
-                <div className="text-[10px] text-neutral-400 font-mono mt-0.5">Chief Operating Officer (COO)</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#262626] hover:border-[#ff6a00]/30 transition-colors">
-                <div className="text-sm font-bold text-white">Karthik</div>
-                <div className="text-[10px] text-neutral-400 font-mono mt-0.5">Tech Lead</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#262626] hover:border-[#ff6a00]/30 transition-colors">
-                <div className="text-sm font-bold text-white">Bhanu & Kundhan</div>
-                <div className="text-[10px] text-neutral-400 font-mono mt-0.5">Software Engineering</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#262626] hover:border-[#ff6a00]/30 transition-colors">
-                <div className="text-sm font-bold text-white">Lokesh</div>
-                <div className="text-[10px] text-neutral-400 font-mono mt-0.5">Hardware & Lab QA</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#262626] hover:border-[#ff6a00]/30 transition-colors col-span-2">
-                <div className="text-sm font-bold text-white">Nikrosh</div>
-                <div className="text-[10px] text-neutral-400 font-mono mt-0.5">Growth & Marketing Lead</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. FEATURED PROJECT KITS */}
-      <section className="py-16 md:py-20 bg-[#0a0a0a] border-b border-[#1f1f1f]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
               <span className="text-xs font-bold text-[#ff6a00] uppercase tracking-wider">
                 Turnkey Engineering Builds
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
-                Popular College Project Kits
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-0.5 tracking-tight">
+                Ready-to-Assemble Capstone Project Kits
               </h2>
-              <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-                Pre-tested hardware + circuit diagrams + source code + presentation guides.
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Pre-tested hardware + circuit schematics + full source code + IEEE project presentation decks.
               </p>
             </div>
             <Link
               href="/projects"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff6a00] hover:text-[#ff7a1a] transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff6a00] hover:text-[#ea580c] transition-colors"
             >
-              <span>View All 8+ Project Kits</span>
+              <span>View All Project Kits</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -369,47 +168,48 @@ export default function HomePage() {
             {featuredKits.map((kit) => (
               <div
                 key={kit.id}
-                className="rounded-2xl bg-[#111111] border border-[#222222] hover:border-[#ff6a00]/40 transition-all flex flex-col justify-between overflow-hidden group shadow-lg"
+                className="rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] transition-all flex flex-col justify-between overflow-hidden group shadow-2xs hover:shadow-lg"
               >
                 <div>
-                  <div className="relative aspect-video w-full bg-[#161616] overflow-hidden">
+                  <div className="relative aspect-video w-full bg-slate-100 overflow-hidden border-b border-slate-100">
                     <Image
-                      src={kit.images[0]}
+                      src={kit.images[0] || "/banners/banner-kits.jpg"}
                       alt={kit.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 300px"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-[10px] font-bold text-[#ff6a00] border border-[#ff6a00]/30">
+                    <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-white/95 text-[10px] font-bold text-[#ff6a00] border border-orange-200 shadow-2xs">
                       {kit.difficulty}
                     </div>
                   </div>
 
                   <div className="p-4">
-                    <div className="flex items-center justify-between text-[11px] text-neutral-400 mb-1.5">
-                      <span>{kit.category}</span>
-                      <span className="flex items-center gap-1">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1.5">
+                      <span className="font-semibold uppercase text-[10px] text-slate-500">{kit.category}</span>
+                      <span className="flex items-center gap-1 text-slate-600">
                         <Clock className="w-3 h-3 text-[#ff6a00]" />
                         <span>{kit.buildTime}</span>
                       </span>
                     </div>
 
                     <Link href={`/projects/${kit.slug}`}>
-                      <h3 className="text-sm font-bold text-white group-hover:text-[#ff6a00] transition-colors line-clamp-2 leading-snug">
+                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors line-clamp-2 leading-snug">
                         {kit.title}
                       </h3>
                     </Link>
 
-                    <p className="text-xs text-neutral-400 mt-2 line-clamp-2">
+                    <p className="text-xs text-slate-600 mt-2 line-clamp-2 leading-relaxed">
                       {kit.description}
                     </p>
 
-                    <div className="mt-3 pt-3 border-t border-[#1c1c1c] space-y-1 text-[11px] text-neutral-400">
-                      <div className="flex items-center gap-1 text-neutral-300">
+                    <div className="mt-3 pt-3 border-t border-slate-100 space-y-1 text-[11px]">
+                      <div className="flex items-center gap-1.5 text-slate-700">
                         <Code className="w-3 h-3 text-[#ff6a00]" />
-                        <span>Includes full source code & schematics</span>
+                        <span>Includes full code & schematics</span>
                       </div>
-                      <div className="flex items-center gap-1 text-neutral-300">
-                        <ShieldCheck className="w-3 h-3 text-[#22c55e]" />
+                      <div className="flex items-center gap-1.5 text-emerald-600 font-medium">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
                         <span>Pre-tested before campus dispatch</span>
                       </div>
                     </div>
@@ -417,17 +217,17 @@ export default function HomePage() {
                 </div>
 
                 <div className="p-4 pt-0">
-                  <div className="flex items-baseline justify-between mb-3">
+                  <div className="flex items-baseline justify-between mb-3 pt-2">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-lg font-black text-white">₹{kit.price}</span>
-                      <span className="text-xs text-neutral-500 line-through">₹{kit.mrp}</span>
+                      <span className="text-lg font-black text-slate-900">₹{kit.price}</span>
+                      <span className="text-xs text-slate-400 line-through">₹{kit.mrp}</span>
                     </div>
-                    <span className="text-xs font-bold text-[#22c55e]">Save ₹{kit.mrp - kit.price}</span>
+                    <span className="text-xs font-bold text-emerald-600">Save ₹{kit.mrp - kit.price}</span>
                   </div>
 
                   <Link
                     href={`/projects/${kit.slug}`}
-                    className="w-full py-2.5 px-3 rounded-xl bg-[#1c1c1c] hover:bg-[#ff6a00] text-white hover:text-black text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 px-3 rounded-xl bg-orange-50 hover:bg-[#ff6a00] text-[#ff6a00] hover:text-white border border-orange-200 hover:border-[#ff6a00] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs"
                   >
                     <span>View Kit Details</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -439,155 +239,157 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. TRENDING LAB COMPONENTS CATALOG */}
-      <section className="py-16 md:py-20 bg-[#080808] border-b border-[#1f1f1f]">
+      {/* 6. PROPER BOM & CIRCUIT SCANNER SECTION */}
+      <section className="py-12 sm:py-16 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-            <div>
-              <span className="text-xs font-bold text-[#ff6a00] uppercase tracking-wider">
-                Lab-Grade Electronics
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
-                Trending College Hardware & Sensors
-              </h2>
-              <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-                Genuine silicon, pin-inspected, and breadboard-ready.
-              </p>
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#ff6a00] text-xs font-bold mb-2.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Instant BOM & Circuit Matcher</span>
             </div>
-
-            {/* Category Pills */}
-            <div className="flex flex-wrap gap-1.5">
-              <Link
-                href="/shop"
-                className="px-3 py-1 rounded-lg text-xs font-semibold bg-[#ff6a00] text-black"
-              >
-                All
-              </Link>
-              {CATEGORIES.slice(0, 4).map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/shop?category=${cat.slug}`}
-                  className="px-3 py-1 rounded-lg text-xs font-medium bg-[#141414] hover:bg-[#1f1f1f] text-neutral-300 hover:text-white border border-[#262626] transition-colors"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Have a Circuit Diagram or Parts List?
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Drag and drop any circuit PDF, parts list image, or Excel BOM. Our multi-stage catalog engine cross-references live inventory to build your 1-click cart.
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link
-              href="/shop"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#141414] hover:bg-[#1c1c1c] border border-[#2a2a2a] text-white text-xs font-bold transition-all"
-            >
-              <span>Explore All 2,000+ Electronic Components</span>
-              <ArrowRight className="w-4 h-4 text-[#ff6a00]" />
-            </Link>
-          </div>
+          {/* Interactive Dropzone Scanner */}
+          <ProjectDropzone />
         </div>
       </section>
 
-      {/* 8. CUSTOM ENGINEERING SERVICES HUB */}
-      <section className="py-16 md:py-24 bg-[#0c0c0c] border-b border-[#1f1f1f]">
+      {/* 7. CUSTOM FABRICATION SERVICES */}
+      <section className="py-12 sm:py-16 bg-slate-50/60 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs font-bold text-[#ff6a00] uppercase tracking-wider">
               Beyond Just Retail
             </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mt-1">
-              Engineering Services for Senior Projects
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
+              Fabrication & Senior Capstone Hub
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-neutral-400">
-              Partsly manages fabrication, assembly, and presentation materials for college mini and capstone projects.
+            <p className="mt-2 text-xs sm:text-sm text-slate-600">
+              partsly manages custom fabrication, assembly, and presentation materials for engineering mini and major capstone projects.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Service 1: PCB */}
             <Link
               href="/services/pcb"
-              className="p-6 rounded-2xl bg-[#111111] border border-[#222222] hover:border-[#ff6a00]/50 transition-all group"
+              className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] hover:shadow-md transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
                 <Layers className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white group-hover:text-[#ff6a00] transition-colors">
+              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors">
                 PCB Manufacturing
               </h3>
-              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                 Upload Gerber files. 1, 2, or 4-layer FR-4 boards with custom solder mask colors and HASL/ENIG finishes.
               </p>
-              <div className="mt-4 text-xs font-semibold text-[#ff6a00] flex items-center gap-1">
+              <div className="mt-4 text-xs font-bold text-[#ff6a00] flex items-center gap-1">
                 <span>Instant PCB Quote</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </Link>
 
-            {/* Service 2: 3D Printing */}
             <Link
               href="/services/3d-printing"
-              className="p-6 rounded-2xl bg-[#111111] border border-[#222222] hover:border-[#ff6a00]/50 transition-all group"
+              className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] hover:shadow-md transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
                 <Printer className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white group-hover:text-[#ff6a00] transition-colors">
-                3D Print Enclosures
+              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors">
+                3D Sensor Enclosures
               </h3>
-              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                Upload STL/OBJ/STEP files. Durable PLA, ABS, PETG, and high-detail Resin for custom sensor brackets and robot chassis.
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Upload STL or STEP files. Precision FDM & SLA prints in tough PLA, PETG, ABS, and Resin for chassis & cases.
               </p>
-              <div className="mt-4 text-xs font-semibold text-[#ff6a00] flex items-center gap-1">
+              <div className="mt-4 text-xs font-bold text-[#ff6a00] flex items-center gap-1">
                 <span>Instant 3D Quote</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </Link>
 
-            {/* Service 3: Working Prototype */}
             <Link
               href="/services/prototypes"
-              className="p-6 rounded-2xl bg-[#111111] border border-[#222222] hover:border-[#ff6a00]/50 transition-all group"
+              className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] hover:shadow-md transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
                 <Wrench className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white group-hover:text-[#ff6a00] transition-colors">
-                Working Prototype
+              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors">
+                Working Prototypes
               </h3>
-              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                Don&apos;t have time to debug erratic solder joints before review? We assemble, flash firmware, and QA test the hardware.
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Our embedded hardware engineers assemble, solder, flash firmware, and bench-test your prototype.
               </p>
-              <div className="mt-4 text-xs font-semibold text-[#ff6a00] flex items-center gap-1">
-                <span>Request Prototype</span>
+              <div className="mt-4 text-xs font-bold text-[#ff6a00] flex items-center gap-1">
+                <span>Request Lab Assembly</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </Link>
 
-            {/* Service 4: Documentation */}
             <Link
               href="/services/documents"
-              className="p-6 rounded-2xl bg-[#111111] border border-[#222222] hover:border-[#ff6a00]/50 transition-all group"
+              className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#ff6a00] hover:shadow-md transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] mb-4 group-hover:scale-105 transition-transform">
                 <FileText className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white group-hover:text-[#ff6a00] transition-colors">
+              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors">
                 Project Documentation
               </h3>
-              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                Professional IEEE reports, viva presentation PPT decks, architecture flowcharts, and circuit schematic prints.
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Complete IEEE-standard reports, circuit block diagrams, flowcharts, and technical viva-voce decks.
               </p>
-              <div className="mt-4 text-xs font-semibold text-[#ff6a00] flex items-center gap-1">
-                <span>View Documentation Kits</span>
+              <div className="mt-4 text-xs font-bold text-[#ff6a00] flex items-center gap-1">
+                <span>Generate Report</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. TRUST & QUALITY PILLARS */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
+                <Truck className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-black text-slate-900">10-30m Campus Delivery</h4>
+              <p className="text-xs text-slate-500 mt-1">Direct to your hostel gate or lab</p>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-black text-slate-900">100% Tested Zero-DOA</h4>
+              <p className="text-xs text-slate-500 mt-1">Every IC power tested before dispatch</p>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                <Code className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-black text-slate-900">Code & Schematics</h4>
+              <p className="text-xs text-slate-500 mt-1">Free pinout guides and Arduino scripts</p>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-[#ff6a00] flex items-center justify-center mb-3">
+                <Zap className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-black text-slate-900">UPI & Cash on Campus</h4>
+              <p className="text-xs text-slate-500 mt-1">Zero payment friction for students</p>
+            </div>
           </div>
         </div>
       </section>

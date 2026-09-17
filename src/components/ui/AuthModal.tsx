@@ -274,53 +274,53 @@ export function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
       <div
-        className="w-full max-w-md bg-[#101010] border border-[#262626] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-[#222222] flex items-center justify-between bg-[#141414]">
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-black text-base shadow-lg shadow-[#ff6a00]/20">
+            <div className="w-8 h-8 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-white text-base shadow-md shadow-[#ff6a00]/20">
               P
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <h3 className="text-sm font-bold text-slate-900 tracking-wide">
                 {user ? "Student Account" : `${BRAND.displayName} Authentication`}
               </h3>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-slate-500">
                 {user ? "Secure session active" : "Verified Campus & Engineering Access"}
               </p>
             </div>
           </div>
           <button
             onClick={() => setIsAuthModalOpen(false)}
-            className="text-neutral-400 hover:text-white p-1.5 rounded-xl hover:bg-[#222222] transition-colors"
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8">
+        <div className="p-6 sm:p-8 bg-white">
           {/* If already logged in */}
           {user ? (
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#171717] border border-[#262626] flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#ff6a00]/20 border border-[#ff6a00]/40 flex items-center justify-center text-[#ff6a00] font-black text-base">
-                  {user.name ? user.name.slice(0, 2).toUpperCase() : "TB"}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-orange-100 border border-orange-300 flex items-center justify-center text-[#ff6a00] font-black text-base">
+                  {user.name ? user.name.slice(0, 2).toUpperCase() : "P"}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-white truncate">{user.name}</div>
-                  <div className="text-xs text-neutral-400 truncate">{user.phone || user.email}</div>
+                  <div className="text-sm font-bold text-slate-900 truncate">{user.name}</div>
+                  <div className="text-xs text-slate-500 truncate">{user.phone || user.email}</div>
                   <div className="mt-1.5 flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#ff6a00]/15 text-[#ff6a00] border border-[#ff6a00]/30 font-mono">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-[#ff6a00] border border-orange-200 font-mono">
                       {user.role}
                     </span>
                     {user.phoneVerified && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/70 text-emerald-400 border border-emerald-800/50 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Mobile Verified
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Mobile Verified
                       </span>
                     )}
                   </div>
@@ -331,14 +331,14 @@ export function AuthModal() {
                 <Link
                   href="/account"
                   onClick={() => setIsAuthModalOpen(false)}
-                  className="py-2.5 px-4 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-center text-xs font-semibold text-white transition-colors"
+                  className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-center text-xs font-bold text-slate-800 transition-colors"
                 >
                   My Account Hub
                 </Link>
                 <Link
                   href="/account/orders"
                   onClick={() => setIsAuthModalOpen(false)}
-                  className="py-2.5 px-4 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-center text-xs font-semibold text-white transition-colors"
+                  className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-center text-xs font-bold text-slate-800 transition-colors"
                 >
                   My Orders
                 </Link>
@@ -346,7 +346,7 @@ export function AuthModal() {
 
               <button
                 onClick={logout}
-                className="w-full py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white text-xs font-semibold transition-colors mt-2"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 text-xs font-semibold transition-colors mt-2"
               >
                 Sign Out of {BRAND.displayName}
               </button>
@@ -355,8 +355,8 @@ export function AuthModal() {
             <div>
               {/* Error Banner */}
               {error && (
-                <div className="p-3 mb-5 rounded-xl bg-rose-950/60 border border-rose-800/50 text-rose-300 text-xs flex items-center gap-2.5 animate-in fade-in">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <div className="p-3 mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
                   <span>{error}</span>
                 </div>
               )}
@@ -365,19 +365,19 @@ export function AuthModal() {
               {step === "PHONE_INPUT" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Welcome to {BRAND.displayName}</h2>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Welcome to {BRAND.displayName}</h2>
+                    <p className="text-xs text-slate-500 mt-1">
                       Enter your 10-digit mobile number for instant OTP sign-in.
                     </p>
                   </div>
 
                   <form onSubmit={handleSendOtp} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-2">
+                      <label className="block text-xs font-bold text-slate-700 mb-2">
                         Mobile Number
                       </label>
-                      <div className="flex items-center rounded-2xl bg-[#161616] border border-[#2b2b2b] focus-within:border-[#ff6a00] focus-within:ring-1 focus-within:ring-[#ff6a00] overflow-hidden transition-all">
-                        <div className="px-3.5 py-3 bg-[#1c1c1c] border-r border-[#2b2b2b] text-xs font-bold text-neutral-300 flex items-center gap-1.5 select-none">
+                      <div className="flex items-center rounded-2xl bg-slate-50 border border-slate-300 focus-within:border-[#ff6a00] focus-within:ring-1 focus-within:ring-[#ff6a00] overflow-hidden transition-all">
+                        <div className="px-3.5 py-3 bg-slate-100 border-r border-slate-300 text-xs font-bold text-slate-700 flex items-center gap-1.5 select-none">
                           <span>🇮🇳</span>
                           <span>+91</span>
                         </div>
@@ -388,7 +388,7 @@ export function AuthModal() {
                           onChange={handlePhoneChange}
                           placeholder="98765 43210"
                           maxLength={10}
-                          className="w-full bg-transparent px-3.5 py-3 text-sm font-semibold text-white tracking-wider placeholder-neutral-600 focus:outline-none"
+                          className="w-full bg-transparent px-3.5 py-3 text-sm font-bold text-slate-900 tracking-wider placeholder-slate-400 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -396,7 +396,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || phone.length < 10}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-black text-sm transition-all shadow-lg shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -411,8 +411,8 @@ export function AuthModal() {
 
                   {/* Divider */}
                   <div className="relative flex items-center justify-center my-4">
-                    <div className="border-t border-[#222222] w-full" />
-                    <span className="bg-[#101010] px-3 text-[11px] uppercase tracking-wider font-semibold text-neutral-500">
+                    <div className="border-t border-slate-200 w-full" />
+                    <span className="bg-white px-3 text-[11px] uppercase tracking-wider font-bold text-slate-400">
                       or
                     </span>
                   </div>
@@ -423,19 +423,19 @@ export function AuthModal() {
                       setError(null);
                       setStep("PASSWORD_LOGIN");
                     }}
-                    className="w-full py-2.5 px-4 rounded-2xl bg-[#161616] hover:bg-[#1f1f1f] border border-[#2b2b2b] text-neutral-300 hover:text-white text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2.5 px-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold transition-colors flex items-center justify-center gap-2"
                   >
-                    <Lock className="w-3.5 h-3.5 text-neutral-400" />
+                    <Lock className="w-3.5 h-3.5 text-slate-500" />
                     <span>Login with Password</span>
                   </button>
 
-                  <p className="text-[11px] text-center text-neutral-500 pt-2 leading-relaxed">
+                  <p className="text-[11px] text-center text-slate-500 pt-2 leading-relaxed">
                     By continuing, you agree to {BRAND.displayName}{" "}
-                    <Link href="/terms" className="text-neutral-400 underline hover:text-white">
+                    <Link href="/terms" className="text-slate-700 underline hover:text-[#ff6a00]">
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link href="/privacy" className="text-neutral-400 underline hover:text-white">
+                    <Link href="/privacy" className="text-slate-700 underline hover:text-[#ff6a00]">
                       Privacy Policy
                     </Link>.
                   </p>
@@ -446,20 +446,20 @@ export function AuthModal() {
               {step === "OTP_INPUT" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Verify Mobile Number</h2>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Verify Mobile Number</h2>
+                    <p className="text-xs text-slate-500 mt-1">
                       Enter the 6-digit OTP sent to{" "}
-                      <span className="text-white font-mono font-bold">{formattedPhone || `+91 ${phone}`}</span>
+                      <span className="text-slate-900 font-mono font-bold">{formattedPhone || `+91 ${phone}`}</span>
                     </p>
                   </div>
 
                   {/* DEV OTP Helper Banner */}
                   {devOtp && (
-                    <div className="p-3 rounded-2xl bg-amber-950/40 border border-amber-800/50 text-amber-300 text-xs flex items-center justify-between">
+                    <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-[#ff6a00]" />
                         <span>
-                          Dev OTP: <strong className="font-mono text-white text-sm">{devOtp}</strong>
+                          Dev OTP: <strong className="font-mono text-slate-900 text-sm">{devOtp}</strong>
                         </span>
                       </div>
                       <button
@@ -469,7 +469,7 @@ export function AuthModal() {
                           setOtp(digits);
                           otpInputRefs.current[5]?.focus();
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-[#ff6a00] text-black font-bold text-[11px] hover:bg-[#ff7a1a]"
+                        className="px-2.5 py-1 rounded-lg bg-[#ff6a00] text-white font-bold text-[11px] hover:bg-[#ea580c]"
                       >
                         Auto-fill
                       </button>
@@ -492,7 +492,7 @@ export function AuthModal() {
                           autoFocus={idx === 0}
                           onChange={(e) => handleOtpChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-11 h-13 sm:w-12 sm:h-14 text-center text-lg font-mono font-black bg-[#161616] border border-[#2c2c2c] rounded-2xl text-white focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
+                          className="w-11 h-13 sm:w-12 sm:h-14 text-center text-lg font-mono font-black bg-slate-50 border border-slate-300 rounded-2xl text-slate-900 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
                         />
                       ))}
                     </div>
@@ -500,7 +500,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || otp.join("").length !== 6}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-black text-sm transition-all shadow-lg shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -519,13 +519,13 @@ export function AuthModal() {
                         setOtp(["", "", "", "", "", ""]);
                         setStep("PHONE_INPUT");
                       }}
-                      className="text-neutral-400 hover:text-white transition-colors"
+                      className="text-slate-500 hover:text-slate-900 transition-colors font-medium"
                     >
                       Change Number
                     </button>
 
                     {resendCooldown > 0 ? (
-                      <span className="text-neutral-500 font-mono text-[11px]">
+                      <span className="text-slate-400 font-mono text-[11px]">
                         Resend code in {resendCooldown}s
                       </span>
                     ) : (
@@ -533,7 +533,7 @@ export function AuthModal() {
                         type="button"
                         onClick={handleSendOtp}
                         disabled={loading}
-                        className="text-[#ff6a00] hover:underline font-semibold"
+                        className="text-[#ff6a00] hover:underline font-bold"
                       >
                         Resend OTP
                       </button>
@@ -546,19 +546,19 @@ export function AuthModal() {
               {step === "NEW_USER_SETUP" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Complete Your Profile</h2>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Complete Your Profile</h2>
+                    <p className="text-xs text-slate-500 mt-1">
                       Phone verified. Let us know who you are to personalize your lab orders.
                     </p>
                   </div>
 
                   <form onSubmit={handleNewUserRegister} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Full Name <span className="text-[#ff6a00]">*</span>
                       </label>
                       <div className="relative">
-                        <User className="w-4 h-4 text-neutral-500 absolute left-3.5 top-3" />
+                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                         <input
                           type="text"
                           required
@@ -566,23 +566,23 @@ export function AuthModal() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="e.g. Arjun Sharma"
-                          className="w-full bg-[#161616] border border-[#2b2b2b] rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
-                        Campus Email <span className="text-neutral-500 font-normal">(Optional)</span>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        Campus Email <span className="text-slate-400 font-normal">(Optional)</span>
                       </label>
                       <div className="relative">
-                        <Mail className="w-4 h-4 text-neutral-500 absolute left-3.5 top-3" />
+                        <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                         <input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="arjun@campus.edu"
-                          className="w-full bg-[#161616] border border-[#2b2b2b] rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
                         />
                       </div>
                     </div>
@@ -590,7 +590,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || !name.trim()}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-black text-sm transition-all shadow-lg shadow-[#ff6a00]/25 flex items-center justify-center gap-2 mt-2 cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 mt-2 cursor-pointer"
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -606,15 +606,15 @@ export function AuthModal() {
               {step === "PASSWORD_LOGIN" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Login with Password</h2>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Login with Password</h2>
+                    <p className="text-xs text-slate-500 mt-1">
                       Enter your mobile number or email address and password.
                     </p>
                   </div>
 
                   <form onSubmit={handlePasswordLogin} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Mobile Number or Email
                       </label>
                       <input
@@ -624,20 +624,20 @@ export function AuthModal() {
                         value={passwordIdentifier}
                         onChange={(e) => setPasswordIdentifier(e.target.value)}
                         placeholder="9876543210 or student@campus.edu"
-                        className="w-full bg-[#161616] border border-[#2b2b2b] rounded-2xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
                       />
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-xs font-semibold text-neutral-300">Password</label>
+                        <label className="block text-xs font-bold text-slate-700">Password</label>
                         <button
                           type="button"
                           onClick={() => {
                             setError(null);
                             setStep("FORGOT_PASSWORD");
                           }}
-                          className="text-[11px] text-[#ff6a00] hover:underline"
+                          className="text-[11px] text-[#ff6a00] hover:underline font-semibold"
                         >
                           Forgot Password?
                         </button>
@@ -648,14 +648,14 @@ export function AuthModal() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full bg-[#161616] border border-[#2b2b2b] rounded-2xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-black text-sm transition-all shadow-lg shadow-[#ff6a00]/25 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Sign In</span>}
                     </button>
@@ -669,7 +669,7 @@ export function AuthModal() {
                         setError(null);
                         setStep("PHONE_INPUT");
                       }}
-                      className="text-xs text-[#ff6a00] hover:underline font-semibold"
+                      className="text-xs text-[#ff6a00] hover:underline font-bold"
                     >
                       ← Login with Mobile OTP instead
                     </button>
@@ -681,19 +681,19 @@ export function AuthModal() {
               {step === "FORGOT_PASSWORD" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Forgot Password</h2>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Forgot Password</h2>
+                    <p className="text-xs text-slate-500 mt-1">
                       Enter your registered 10-digit mobile number to receive a password reset OTP.
                     </p>
                   </div>
 
                   <form onSubmit={handleSendOtp} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-2">
+                      <label className="block text-xs font-bold text-slate-700 mb-2">
                         Registered Mobile Number
                       </label>
-                      <div className="flex items-center rounded-2xl bg-[#161616] border border-[#2b2b2b] focus-within:border-[#ff6a00] overflow-hidden">
-                        <div className="px-3.5 py-3 bg-[#1c1c1c] border-r border-[#2b2b2b] text-xs font-bold text-neutral-300">
+                      <div className="flex items-center rounded-2xl bg-slate-50 border border-slate-300 focus-within:border-[#ff6a00] overflow-hidden">
+                        <div className="px-3.5 py-3 bg-slate-100 border-r border-slate-300 text-xs font-bold text-slate-700">
                           +91
                         </div>
                         <input
@@ -703,7 +703,7 @@ export function AuthModal() {
                           onChange={handlePhoneChange}
                           placeholder="98765 43210"
                           maxLength={10}
-                          className="w-full bg-transparent px-3.5 py-3 text-sm font-semibold text-white focus:outline-none"
+                          className="w-full bg-transparent px-3.5 py-3 text-sm font-bold text-slate-900 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -711,7 +711,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || phone.length < 10}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-black text-sm shadow-lg shadow-[#ff6a00]/20"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm shadow-md shadow-[#ff6a00]/20"
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Send Reset OTP</span>}
                     </button>
@@ -724,7 +724,7 @@ export function AuthModal() {
                         setError(null);
                         setStep("PHONE_INPUT");
                       }}
-                      className="text-xs text-neutral-400 hover:text-white"
+                      className="text-xs text-slate-500 hover:text-slate-900 font-medium"
                     >
                       ← Back to Login
                     </button>
@@ -736,14 +736,14 @@ export function AuthModal() {
               {step === "RESET_PASSWORD" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Set New Password</h2>
-                    <p className="text-xs text-neutral-400 mt-1">
-                      Enter the reset OTP sent to <strong className="text-white">{phone}</strong> and your new password.
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Set New Password</h2>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Enter the reset OTP sent to <strong className="text-slate-900">{phone}</strong> and your new password.
                     </p>
                   </div>
 
                   {devOtp && (
-                    <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/50 text-amber-300 text-xs flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
                       <span>Dev OTP: <strong>{devOtp}</strong></span>
                       <button
                         type="button"
@@ -757,7 +757,7 @@ export function AuthModal() {
 
                   <form onSubmit={handleResetPassword} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1.5">6-Digit OTP</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">6-Digit OTP</label>
                       <div className="flex gap-2">
                         {otp.map((d, i) => (
                           <input
@@ -768,40 +768,40 @@ export function AuthModal() {
                             value={d}
                             onChange={(e) => handleOtpChange(i, e.target.value)}
                             onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                            className="w-11 h-12 text-center text-base font-mono font-bold bg-[#161616] border border-[#2b2b2b] rounded-xl text-white focus:outline-none focus:border-[#ff6a00]"
+                            className="w-11 h-12 text-center text-base font-mono font-black bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                           />
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1.5">New Password</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">New Password</label>
                       <input
                         type="password"
                         required
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="At least 6 characters"
-                        className="w-full bg-[#161616] border border-[#2b2b2b] rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Confirm Password</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Confirm Password</label>
                       <input
                         type="password"
                         required
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-enter password"
-                        className="w-full bg-[#161616] border border-[#2b2b2b] rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading || otp.join("").length !== 6 || !newPassword}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-black text-sm shadow-lg shadow-[#ff6a00]/20"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm shadow-md shadow-[#ff6a00]/20"
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Reset Password & Login</span>}
                     </button>

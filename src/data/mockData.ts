@@ -208,15 +208,14 @@ export const PRODUCTS: Product[] = [
       "USB Interface": "Silicon Labs CP2102 / CH340 with micro-USB",
       "Protocols": "I2C, SPI, UART, PWM, ADC (12-bit), DAC"
     },
-    pinoutUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+    pinoutUrl: "/products/esp32-devkit.jpg",
     datasheetUrl: "#datasheet-esp32",
     rating: 4.9,
     reviewCount: 248,
     isFeatured: true,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"
+      "/products/esp32-devkit.jpg"
     ],
     variants: [
       {
@@ -263,8 +262,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=800&q=80"
+      "/products/arduino-uno.jpg"
     ],
     variants: [
       {
@@ -308,7 +306,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     isBestseller: false,
     images: [
-      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80"
+      "/products/rpi-pico-w.jpg"
     ],
     variants: [
       {
@@ -345,7 +343,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
+      "/products/hc-sr04.jpg"
     ],
     variants: [
       {
@@ -389,7 +387,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=800&q=80"
+      "/products/hc-sr04.jpg"
     ],
     variants: [
       {
@@ -425,7 +423,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"
+      "/products/oled-display.jpg"
     ],
     variants: [
       {
@@ -470,7 +468,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80"
+      "/products/sg90-servo.jpg"
     ],
     variants: [
       {
@@ -515,7 +513,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
+      "/products/l298n-driver.jpg"
     ],
     variants: [
       {
@@ -551,7 +549,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     isBestseller: false,
     images: [
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"
+      "/products/oled-display.jpg"
     ],
     variants: [
       {
@@ -586,7 +584,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
+      "/products/relay-module.jpg"
     ],
     variants: [
       {
@@ -629,7 +627,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=800&q=80"
+      "/products/arduino-uno.jpg"
     ],
     variants: [
       {
@@ -663,7 +661,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isBestseller: true,
     images: [
-      "https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=800&q=80"
+      "/products/arduino-uno.jpg"
     ],
     variants: [
       {
@@ -711,8 +709,8 @@ export const PROJECT_KITS: ProjectKit[] = [
       { name: "Fully Assembled & Bench-Tested Working Prototype", price: 999, description: "Our engineering lab solders, flashes firmware, and QA tests the complete build before campus delivery" }
     ],
     images: [
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+      "/banners/banner-kits.jpg",
+      "/products/esp32-devkit.jpg"
     ],
     rating: 4.9,
     reviewsCount: 88
@@ -745,7 +743,8 @@ export const PROJECT_KITS: ProjectKit[] = [
       { name: "College Presentation PPT + Viva Q&A Guide", price: 499, description: "Professional 20-slide technical presentation deck + circuit breakdown" }
     ],
     images: [
-      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80"
+      "/banners/banner-deals.jpg",
+      "/products/arduino-uno.jpg"
     ],
     rating: 4.8,
     reviewsCount: 114
