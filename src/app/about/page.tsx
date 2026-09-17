@@ -27,11 +27,11 @@ export default function AboutPage() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
         {/* 1. Sleek Hero Header */}
         <div className="text-center max-w-3xl mx-auto mb-6">
-          {/* TechBox Emblem */}
+          {/* Partsly Emblem */}
           <div className="relative w-20 h-20 mx-auto mb-5 rounded-2xl bg-[#121212] border border-[#ff6a00]/40 p-2 shadow-2xl shadow-[#ff6a00]/20 flex items-center justify-center">
             <Image
-              src="/logo-icon.png"
-              alt="TechBox Official Emblem"
+              src="/logo-icon-dark.png"
+              alt="Partsly Official Emblem"
               width={64}
               height={64}
               priority
@@ -52,7 +52,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="mt-4 text-sm sm:text-base text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            TechBox was founded on one simple premise: turning your engineering project idea into real, working hardware shouldn&apos;t be an agonizing journey. Explore the minds driving student project infrastructure.
+            Partsly was founded on one simple premise: turning your engineering project idea into real, working hardware shouldn&apos;t be an agonizing journey. Explore the minds driving student project infrastructure.
           </p>
         </div>
 
@@ -61,17 +61,17 @@ export default function AboutPage() {
           <ThreeDTeamCarousel />
         </section>
 
-        {/* 3. The Origin of TechBox (Preserved & Reimagined with Glass Aesthetics) */}
+        {/* 3. The Origin of Partsly (Preserved & Reimagined with Glass Aesthetics) */}
         <section className="mt-16 md:mt-24 p-8 md:p-12 rounded-3xl bg-[#111111]/80 backdrop-blur-xl border border-white/10 shadow-2xl mb-16 space-y-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff6a00]/[0.04] blur-3xl pointer-events-none" />
 
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#ff6a00] uppercase tracking-wider">
             <Compass className="w-4 h-4 text-[#ff6a00]" />
-            <span>The Origin of TechBox</span>
+            <span>The Origin of Partsly</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-snug tracking-tight">
-            Why College Projects Were Broken — And How TechBox Fixes Them
+            Why College Projects Were Broken — And How Partsly Fixes Them
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-neutral-300 leading-relaxed">
@@ -79,7 +79,7 @@ export default function AboutPage() {
               Every semester across engineering colleges, the exact same crisis unfolds: students hunt across crowded city electronics markets for elusive ICs, only to receive counterfeit chips that overheat on breadboards. PCB manufacturing takes 3 weeks with high import duties, custom enclosures have to be carved out of cardboard, and 48 hours before external review, erratic solder joints fail during bench tests.
             </p>
             <p className="p-5 rounded-2xl bg-[#151515]/60 border border-white/5">
-              We created TechBox to be the <strong className="text-white">student project infrastructure platform</strong>. Whether you need genuine bench-tested sensors, a turnkey project kit with pre-tested firmware, custom 2-layer PCB fabrication, precision 3D-printed enclosures, or presentation-ready IEEE documentation, TechBox delivers everything directly to your campus lab or hostel.
+              We created Partsly to be the <strong className="text-white">student project infrastructure platform</strong>. Whether you need genuine bench-tested sensors, a turnkey project kit with pre-tested firmware, custom 2-layer PCB fabrication, precision 3D-printed enclosures, or presentation-ready IEEE documentation, Partsly delivers everything directly to your campus lab or hostel.
             </p>
           </div>
 
@@ -122,8 +122,8 @@ export default function AboutPage() {
           <div className="relative z-10 max-w-xl mx-auto space-y-4">
             <div className="relative w-48 h-14 mx-auto">
               <Image
-                src="/logo.png"
-                alt="TechBox Full Brand"
+                src="/logo-dark.png"
+                alt="Partsly Full Brand"
                 fill
                 className="object-contain"
               />
@@ -132,7 +132,7 @@ export default function AboutPage() {
               Have an idea for your capstone or mini project?
             </h3>
             <p className="text-xs sm:text-sm text-neutral-400">
-              Upload your synopsis or component list today and let TechBox turn your vision into working hardware.
+              Upload your synopsis or component list today and let Partsly turn your vision into working hardware.
             </p>
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link

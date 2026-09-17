@@ -127,7 +127,7 @@ export async function POST(req: Request) {
               data: { usageCount: { increment: 1 } },
             });
           }
-        } else if (cleanCoupon === "TECHBOX10") {
+        } else if (cleanCoupon === "PARTSLY10" || cleanCoupon === "TECHBOX10") {
           discount = Math.round(subtotal * 0.1);
         } else if (cleanCoupon === "CAMPUSFIRST") {
           discount = Math.min(150, Math.round(subtotal * 0.15));
@@ -188,7 +188,7 @@ export async function POST(req: Request) {
       await tx.shipment.create({
         data: {
           orderId: order.id,
-          carrier: "TechBox Campus Dispatch",
+          carrier: "Partsly Campus Dispatch",
           trackingNumber,
           currentCheckpoint: "Order placed & awaiting verification",
           checkpointHistory: [
@@ -196,7 +196,7 @@ export async function POST(req: Request) {
               status: "ORDER_CREATED",
               location: collegeName || "Campus Hub",
               timestamp: new Date().toISOString(),
-              note: "Order created in TechBox campus dispatch queue.",
+              note: "Order created in Partsly campus dispatch queue.",
             },
           ],
           estimatedDelivery: new Date(Date.now() + 24 * 60 * 60 * 1000),

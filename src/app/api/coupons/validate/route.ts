@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     if (!coupon) {
       // Check built-in fallback launch codes
-      if (cleanCode === "TECHBOX10") {
+      if (cleanCode === "PARTSLY10" || cleanCode === "TECHBOX10") {
         const discountAmount = Math.round(cartTotal * 0.1);
         return NextResponse.json({
           valid: true,

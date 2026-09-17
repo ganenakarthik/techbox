@@ -288,13 +288,13 @@ export default function HomePage() {
             <div className="space-y-4 max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#ff6a00]/10 text-[#ff6a00] text-xs font-bold">
                 <Users className="w-4 h-4" />
-                <span>The Minds Behind TechBox</span>
+                <span>The Minds Behind Partsly</span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-white">
                 Built by Engineers Who Faced the Same Struggles.
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                TechBox was created by hardware engineers and researchers to solve the painful experience of sourcing electronics and building final-year projects in college. We guarantee authentic hardware, verified code, and direct campus delivery.
+                Partsly was created by hardware engineers and researchers to solve the painful experience of sourcing electronics and building final-year projects in college. We guarantee authentic hardware, verified code, and direct campus delivery.
               </p>
               <div className="pt-2">
                 <Link
@@ -504,7 +504,7 @@ export default function HomePage() {
               Engineering Services for Senior Projects
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-neutral-400">
-              TechBox manages fabrication, assembly, and presentation materials for college mini and capstone projects.
+              Partsly manages fabrication, assembly, and presentation materials for college mini and capstone projects.
             </p>
           </div>
 

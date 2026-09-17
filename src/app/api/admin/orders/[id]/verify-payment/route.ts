@@ -79,7 +79,7 @@ export async function PATCH(
             : [];
           history.push({
             status: "PAYMENT_VERIFIED",
-            location: "TechBox Financial Clearance Desk",
+            location: "Partsly Financial Clearance Desk",
             timestamp: new Date().toISOString(),
             note: `UTR ${order.utrNumber || "Verified"} cleared. Order confirmed for campus packing.`,
           });

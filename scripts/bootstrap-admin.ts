@@ -12,7 +12,7 @@ async function hashPassword(password: string): Promise<string> {
 async function main() {
   const email = process.argv[2] || process.env.ADMIN_EMAIL;
   const password = process.argv[3] || process.env.ADMIN_PASSWORD;
-  const name = process.argv[4] || "TechBox Operations Lead";
+  const name = process.argv[4] || "Partsly Operations Lead";
 
   if (!email || !password) {
     console.error("Usage: npx tsx scripts/bootstrap-admin.ts <email> <password> [name]");

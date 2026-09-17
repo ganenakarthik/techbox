@@ -269,7 +269,7 @@ export default function PcbServicePage() {
             <div className="flex items-start gap-2 text-[11px] text-neutral-400 pt-2 border-t border-[#1c1c1c]">
               <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0 mt-0.5" />
               <span>
-                TechBox hardware engineers perform 100% trace and clearance rule checks before production.
+                Partsly hardware engineers perform 100% trace and clearance rule checks before production.
               </span>
             </div>
           </div>

@@ -24,7 +24,7 @@ export default function ShippingPolicyPage() {
             <span className="text-[#ff6a00]">1.</span> Dedicated Campus Runner Network
           </h2>
           <p>
-            TechBox operates an exclusive student courier network stationed near major engineering colleges. Because traditional delivery couriers are frequently barred from entering university gates or hostel premises, our dedicated campus runners coordinate delivery directly to your college main gate, hostel security reception, or department innovation lab.
+            Partsly operates an exclusive student courier network stationed near major engineering colleges. Because traditional delivery couriers are frequently barred from entering university gates or hostel premises, our dedicated campus runners coordinate delivery directly to your college main gate, hostel security reception, or department innovation lab.
           </p>
         </section>
 
@@ -33,7 +33,7 @@ export default function ShippingPolicyPage() {
             <span className="text-[#ff6a00]">2.</span> Daily Campus Dispatch Slots
           </h2>
           <p>
-            Orders placed on TechBox are dispatched in two regular daily batches:
+            Orders placed on Partsly are dispatched in two regular daily batches:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-neutral-400">
             <li><strong>Morning Run (10:30 AM – 1:00 PM):</strong> For orders placed before 8:00 AM.</li>

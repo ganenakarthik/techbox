@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { Product, ProductVariant, ProjectKit, COLLEGES, College } from "@/data/mockData";
+import { BRAND } from "@/config/brand";
 
 export interface CartItem {
   id: string; // unique cart item id
@@ -192,12 +193,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // network error, fallback to guest
       }
 
-      // Guest: Load from localStorage
+      // Guest: Load from localStorage (partsly_cart with legacy techbox_cart fallback)
       try {
-        const savedCart = localStorage.getItem("techbox_cart");
+        const savedCart = localStorage.getItem(BRAND.cartStorageKey) || localStorage.getItem("techbox_cart");
         if (savedCart) setCart(JSON.parse(savedCart));
 
-        const savedWishlist = localStorage.getItem("techbox_wishlist");
+        const savedWishlist = localStorage.getItem(BRAND.wishlistStorageKey) || localStorage.getItem("techbox_wishlist");
         if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
       } catch {
         // ignore
@@ -211,7 +212,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user) {
       try {
-        localStorage.setItem("techbox_cart", JSON.stringify(cart));
+        localStorage.setItem(BRAND.cartStorageKey, JSON.stringify(cart));
       } catch {
         // ignore
       }
@@ -221,7 +222,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user) {
       try {
-        localStorage.setItem("techbox_wishlist", JSON.stringify(wishlist));
+        localStorage.setItem(BRAND.wishlistStorageKey, JSON.stringify(wishlist));
       } catch {
         // ignore
       }
@@ -417,6 +418,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCouponCode("");
     setDiscountAmount(0);
     try {
+      localStorage.removeItem(BRAND.cartStorageKey);
       localStorage.removeItem("techbox_cart");
     } catch {
       // ignore
@@ -468,11 +470,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const applyCoupon = (code: string) => {
     const clean = code.trim().toUpperCase();
-    if (clean === "TECHBOX10") {
+    if (clean === "PARTSLY10" || clean === "TECHBOX10") {
       const discount = Math.round(subtotal * 0.1);
       setDiscountAmount(discount);
       setCouponCode(clean);
-      addToast("Coupon TECHBOX10 applied (10% OFF)!", "success");
+      addToast(`Coupon ${clean} applied (10% OFF)!`, "success");
       return { success: true, message: "10% Student discount applied!" };
     }
     if (clean === "CAMPUSFIRST") {
@@ -482,7 +484,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addToast("Coupon CAMPUSFIRST applied (₹150 OFF)!", "success");
       return { success: true, message: "Welcome campus discount applied!" };
     }
-    return { success: false, message: "Invalid coupon code. Try TECHBOX10" };
+    return { success: false, message: `Invalid coupon code. Try ${BRAND.defaultCoupon}` };
   };
 
   const removeCoupon = () => {
@@ -561,7 +563,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         await refreshCart();
         await refreshWishlist();
-        addToast("Account created successfully! Welcome to TechBox.", "success");
+        addToast(`Account created successfully! Welcome to ${BRAND.displayName}.`, "success");
         setIsAuthModalOpen(false);
         return true;
       } else {
@@ -649,7 +651,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setUser(resData.user);
       await refreshCart();
       await refreshWishlist();
-      addToast(resData.message || "Account created successfully! Welcome to TechBox.", "success");
+      addToast(resData.message || `Account created successfully! Welcome to ${BRAND.displayName}.`, "success");
       setIsAuthModalOpen(false);
 
       if (authRedirectUrl) {
@@ -705,6 +707,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCart([]);
     setWishlist([]);
     try {
+      localStorage.removeItem(BRAND.cartStorageKey);
+      localStorage.removeItem(BRAND.wishlistStorageKey);
       localStorage.removeItem("techbox_cart");
       localStorage.removeItem("techbox_wishlist");
     } catch {

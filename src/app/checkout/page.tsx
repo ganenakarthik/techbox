@@ -591,8 +591,8 @@ export default function CheckoutPage() {
                   <div className="flex flex-col md:flex-row items-center gap-6">
                     <div className="relative w-52 h-52 rounded-2xl overflow-hidden bg-black border border-[#333333] shadow-2xl shrink-0 p-2">
                       <Image
-                        src="/images/techbox-upi-qr.jpg"
-                        alt="TechBox PhonePe UPI QR Code"
+                        src="/images/partsly-upi-qr.jpg"
+                        alt="Partsly PhonePe UPI QR Code"
                         fill
                         className="object-contain"
                       />
@@ -641,7 +641,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <p className="text-[11px] text-neutral-400 mt-1.5 leading-relaxed">
-                      Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. TechBox operations team verifies the bank credit and confirms your order. If you haven't paid yet, you can also submit your UTR after placing the order.
+                      Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. Partsly operations team verifies the bank credit and confirms your order. If you haven't paid yet, you can also submit your UTR after placing the order.
                     </p>
                   </div>
                 </div>

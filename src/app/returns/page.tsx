@@ -24,7 +24,7 @@ export default function ReturnsPolicyPage() {
             <span className="text-[#ff6a00]">1.</span> 7-Day Dead on Arrival (DOA) Replacement Policy
           </h2>
           <p>
-            We know how critical deadlines are. If any microcontroller, sensor, display, motor driver, or IC received from TechBox fails to boot or is found defective upon arrival, we provide an immediate <strong>1-to-1 replacement within 7 calendar days</strong> of delivery.
+            We know how critical deadlines are. If any microcontroller, sensor, display, motor driver, or IC received from Partsly fails to boot or is found defective upon arrival, we provide an immediate <strong>1-to-1 replacement within 7 calendar days</strong> of delivery.
           </p>
         </section>
 

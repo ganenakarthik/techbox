@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "ready",
-        service: "techbox-core",
+        service: "partsly-core",
         database: "connected",
         timestamp: new Date().toISOString(),
       },
@@ -22,7 +22,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "unavailable",
-        service: "techbox-core",
+        service: "partsly-core",
         database: "disconnected",
         error: error.message || "Database unreachable",
         timestamp: new Date().toISOString(),

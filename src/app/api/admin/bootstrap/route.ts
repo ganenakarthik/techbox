@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, password, name = "TechBox Operations Lead" } = body;
+    const { email, password, name = "Partsly Operations Lead" } = body;
 
     if (!email || !password || typeof password !== "string" || password.length < 8) {
       return NextResponse.json(

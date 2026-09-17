@@ -30,7 +30,7 @@ const ALLOWED_MIME_PREFIXES = [
 ];
 
 /**
- * Production storage abstraction for TechBox.
+ * Production storage abstraction for Partsly.
  * Primary Provider: Supabase Storage (Private bucket `project-files`).
  * Local Fallback: Stored in a private, non-public directory accessed strictly via authenticated API proxy.
  */

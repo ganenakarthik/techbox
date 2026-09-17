@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "No TechBox account found with this mobile number." },
+        { error: "No Partsly account found with this mobile number." },
         { status: 404 }
       );
     }

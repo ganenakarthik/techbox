@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import { BRAND } from "@/config/brand";
 import {
   Search,
   ShoppingBag,
@@ -99,11 +100,11 @@ export function Navbar() {
             <div className="flex items-center gap-4 shrink-0">
               <Link href="/admin" className="flex items-center gap-2.5 group">
                 <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-[#141414] border border-[#ff6a00]/40 p-0.5 shadow-md shadow-[#ff6a00]/15">
-                  <Image src="/logo-icon.png" alt="TechBox" fill className="object-contain" />
+                  <Image src={BRAND.logoIconDark} alt={BRAND.displayName} fill className="object-contain" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base tracking-wider text-white">
-                    TECH<span className="text-[#ff6a00]">BOX</span>
+                  <span className="font-extrabold text-base tracking-tight text-white lowercase">
+                    {BRAND.name}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-[#ff6a00]/15 text-[#ff6a00] border border-[#ff6a00]/30 text-[10px] font-mono font-bold uppercase tracking-wider">
                     Staff Console
@@ -212,18 +213,18 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-3 group shrink-0">
               <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-[#141414] border border-[#ff6a00]/40 group-hover:border-[#ff6a00] transition-colors shrink-0 shadow-lg shadow-[#ff6a00]/15">
                 <Image
-                  src="/logo-icon.png"
-                  alt="TechBox Logo"
+                  src={BRAND.logoIconDark}
+                  alt={`${BRAND.displayName} Logo`}
                   fill
                   className="object-contain p-0.5 group-hover:scale-105 transition-transform"
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-lg tracking-wider text-white flex items-center gap-0.5 leading-none">
-                  TECH<span className="text-[#ff6a00]">BOX</span>
+                <span className="font-extrabold text-xl tracking-tight text-white lowercase flex items-center gap-0.5 leading-none">
+                  {BRAND.name}
                 </span>
                 <span className="text-[9px] font-medium text-neutral-400 tracking-widest uppercase mt-1 hidden sm:block">
-                  Project Infrastructure
+                  Campus Infrastructure
                 </span>
               </div>
             </Link>
@@ -415,10 +416,10 @@ export function Navbar() {
               <div className="flex items-center justify-between pb-4 border-b border-[#262626]">
                 <div className="flex items-center gap-2">
                   <div className="relative w-7 h-7 rounded-lg overflow-hidden bg-[#141414] border border-[#ff6a00]/40">
-                    <Image src="/logo-icon.png" alt="TechBox" fill className="object-contain" />
+                    <Image src={BRAND.logoIconDark} alt={BRAND.displayName} fill className="object-contain" />
                   </div>
-                  <span className="font-bold text-base text-white">
-                    TECH<span className="text-[#ff6a00]">BOX</span>
+                  <span className="font-bold text-lg text-white lowercase">
+                    {BRAND.name}
                   </span>
                 </div>
                 <button
@@ -504,7 +505,7 @@ export function Navbar() {
             </div>
 
             <div className="pt-6 text-center text-xs text-neutral-500">
-              TechBox • Everything for your project.
+              {BRAND.displayName} • {BRAND.tagline}
             </div>
           </div>
         </div>

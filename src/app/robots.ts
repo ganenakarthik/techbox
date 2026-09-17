@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/", "/account/"],
       },
     ],
-    sitemap: "https://techbox.in/sitemap.xml",
+    sitemap: "https://partsly.in/sitemap.xml",
   };
 }

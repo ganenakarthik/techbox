@@ -73,7 +73,7 @@ export async function POST(req: Request) {
         status: "CONFIRMED",
         title: "Order Confirmed & Payment Verified",
         time: now.toISOString(),
-        location: "TechBox Campus Dispatch Hub",
+        location: "Partsly Campus Dispatch Hub",
         description: "Your electronic components have been reserved and routed to the campus packing bench.",
       },
     ];
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
       update: {},
       create: {
         orderId: order.id,
-        carrier: "TechBox Campus Express Runner",
+        carrier: "Partsly Campus Express Runner",
         trackingNumber,
         currentCheckpoint: "Order Confirmed & Payment Verified",
         checkpointHistory: initialCheckpoints,

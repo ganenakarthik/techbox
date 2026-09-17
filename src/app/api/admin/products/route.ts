@@ -108,8 +108,8 @@ export async function POST(req: Request) {
       if (!br) {
         br = await prisma.brand.create({
           data: {
-            name: "TechBox Lab",
-            slug: "techbox-lab",
+            name: "Partsly Lab",
+            slug: "partsly-lab",
           },
         });
       }
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
           categoryId: resolvedCategoryId,
           description: description || `${name} engineered for college electronics labs.`,
           specs: specs || {},
-          images: images.length > 0 ? images : ["/images/techbox-upi-qr.jpg"],
+          images: images.length > 0 ? images : ["/images/partsly-upi-qr.jpg"],
           isFeatured: Boolean(isFeatured),
           pinoutUrl,
           datasheetUrl,

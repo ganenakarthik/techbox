@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
+import { BRAND } from "@/config/brand";
 import {
   X,
   Phone,
@@ -282,11 +283,11 @@ export function AuthModal() {
         <div className="p-5 border-b border-[#222222] flex items-center justify-between bg-[#141414]">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-black text-base shadow-lg shadow-[#ff6a00]/20">
-              T
+              P
             </div>
             <div>
               <h3 className="text-sm font-bold text-white tracking-wide">
-                {user ? "Student Account" : "TechBox Authentication"}
+                {user ? "Student Account" : `${BRAND.displayName} Authentication`}
               </h3>
               <p className="text-[11px] text-neutral-400">
                 {user ? "Secure session active" : "Verified Campus & Engineering Access"}
@@ -347,7 +348,7 @@ export function AuthModal() {
                 onClick={logout}
                 className="w-full py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white text-xs font-semibold transition-colors mt-2"
               >
-                Sign Out of TechBox
+                Sign Out of {BRAND.displayName}
               </button>
             </div>
           ) : (
@@ -364,7 +365,7 @@ export function AuthModal() {
               {step === "PHONE_INPUT" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-black text-white tracking-tight">Welcome to TechBox</h2>
+                    <h2 className="text-xl font-black text-white tracking-tight">Welcome to {BRAND.displayName}</h2>
                     <p className="text-xs text-neutral-400 mt-1">
                       Enter your 10-digit mobile number for instant OTP sign-in.
                     </p>
@@ -429,7 +430,7 @@ export function AuthModal() {
                   </button>
 
                   <p className="text-[11px] text-center text-neutral-500 pt-2 leading-relaxed">
-                    By continuing, you agree to TechBox{" "}
+                    By continuing, you agree to {BRAND.displayName}{" "}
                     <Link href="/terms" className="text-neutral-400 underline hover:text-white">
                       Terms of Service
                     </Link>{" "}
@@ -594,7 +595,7 @@ export function AuthModal() {
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <span>Complete Setup & Enter TechBox</span>
+                        <span>Complete Setup & Enter {BRAND.displayName}</span>
                       )}
                     </button>
                   </form>

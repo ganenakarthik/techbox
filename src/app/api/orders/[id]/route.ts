@@ -59,7 +59,7 @@ export async function GET(
       recipientName: order.recipientName,
       recipientPhone: order.recipientPhone,
       campusDetail: order.campusDetail,
-      deliveryMethod: order.deliveryMethod || "TECHBOX_CAMPUS_DELIVERY",
+      deliveryMethod: order.deliveryMethod || "PARTSLY_CAMPUS_DELIVERY",
       runnerName: order.runnerName || null,
       runnerPhone: order.runnerPhone || null,
       packedAt: order.packedAt ? order.packedAt.toISOString() : null,

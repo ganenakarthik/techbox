@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "ready",
-        service: "techbox-core",
+        service: "partsly-core",
         database: "connected",
         dbLatencyMs: latencyMs,
         timestamp: new Date().toISOString(),
@@ -32,7 +32,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "unavailable",
-        service: "techbox-core",
+        service: "partsly-core",
         database: "disconnected",
         dbLatencyMs: latencyMs,
         error: "Database connectivity check failed",

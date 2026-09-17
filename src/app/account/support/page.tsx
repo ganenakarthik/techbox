@@ -94,7 +94,7 @@ export default function SupportPage() {
 
       const data = await res.json();
       if (res.ok && data.ticket) {
-        addToast("Reply sent to TechBox support team!", "success");
+        addToast("Reply sent to Partsly support team!", "success");
         setTickets(tickets.map((t) => (t.id === ticketId ? data.ticket : t)));
         setReplyText((prev) => ({ ...prev, [ticketId]: "" }));
       } else {

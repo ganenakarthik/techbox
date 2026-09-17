@@ -230,7 +230,7 @@ export default function OrderTrackingPage({
               {order.status}
             </span>
             <span className="text-xs text-neutral-400">
-              Carrier: {order.shipment?.carrier || "TechBox Campus Express Runner"}
+              Carrier: {order.shipment?.carrier || "Partsly Campus Express Runner"}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white mt-1.5">
@@ -252,7 +252,7 @@ export default function OrderTrackingPage({
             className="py-2.5 px-4 rounded-xl bg-[#22c55e] hover:bg-[#25b85a] text-black text-xs font-bold flex items-center gap-2 transition-all shadow-lg shadow-[#22c55e]/20"
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Send Order Details to TechBox WhatsApp</span>
+            <span>Send Order Details to Partsly WhatsApp</span>
           </a>
           <button
             onClick={handlePrintInvoice}
@@ -278,7 +278,7 @@ export default function OrderTrackingPage({
           <div className="text-xs">
             <h3 className="font-bold text-white text-sm">Payment Verified & Approved</h3>
             <p className="text-neutral-300 mt-0.5">
-              Bank credit of ₹{order.total} has been verified by TechBox Operations. UTR Reference: <strong className="font-mono text-white">{order.utrNumber || "Verified"}</strong>.
+              Bank credit of ₹{order.total} has been verified by Partsly Operations. UTR Reference: <strong className="font-mono text-white">{order.utrNumber || "Verified"}</strong>.
             </p>
           </div>
         </div>
@@ -295,7 +295,7 @@ export default function OrderTrackingPage({
               </span>
             </div>
             <p className="text-neutral-300 mt-1">
-              UTR Reference: <strong className="font-mono text-white">{order.utrNumber}</strong> submitted. TechBox operations team is verifying the credit in our PhonePe merchant account. Your order will be confirmed once cleared.
+              UTR Reference: <strong className="font-mono text-white">{order.utrNumber}</strong> submitted. Partsly operations team is verifying the credit in our PhonePe merchant account. Your order will be confirmed once cleared.
             </p>
             <div className="mt-3 flex items-center gap-3">
               <a
@@ -317,8 +317,8 @@ export default function OrderTrackingPage({
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="relative w-48 h-48 rounded-2xl overflow-hidden bg-black border border-[#333333] shadow-xl shrink-0 p-2">
               <Image
-                src="/images/techbox-upi-qr.jpg"
-                alt="TechBox PhonePe UPI QR"
+                src="/images/partsly-upi-qr.jpg"
+                alt="Partsly PhonePe UPI QR"
                 fill
                 className="object-contain"
               />
@@ -384,7 +384,7 @@ export default function OrderTrackingPage({
                 🏃
               </div>
               <div>
-                <div className="text-[10px] text-sky-400 uppercase font-bold tracking-wider">TechBox Campus Runner</div>
+                <div className="text-[10px] text-sky-400 uppercase font-bold tracking-wider">Partsly Campus Runner</div>
                 <div className="text-sm font-bold text-white">{order.runnerName}</div>
                 <div className="text-[11px] text-neutral-400">{order.campusDetail || "Delivering directly to your campus point"}</div>
               </div>

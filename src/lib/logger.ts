@@ -39,7 +39,7 @@ export class Logger {
       severity,
       message: payload.message,
       timestamp,
-      serviceContext: { service: "techbox-core", version: "0.1.1" },
+      serviceContext: { service: "partsly-core", version: "0.1.1" },
       ...payload.context,
     };
 

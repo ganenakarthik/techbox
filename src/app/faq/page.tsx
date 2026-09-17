@@ -10,7 +10,7 @@ export default function FAQPage() {
   const faqs = [
     {
       q: "How does direct campus delivery work?",
-      a: "TechBox operates dedicated campus courier runners who deliver directly to university main gates, hostel security desks, or innovation labs twice daily: Morning batch (10:30 AM – 1:00 PM) and Evening batch (4:30 PM – 7:30 PM). When our runner arrives at your designated gate, you receive an automated SMS and call to collect your parcel with your student ID.",
+      a: "Partsly operates dedicated campus courier runners who deliver directly to university main gates, hostel security desks, or innovation labs twice daily: Morning batch (10:30 AM – 1:00 PM) and Evening batch (4:30 PM – 7:30 PM). When our runner arrives at your designated gate, you receive an automated SMS and call to collect your parcel with your student ID.",
     },
     {
       q: "Are the microcontrollers and electronic components tested before dispatch?",
@@ -21,7 +21,7 @@ export default function FAQPage() {
       a: "You can upload your project synopsis, schematic PDF, CSV, or BOM bill of materials. Our server extracts the engineering requirements, tokenizes component names and quantities, checks our live PostgreSQL inventory for exact SKUs, computes confidence ratings, and builds an itemized, ready-to-order project kit. If any ambiguous component is detected, our system flags it for your review before checkout.",
     },
     {
-      q: "Can TechBox fabricate custom PCBs for student projects?",
+      q: "Can Partsly fabricate custom PCBs for student projects?",
       a: "Yes! Submit your Gerber zip files through our PCB Manufacturing service page. We support 1 to 4 layer boards, standard 1.6mm FR4 substrates, green/black/blue solder masks, and HASL or ENIG lead-free surface finish. We provide prototype panel turnaround within 4 to 6 working days.",
     },
     {

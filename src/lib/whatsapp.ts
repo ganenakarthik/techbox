@@ -17,7 +17,10 @@ export function generateWhatsAppOrderUrl(order: {
   paymentStatus: string;
   utrNumber?: string | null;
 }): string {
-  const whatsappNumber = process.env.NEXT_PUBLIC_TECHBOX_WHATSAPP || "917032635858";
+  const whatsappNumber =
+    process.env.NEXT_PUBLIC_PARTSLY_WHATSAPP ||
+    process.env.NEXT_PUBLIC_TECHBOX_WHATSAPP ||
+    "917032635858";
   
   const itemsText = order.items
     .map((item) => {
@@ -27,7 +30,7 @@ export function generateWhatsAppOrderUrl(order: {
     .join("\n");
 
   const lines = [
-    `⚡ *TECHBOX ORDER SUBMISSION*`,
+    `⚡ *PARTSLY ORDER SUBMISSION*`,
     `--------------------------------`,
     `*Order Number:* ${order.orderNumber}`,
     `*Customer:* ${order.recipientName} (${order.recipientPhone})`,
@@ -40,7 +43,7 @@ export function generateWhatsAppOrderUrl(order: {
     `*Payment Status:* ${order.paymentStatus}`,
     order.utrNumber ? `*Bank UTR / Ref:* ${order.utrNumber}` : `*Bank UTR:* Awaiting verification`,
     `--------------------------------`,
-    `Hello TechBox team, I have placed an order and would like to confirm my payment & campus delivery status.`,
+    `Hello Partsly team, I have placed an order and would like to confirm my payment & campus delivery status.`,
   ].filter((line) => line !== undefined && line !== null);
 
   const message = lines.join("\n");

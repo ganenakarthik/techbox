@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
           Privacy <span className="text-[#ff6a00]">Policy</span>
         </h1>
         <p className="mt-3 text-xs sm:text-sm text-neutral-400">
-          Last updated: September 2026. How TechBox handles your student data, project schematics, and payment details.
+          Last updated: September 2026. How Partsly handles your student data, project schematics, and payment details.
         </p>
       </div>
 
@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
             <span className="text-[#ff6a00]">3.</span> Security of Banking & Payment Details
           </h2>
           <p>
-            TechBox does NOT store full debit/credit card numbers or UPI PINs on its servers. All payments are processed through PCI-DSS Level 1 compliant gateway infrastructure via encrypted TLS connections.
+            Partsly does NOT store full debit/credit card numbers or UPI PINs on its servers. All payments are processed through PCI-DSS Level 1 compliant gateway infrastructure via encrypted TLS connections.
           </p>
         </section>
 
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
             <span className="text-[#ff6a00]">4.</span> Cookies & Session Authentication
           </h2>
           <p>
-            We use secure, HTTP-only cookies (<code>techbox_session</code>) to maintain authenticated sessions and protect your cart and order history against cross-site scripting (XSS).
+            We use secure, HTTP-only cookies (<code>partsly_session</code>) to maintain authenticated sessions and protect your cart and order history against cross-site scripting (XSS).
           </p>
         </section>
       </div>

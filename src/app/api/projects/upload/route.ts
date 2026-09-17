@@ -104,7 +104,7 @@ export async function POST(req: Request) {
     if (ext === ".csv" || ext === ".txt") {
       extractedText = buffer.toString("utf8");
     } else {
-      extractedText = `Received ${originalName} (${(file.size / 1024).toFixed(1)} KB) — TechBox engineering team will review your project specifications and generate an itemized quote.`;
+      extractedText = `Received ${originalName} (${(file.size / 1024).toFixed(1)} KB) — Partsly engineering team will review your project specifications and generate an itemized quote.`;
     }
 
     return NextResponse.json({

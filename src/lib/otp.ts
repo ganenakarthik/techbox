@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { prisma } from "./prisma";
 import { validateAndNormalizeIndianPhone } from "./phone";
 
-const AUTH_SECRET = process.env.AUTH_SECRET || "techbox_super_secret_session_key_production_grade";
+const AUTH_SECRET = process.env.AUTH_SECRET || "partsly_super_secret_session_key_production_grade";
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_RESEND_COOLDOWN_SECONDS = 45;
 const OTP_MAX_ATTEMPTS = 4;
@@ -156,7 +156,7 @@ export class OtpService {
           body: new URLSearchParams({
             To: `+91${validated.national}`,
             From: process.env.TWILIO_PHONE_NUMBER || "",
-            Body: `Your TechBox verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
+            Body: `Your Partsly verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
           }),
         });
       } catch (twilioErr) {

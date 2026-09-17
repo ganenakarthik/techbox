@@ -187,7 +187,7 @@ export default function CartPage() {
                     type="text"
                     value={inputCoupon}
                     onChange={(e) => setInputCoupon(e.target.value)}
-                    placeholder="Coupon code (e.g. TECHBOX10)"
+                    placeholder="Coupon code (e.g. PARTSLY10)"
                     className="w-full bg-[#161616] border border-[#262626] rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>

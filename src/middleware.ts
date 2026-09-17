@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
 
   // Protect all /admin routes
   if (pathname.startsWith("/admin")) {
-    const sessionCookie = request.cookies.get("techbox_session");
+    const sessionCookie = request.cookies.get("partsly_session") || request.cookies.get("techbox_session");
 
     // 1. Unauthenticated -> 307 Redirect to login with return url
     if (!sessionCookie || !sessionCookie.value) {

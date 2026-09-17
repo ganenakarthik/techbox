@@ -8,7 +8,8 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { SearchOverlay } from "@/components/ui/SearchOverlay";
 import { AuthModal } from "@/components/ui/AuthModal";
 import { ToastContainer } from "@/components/ui/ToastContainer";
-import { TechBoxBootSequence } from "@/components/boot/TechBoxBootSequence";
+import { BootSequence } from "@/components/boot/BootSequence";
+import { BRAND } from "@/config/brand";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,11 +22,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TechBox — Everything for your project | College & Engineering Platform",
+  title: `${BRAND.displayName} — ${BRAND.tagline} | College & Engineering Platform`,
   description:
-    "TechBox is the student project infrastructure platform. Buy electronic components, upload project documents, auto-detect BOM requirements, order custom PCBs, 3D enclosures, and prototypes with direct campus delivery.",
+    `${BRAND.displayName} is the student project infrastructure platform. Buy electronic components, upload project documents, auto-detect BOM requirements, order custom PCBs, 3D enclosures, and working prototypes with rapid campus dropzone delivery.`,
   keywords: [
-    "TechBox",
+    "Partsly",
+    "partsly",
     "electronics components",
     "engineering college projects",
     "ESP32",
@@ -36,11 +38,15 @@ export const metadata: Metadata = {
     "campus delivery",
     "student project kits",
   ],
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icon-192.png",
+  },
   openGraph: {
-    title: "TechBox — Everything for your project",
-    description: "Components, project kits, prototypes and documentation — delivered to your campus.",
-    url: "https://techbox.in",
-    siteName: "TechBox",
+    title: `${BRAND.displayName} — ${BRAND.tagline}`,
+    description: "Components, project kits, prototypes and documentation — delivered directly to your campus dropzone.",
+    url: BRAND.appUrl,
+    siteName: BRAND.displayName,
     type: "website",
   },
 };
@@ -54,7 +60,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-[#080808] text-white">
         <AppProvider>
-          <TechBoxBootSequence />
+          <BootSequence />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

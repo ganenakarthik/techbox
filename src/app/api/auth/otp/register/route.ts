@@ -121,7 +121,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Account created successfully. Welcome to TechBox, ${user.name}!`,
+      message: `Account created successfully. Welcome to Partsly, ${user.name}!`,
       user: {
         id: user.id,
         name: user.name,

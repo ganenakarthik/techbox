@@ -84,7 +84,7 @@ export default function DocumentationPage() {
 
         {/* Professional Ethics Callout */}
         <div className="mt-4 p-3 rounded-xl bg-[#141414] border border-[#222222] text-[11px] text-neutral-400 max-w-lg mx-auto">
-          <strong className="text-white">Academic Integrity Notice:</strong> TechBox documentation services provide structural formatting, vector schematics, and presentation design support to help students communicate their authentic engineering work clearly to examiners.
+          <strong className="text-white">Academic Integrity Notice:</strong> Partsly documentation services provide structural formatting, vector schematics, and presentation design support to help students communicate their authentic engineering work clearly to examiners.
         </div>
       </div>
 

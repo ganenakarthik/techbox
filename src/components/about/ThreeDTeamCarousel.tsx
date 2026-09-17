@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TECHBOX_TEAM, TeamMember } from "@/data/teamData";
+import { PARTSLY_TEAM, TeamMember } from "@/data/teamData";
 import { GlassProfileCard } from "./GlassProfileCard";
 import { ExpandedProfileModal } from "./ExpandedProfileModal";
 import { CarouselControls } from "./CarouselControls";
@@ -39,11 +39,11 @@ export function ThreeDTeamCarousel() {
 
   // Navigation handlers
   const handlePrev = useCallback(() => {
-    setActiveIndex((prev) => (prev - 1 + TECHBOX_TEAM.length) % TECHBOX_TEAM.length);
+    setActiveIndex((prev) => (prev - 1 + PARTSLY_TEAM.length) % PARTSLY_TEAM.length);
   }, []);
 
   const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % TECHBOX_TEAM.length);
+    setActiveIndex((prev) => (prev + 1) % PARTSLY_TEAM.length);
   }, []);
 
   const handleSelect = useCallback((idx: number) => {
@@ -129,7 +129,7 @@ export function ThreeDTeamCarousel() {
 
   // Calculate 3D positioning for each card on the circular arc
   const getCard3DStyles = (index: number) => {
-    const total = TECHBOX_TEAM.length;
+    const total = PARTSLY_TEAM.length;
     let offset = (index - activeIndex) % total;
     if (offset > total / 2) offset -= total;
     if (offset < -total / 2) offset += total;
@@ -217,7 +217,7 @@ export function ThreeDTeamCarousel() {
           />
 
           {/* 8 Glass Cards Placed in 3D Space */}
-          {TECHBOX_TEAM.map((member, index) => {
+          {PARTSLY_TEAM.map((member, index) => {
             const styles = getCard3DStyles(index);
 
             return (
@@ -272,7 +272,7 @@ export function ThreeDTeamCarousel() {
 
       {/* Interactive Controls & Trackers */}
       <CarouselControls
-        members={TECHBOX_TEAM}
+        members={PARTSLY_TEAM}
         activeIndex={activeIndex}
         onPrev={handlePrev}
         onNext={handleNext}

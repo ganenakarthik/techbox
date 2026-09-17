@@ -71,7 +71,7 @@ export async function POST(req: Request) {
             brandId: brand.id,
             categoryId: category.id,
             specs: typeof specs === "string" ? JSON.parse(specs) : specs,
-            images: Array.isArray(images) && images.length > 0 ? images : ["/images/techbox-upi-qr.jpg"],
+            images: Array.isArray(images) && images.length > 0 ? images : ["/images/partsly-upi-qr.jpg"],
             pinoutUrl,
             datasheetUrl,
           },
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
             brandId: brand.id,
             categoryId: category.id,
             specs: typeof specs === "string" ? JSON.parse(specs) : specs,
-            images: Array.isArray(images) && images.length > 0 ? images : ["/images/techbox-upi-qr.jpg"],
+            images: Array.isArray(images) && images.length > 0 ? images : ["/images/partsly-upi-qr.jpg"],
             pinoutUrl,
             datasheetUrl,
           },
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
       target: "ProductCatalog",
       previousValue: null,
       newValue: { count: imported.length, errors: errors.length },
-      details: `Imported/Updated ${imported.length} products into TechBox catalog`,
+      details: `Imported/Updated ${imported.length} products into Partsly catalog`,
     });
 
     return NextResponse.json({

@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Truck, ShieldCheck, Cpu, Sparkles, MapPin, Heart } from "lucide-react";
+import { BRAND } from "@/config/brand";
 
 export function Footer() {
   return (
@@ -60,14 +61,14 @@ export function Footer() {
           <div className="col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
               <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-[#141414] border border-[#ff6a00]/40 shrink-0">
-                <Image src="/logo-icon.png" alt="TechBox" fill className="object-contain p-0.5" />
+                <Image src={BRAND.logoIconDark} alt={BRAND.displayName} fill className="object-contain p-0.5" />
               </div>
-              <span className="font-extrabold text-base tracking-wider text-white">
-                TECH<span className="text-[#ff6a00]">BOX</span>
+              <span className="font-extrabold text-lg tracking-tight text-white lowercase">
+                {BRAND.name}
               </span>
             </Link>
             <p className="text-xs text-neutral-400 max-w-sm leading-relaxed">
-              Everything for your project. TechBox is the student project infrastructure platform for engineering and university students across India — from individual microcontrollers to custom PCB manufacturing, working prototypes, and presentation-ready documentation.
+              Everything for your project. {BRAND.displayName} is the student project infrastructure platform for engineering and university students across India — from individual microcontrollers to custom PCB manufacturing, working prototypes, and presentation-ready documentation.
             </p>
             <div className="flex items-center gap-2 text-[11px] text-neutral-500">
               <MapPin className="w-3.5 h-3.5 text-[#ff6a00]" />
@@ -117,7 +118,7 @@ export function Footer() {
         {/* Bottom copyright and legal */}
         <div className="mt-12 pt-8 border-t border-[#1f1f1f] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500">
           <div>
-            © {new Date().getFullYear()} TechBox Inc. Built by engineers for student builders.
+            © {new Date().getFullYear()} {BRAND.formalName}. Built by engineers for student builders.
           </div>
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <Link href="/shipping-policy" className="hover:text-neutral-300">Shipping Policy</Link>

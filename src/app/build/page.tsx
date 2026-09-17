@@ -63,7 +63,7 @@ export default function BuildMyProjectPage() {
     {
       id: "working_prototype",
       title: "Level 3: Working Prototype",
-      subtitle: "Assembled, soldered, flashed & tested by TechBox engineers",
+      subtitle: "Assembled, soldered, flashed & tested by Partsly engineers",
       price: 3499,
       popular: true,
       icon: Wrench,

@@ -28,7 +28,7 @@ export default function ContactPage() {
           <span>Campus Engineering Support</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
-          Talk to the <span className="text-[#ff6a00]">TechBox</span> Team
+          Talk to the <span className="text-[#ff6a00]">Partsly</span> Team
         </h1>
         <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
           Questions about microcontroller compatibility, custom PCB panelization, urgent viva delivery slots, or project component kits? Our engineers and campus runners are ready to assist.
@@ -49,7 +49,7 @@ export default function ContactPage() {
                 <div>
                   <div className="font-bold text-white">Primary Dispatch Station</div>
                   <div className="text-neutral-400 mt-0.5">
-                    TechBox Hardware & Prototyping Works<br />
+                    Partsly Hardware & Prototyping Works<br />
                     Outer Ring Road, Tech Corridor<br />
                     Bengaluru, Karnataka 560103, India
                   </div>
@@ -73,7 +73,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <div className="font-bold text-white">Official Correspondence</div>
-                  <div className="text-neutral-400 mt-0.5">support@techbox.in | founders@techbox.in</div>
+                  <div className="text-neutral-400 mt-0.5">support@partsly.in | founders@partsly.in</div>
                 </div>
               </div>
 

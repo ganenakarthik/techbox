@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
         </div>
         <h1 className="text-2xl font-black text-white">403 — Unauthorized Access</h1>
         <p className="mt-2 text-sm text-neutral-400 max-w-md">
-          Administrative privileges are strictly restricted to verified TechBox campus operations leads and staff.
+          Administrative privileges are strictly restricted to verified Partsly campus operations leads and staff.
         </p>
         <div className="mt-6 flex items-center gap-3">
           <Link
@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
             <span className="text-xs text-neutral-400 font-mono">PostgreSQL Single Source of Truth</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white mt-1">
-            TechBox Operations Hub
+            Partsly Operations Hub
           </h1>
           <p className="text-xs text-neutral-400 mt-0.5">
             Real-time fulfillment metrics, automated inventory logs, and dispatch manager.

@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       },
       {
         id: `msg-${Date.now() + 1}`,
-        sender: "TechBox System",
+        sender: "Partsly System",
         role: "SYSTEM",
         text: "Ticket received. A campus engineer has been assigned to your query.",
         timestamp: new Date().toISOString(),

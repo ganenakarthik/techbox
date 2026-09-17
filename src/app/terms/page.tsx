@@ -13,7 +13,7 @@ export default function TermsPage() {
           Terms & <span className="text-[#ff6a00]">Conditions</span>
         </h1>
         <p className="mt-3 text-xs sm:text-sm text-neutral-400">
-          Last updated: September 2026. Standard terms of use for TechBox marketplace and services.
+          Last updated: September 2026. Standard terms of use for Partsly marketplace and services.
         </p>
       </div>
 
@@ -23,7 +23,7 @@ export default function TermsPage() {
             <span className="text-[#ff6a00]">1.</span> Acceptance of Terms
           </h2>
           <p>
-            By accessing TechBox (techbox.in) or placing orders for electronic components, project kits, or engineering services, you agree to be bound by these terms. If you are ordering on behalf of a student college team or university club, you affirm you are authorized to place orders on their behalf.
+            By accessing Partsly (partsly.in) or placing orders for electronic components, project kits, or engineering services, you agree to be bound by these terms. If you are ordering on behalf of a student college team or university club, you affirm you are authorized to place orders on their behalf.
           </p>
         </section>
 

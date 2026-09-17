@@ -3,8 +3,9 @@ import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import { Role } from "@prisma/client";
 
-const AUTH_SECRET = process.env.AUTH_SECRET || "techbox_super_secret_session_key_production_grade";
-const COOKIE_NAME = "techbox_session";
+const AUTH_SECRET = process.env.AUTH_SECRET || "partsly_super_secret_session_key_production_grade";
+export const COOKIE_NAME = "partsly_session";
+export const LEGACY_COOKIE_NAME = "techbox_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days in seconds
 
 export interface SessionUser {
@@ -114,6 +115,7 @@ export async function setSessionCookie(token: string) {
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+  cookieStore.delete(LEGACY_COOKIE_NAME);
 }
 
 /**
@@ -122,7 +124,7 @@ export async function clearSessionCookie() {
 export async function getCurrentUser(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get(COOKIE_NAME);
+    const sessionCookie = cookieStore.get(COOKIE_NAME) || cookieStore.get(LEGACY_COOKIE_NAME);
     if (!sessionCookie?.value) return null;
 
     const payload = verifySessionToken(sessionCookie.value);

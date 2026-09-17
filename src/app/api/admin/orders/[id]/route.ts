@@ -73,10 +73,10 @@ export async function PATCH(
     const {
       status,
       checkpointNote,
-      location = "TechBox Operations Hub",
+      location = "Partsly Operations Hub",
       packingNotes,
-      deliveryMethod = "TECHBOX_CAMPUS_DELIVERY",
-      carrier = "TechBox Campus Delivery",
+      deliveryMethod = "PARTSLY_CAMPUS_DELIVERY",
+      carrier = "Partsly Campus Delivery",
       runnerName,
       runnerPhone,
       trackingNumber,
@@ -199,8 +199,8 @@ export async function PATCH(
     });
 
     // Handle Shipment updates / creation
-    const trackingNo = trackingNumber || (runnerPhone ? `TBX-RUNNER-${runnerPhone.replace(/\D/g, "")}` : `TBX-DEL-${order.orderNumber}`);
-    const actualCarrier = deliveryMethod === "TECHBOX_CAMPUS_DELIVERY" ? "TechBox Campus Delivery" : (carrier || "Courier Partner");
+    const trackingNo = trackingNumber || (runnerPhone ? `PRT-RUNNER-${runnerPhone.replace(/\D/g, "")}` : `PRT-DEL-${order.orderNumber}`);
+    const actualCarrier = (deliveryMethod === "PARTSLY_CAMPUS_DELIVERY" || deliveryMethod === "TECHBOX_CAMPUS_DELIVERY") ? "Partsly Campus Delivery" : (carrier || "Courier Partner");
 
     let updatedShipment = order.shipment;
 

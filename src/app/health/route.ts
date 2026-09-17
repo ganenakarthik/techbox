@@ -6,7 +6,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: "ok",
-      service: "techbox-core",
+      service: "partsly-core",
       timestamp: new Date().toISOString(),
     },
     {

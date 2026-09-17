@@ -40,7 +40,7 @@ export async function PATCH(
       const currentMessages = Array.isArray(ticket.messages) ? (ticket.messages as any[]) : [];
       const newStaffMsg = {
         id: `msg-${Date.now()}`,
-        sender: `Support Staff (${user.name || "TechBox Admin"})`,
+        sender: `Support Staff (${user.name || "Partsly Admin"})`,
         role: "ADMIN",
         text: adminReply.trim(),
         timestamp: new Date().toISOString(),
@@ -60,7 +60,7 @@ export async function PATCH(
         title: `Ticket ${ticket.ticketNumber} Updated`,
         message: status
           ? `Status changed to ${status}.`
-          : `New response received from TechBox engineering team.`,
+          : `New response received from Partsly engineering team.`,
         link: `/account/support`,
       },
     });

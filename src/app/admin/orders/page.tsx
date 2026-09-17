@@ -163,7 +163,7 @@ export default function AdminOrdersPage() {
     }
 
     await handleUpdateStatus(dispatchOrder.id, "SHIPPED", {
-      deliveryMethod: "TECHBOX_CAMPUS_DELIVERY",
+      deliveryMethod: "PARTSLY_CAMPUS_DELIVERY",
       runnerName: runnerName.trim(),
       runnerPhone: runnerPhone.trim(),
       dispatchNotes: dispatchNotes.trim(),
@@ -201,7 +201,7 @@ export default function AdminOrdersPage() {
           <div className="text-xs text-neutral-400 mb-1">
             <Link href="/admin" className="hover:text-white">Admin</Link> / <span className="text-white">Operations</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">TechBox Order Operations Workspace</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-white">Partsly Order Operations Workspace</h1>
           <p className="text-xs text-neutral-400 mt-1">
             Verify payments, generate packing slips with bin locations, and dispatch via campus runners.
           </p>
@@ -668,7 +668,7 @@ export default function AdminOrdersPage() {
             {/* Header */}
             <div className="flex items-center justify-between pb-6 border-b-2 border-black">
               <div>
-                <h1 className="text-2xl font-black tracking-tight">TECHBOX PACKING SLIP</h1>
+                <h1 className="text-2xl font-black tracking-tight">PARTSLY PACKING SLIP</h1>
                 <div className="text-xs font-semibold text-neutral-600">Campus Hardware Operations & Fulfillment</div>
               </div>
               <div className="text-right">
@@ -742,7 +742,7 @@ export default function AdminOrdersPage() {
               </div>
               <div className="text-right">
                 <div>Packed By: ___________________</div>
-                <div className="text-[10px] text-neutral-500 mt-1">TechBox Operations Guarantee Seal</div>
+                <div className="text-[10px] text-neutral-500 mt-1">Partsly Operations Guarantee Seal</div>
               </div>
             </div>
 

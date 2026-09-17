@@ -13,14 +13,14 @@ export interface TeamMember {
   skills: string[];
 }
 
-export const TECHBOX_TEAM: TeamMember[] = [
+export const PARTSLY_TEAM: TeamMember[] = [
   {
     id: "vara-prasad",
     name: "Vara Prasad",
     role: "Founder & Chief Executive Officer",
     tag: "Founder & CEO",
     domain: "Executive Leadership",
-    bio: "Hardware innovator and visionary. Founded TechBox to eliminate the hurdles college students face with counterfeit sensors, delayed PCB fab, and chaotic project vivas.",
+    bio: "Hardware innovator and visionary. Founded Partsly to eliminate the hurdles college students face with counterfeit sensors, delayed PCB fab, and chaotic project vivas.",
     focus: "Overall Platform Vision, Strategic Industry Partnerships & University Ecosystem Infrastructure.",
     background: "Electronics & Embedded Systems Visionary • Infrastructure Architect",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
@@ -62,7 +62,7 @@ export const TECHBOX_TEAM: TeamMember[] = [
     role: "Tech Lead & System Architecture",
     tag: "Tech Lead",
     domain: "Systems Architecture",
-    bio: "Architect of the core TechBox platform, algorithmic BOM analyzer engine, and automated firmware validation testbenches.",
+    bio: "Architect of the core Partsly platform, algorithmic BOM analyzer engine, and automated firmware validation testbenches.",
     focus: "Automated BOM Identification, Firmware Kernels & Embedded Tooling Pipelines.",
     background: "Systems Architect • Firmware & Embedded Core Lead",
     image: "/team/karthik-suit.png",
@@ -127,3 +127,6 @@ export const TECHBOX_TEAM: TeamMember[] = [
     skills: ["Campus Growth", "Hackathons", "Ambassador Program", "Community Building"],
   },
 ];
+
+// Backward-compatible alias
+export const TECHBOX_TEAM = PARTSLY_TEAM;

@@ -208,7 +208,7 @@ export function ExpandedProfileModal({
                   </p>
                 </motion.div>
 
-                {/* Key Focus at TechBox */}
+                {/* Key Focus at Partsly */}
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -217,7 +217,7 @@ export function ExpandedProfileModal({
                 >
                   <div className="text-xs font-mono font-bold text-[#ff6a00] uppercase tracking-wider flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-[#ff6a00]" />
-                    <span>Primary Responsibility at TechBox</span>
+                    <span>Primary Responsibility at Partsly</span>
                   </div>
                   <p className="text-xs sm:text-sm text-white font-medium leading-relaxed">
                     {member.focus}
