@@ -72,14 +72,14 @@ export function AuthModal() {
     e.preventDefault();
     setError(null);
     if (!siEmail.trim() || !siPassword) {
-      setError("Please enter your email and password");
+      setError("Please enter your email or mobile number and password");
       return;
     }
     setLoading(true);
-    const ok = await loginWithPassword(siEmail.trim(), siPassword);
+    const result = await loginWithPassword(siEmail.trim(), siPassword);
     setLoading(false);
-    if (!ok) {
-      setError("Invalid email or password. Please try again.");
+    if (!result.success) {
+      setError(result.error || "Invalid mobile/email or password. Please try again.");
     } else {
       // redirect handled in AppContext
       if (authRedirectUrl) {
@@ -99,15 +99,18 @@ export function AuthModal() {
     if (suPassword !== suConfirm) { setError("Passwords do not match"); return; }
 
     setLoading(true);
-    const ok = await signup({
+    const result = await signup({
       name: suName.trim(),
       email: suEmail.trim().toLowerCase(),
       password: suPassword,
       phone: suPhone.trim() || undefined,
     });
     setLoading(false);
-    if (!ok) {
-      setError("Could not create account. Email may already be in use.");
+    if (!result.success) {
+      setError(result.error || "Could not create account. Email or mobile may already be in use.");
+      if (result.error?.toLowerCase().includes("already")) {
+        setSiEmail(suEmail.trim() || suPhone.trim());
+      }
     } else {
       if (authRedirectUrl) {
         const dest = authRedirectUrl;
@@ -319,9 +322,24 @@ export function AuthModal() {
 
               {/* Error Banner */}
               {error && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
-                  <span>{error}</span>
+                <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs space-y-2">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                    <span className="font-semibold">{error}</span>
+                  </div>
+                  {error.toLowerCase().includes("already") && tab === "signup" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTab("signin");
+                        setError(null);
+                      }}
+                      className="text-[11px] font-bold text-[#ff6a00] hover:underline flex items-center gap-1 pt-1"
+                    >
+                      <span>Click here to Sign In with this account</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -329,16 +347,18 @@ export function AuthModal() {
               {tab === "signin" && (
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Email or Mobile Number
+                    </label>
                     <div className="relative">
                       <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                       <input
-                        type="email"
+                        type="text"
                         autoFocus
                         required
                         value={siEmail}
                         onChange={(e) => { setSiEmail(e.target.value); setError(null); }}
-                        placeholder="you@example.com"
+                        placeholder="e.g. you@gmail.com or 9014808515"
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00] focus:ring-1 focus:ring-[#ff6a00] transition-all"
                       />
                     </div>

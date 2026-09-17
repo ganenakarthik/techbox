@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, signSession, setSessionCookie } from "@/lib/auth";
+import { validateAndNormalizeIndianPhone } from "@/lib/phone";
 
 export async function POST(req: Request) {
   try {
@@ -15,17 +16,37 @@ export async function POST(req: Request) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    let normalizedPhone: string | null = null;
 
-    // Check if user already exists
-    const existing = await prisma.user.findUnique({
+    if (phone && phone.trim()) {
+      const phoneResult = validateAndNormalizeIndianPhone(phone.trim());
+      normalizedPhone = phoneResult.isValid ? phoneResult.normalized : phone.trim();
+    }
+
+    // Check if user already exists by email
+    const existingByEmail = await prisma.user.findUnique({
       where: { email: cleanEmail },
     });
 
-    if (existing) {
+    if (existingByEmail) {
       return NextResponse.json(
-        { error: "An account with this email already exists" },
+        { error: "An account with this email already exists. Please Sign In." },
         { status: 409 }
       );
+    }
+
+    // Check if user already exists by phone
+    if (normalizedPhone) {
+      const existingByPhone = await prisma.user.findFirst({
+        where: { phone: normalizedPhone },
+      });
+
+      if (existingByPhone) {
+        return NextResponse.json(
+          { error: "An account with this mobile number already exists. Please Sign In." },
+          { status: 409 }
+        );
+      }
     }
 
     const passwordHash = await hashPassword(password);
@@ -36,7 +57,7 @@ export async function POST(req: Request) {
         email: cleanEmail,
         name: name.trim(),
         passwordHash,
-        phone: phone?.trim() || null,
+        phone: normalizedPhone,
         collegeId: collegeId || null,
         role: "CUSTOMER",
         cart: {
@@ -74,8 +95,26 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("Signup error:", error);
+
+    // Handle Prisma unique constraint error gracefully
+    if (error?.code === "P2002") {
+      const target = error?.meta?.target;
+      if (Array.isArray(target) && target.includes("phone")) {
+        return NextResponse.json(
+          { error: "This mobile number is already registered. Please Sign In." },
+          { status: 409 }
+        );
+      }
+      if (Array.isArray(target) && target.includes("email")) {
+        return NextResponse.json(
+          { error: "This email is already registered. Please Sign In." },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
-      { error: "Failed to create account. Please try again." },
+      { error: error?.message || "Failed to create account. Please try again." },
       { status: 500 }
     );
   }

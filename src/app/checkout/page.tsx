@@ -534,118 +534,69 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              {/* Payment Method Selector Tabs */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                {[
-                  {
-                    id: "upi",
-                    name: "PhonePe / UPI QR",
-                    desc: "PhonePe, GPay, Paytm, BHIM with UTR verification",
-                    icon: QrCode,
-                    badge: "PRIMARY LAUNCH METHOD",
-                  },
-                  {
-                    id: "cod",
-                    name: "Cash on Delivery",
-                    desc: "Pay campus runner at hostel gate upon delivery",
-                    icon: Truck,
-                  },
-                  {
-                    id: "card",
-                    name: "Card / NetBanking",
-                    desc: "Corporate lab cards & institutional billing",
-                    icon: CreditCard,
-                  },
-                ].map((pm) => {
-                  const Icon = pm.icon;
-                  const isSelected = paymentMethod === pm.id;
-
-                  return (
-                    <div
-                      key={pm.id}
-                      onClick={() => setPaymentMethod(pm.id as any)}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
-                        isSelected
-                          ? "bg-[#ff6a00]/10 border-[#ff6a00] text-slate-900"
-                          : "bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <Icon className="w-5 h-5 text-[#ff6a00]" />
-                        {pm.badge && (
-                          <span className="px-2 py-0.5 rounded text-[8px] font-bold bg-[#ff6a00] text-black">
-                            {pm.badge}
-                          </span>
-                        )}
-                      </div>
-                      <div className="font-bold text-xs text-slate-900">{pm.name}</div>
-                      <div className="text-[10px] text-slate-500 mt-1 leading-snug">{pm.desc}</div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Real PhonePe UPI QR Card */}
-              {paymentMethod === "upi" && (
-                <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-5">
-                  <div className="flex flex-col md:flex-row items-center gap-6">
-                    <div className="relative w-52 h-52 rounded-2xl overflow-hidden bg-black border border-slate-300 shadow-2xl shrink-0 p-2">
-                      <Image
-                        src="/images/partsly-upi-qr.jpg"
-                        alt="Partsly PhonePe UPI QR Code"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-
-                    <div className="space-y-3 text-left flex-1">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8b5cf6]/15 text-[#a78bfa] border border-[#8b5cf6]/30 text-xs font-bold">
-                        <span>PhonePe Official Merchant QR</span>
-                      </div>
-
-                      <h3 className="text-base font-bold text-slate-900">Scan & Pay Using Any UPI App</h3>
-
-                      <div className="p-3.5 rounded-xl bg-slate-100 border border-slate-200 space-y-1.5 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-slate-500">Account Holder:</span>
-                          <strong className="text-slate-900">PINNAM CHARLA CHARLA</strong>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-500">UPI Phone / WhatsApp:</span>
-                          <strong className="text-[#ff6a00] font-mono">+91 70326 35858</strong>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-500">UPI ID (VPA):</span>
-                          <span className="text-slate-900 font-mono">7032635858@ybl</span>
-                        </div>
-                        <div className="flex justify-between pt-1 border-t border-slate-200">
-                          <span className="text-slate-500">Exact Payable Total:</span>
-                          <span className="text-sm font-black text-slate-900">₹{grandTotal}</span>
-                        </div>
-                      </div>
-                    </div>
+              {/* Single Official Payment Method: PhonePe UPI QR */}
+              <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-5">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  <div className="relative w-52 h-52 rounded-2xl overflow-hidden bg-white border-2 border-slate-200 shadow-md shrink-0 p-3 flex items-center justify-center">
+                    <Image
+                      src="/images/partsly-upi-qr.jpg"
+                      alt="Partsly PhonePe UPI QR Code"
+                      fill
+                      className="object-contain p-2"
+                    />
                   </div>
 
-                  {/* UTR Input Section */}
-                  <div className="pt-4 border-t border-slate-200">
-                    <label className="text-xs font-semibold text-slate-600 block mb-1.5">
-                      Enter 12-Digit Bank Reference / UTR Number:
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={utrNumber}
-                        onChange={(e) => setUtrNumber(e.target.value)}
-                        placeholder="e.g. 423901824110 (from your UPI payment receipt)"
-                        className="w-full bg-slate-50 border border-slate-200 focus:border-[#ff6a00] rounded-xl px-4 py-3 text-xs text-slate-900 font-mono tracking-wider focus:outline-none"
-                      />
+                  <div className="space-y-3 text-left flex-1">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#6739b7]/10 text-[#6739b7] border border-[#6739b7]/25 text-xs font-bold">
+                      <QrCode className="w-3.5 h-3.5" />
+                      <span>PhonePe Official Merchant QR</span>
                     </div>
-                    <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-                      Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. Partsly operations team verifies the bank credit and confirms your order. If you haven't paid yet, you can also submit your UTR after placing the order.
+
+                    <h3 className="text-base font-bold text-slate-900">Scan & Pay Using Any UPI App</h3>
+                    <p className="text-xs text-slate-500">
+                      Scan with PhonePe, Google Pay, Paytm, or BHIM. Zero convenience fee.
                     </p>
+
+                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-1.5 text-xs shadow-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Account Holder:</span>
+                        <strong className="text-slate-900">PINNAM CHARLA CHARLA</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">UPI Phone / WhatsApp:</span>
+                        <strong className="text-[#ff6a00] font-mono font-bold">+91 70326 35858</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">UPI ID (VPA):</span>
+                        <span className="text-slate-900 font-mono font-bold">7032635858@ybl</span>
+                      </div>
+                      <div className="flex justify-between pt-2 border-t border-slate-100">
+                        <span className="text-slate-500 font-medium">Exact Payable Total:</span>
+                        <span className="text-base font-black text-[#ff6a00]">₹{grandTotal}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
+
+                {/* UTR Input Section */}
+                <div className="pt-4 border-t border-slate-200">
+                  <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+                    Enter 12-Digit Bank Reference / UTR Number:
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value)}
+                      placeholder="e.g. 423901824110 (from your UPI payment receipt)"
+                      className="w-full bg-white border border-slate-200 focus:border-[#ff6a00] rounded-xl px-4 py-3 text-xs text-slate-900 font-mono tracking-wider focus:outline-none shadow-sm"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+                    Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. Partsly operations team verifies the bank credit and confirms your order. If you haven't paid yet, you can also submit your UTR after placing the order.
+                  </p>
+                </div>
+              </div>
 
               <div className="pt-4 flex justify-between">
                 <button

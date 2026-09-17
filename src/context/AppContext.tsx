@@ -88,11 +88,11 @@ interface AppContextType {
   // Authentication & Role
   user: UserProfile | null;
   login: (email: string, password?: string, role?: "CUSTOMER" | "ADMIN" | "STAFF") => Promise<boolean>;
-  signup: (data: { name: string; email: string; password: string; phone?: string }) => Promise<boolean>;
+  signup: (data: { name: string; email: string; password: string; phone?: string }) => Promise<{ success: boolean; error?: string }>;
   sendOtp: (phone: string, purpose?: string) => Promise<{ success: boolean; resendAfterSeconds?: number; devOtp?: string; error?: string; formattedPhone?: string; isExistingUser?: boolean }>;
   verifyOtp: (phone: string, otp: string, purpose?: string) => Promise<{ success: boolean; isNewUser?: boolean; user?: any; error?: string; attemptsRemaining?: number }>;
   registerWithPhone: (data: { phone: string; name: string; email?: string }) => Promise<{ success: boolean; user?: any; error?: string }>;
-  loginWithPassword: (identifier: string, password: string) => Promise<boolean>;
+  loginWithPassword: (identifier: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   switchRole: (role: "CUSTOMER" | "ADMIN" | "STAFF") => void;
 
@@ -539,7 +539,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signup = async (data: { name: string; email: string; password: string; phone?: string }): Promise<boolean> => {
+  const signup = async (data: { name: string; email: string; password: string; phone?: string }): Promise<{ success: boolean; error?: string }> => {
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
@@ -547,8 +547,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify(data),
       });
 
+      const resData = await res.json();
+
       if (res.ok) {
-        const resData = await res.json();
         setUser(resData.user);
 
         // Merge guest cart
@@ -568,15 +569,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await refreshWishlist();
         addToast(`Account created successfully! Welcome to ${BRAND.displayName}.`, "success");
         setIsAuthModalOpen(false);
-        return true;
+        return { success: true };
       } else {
-        const err = await res.json();
-        addToast(err.error || "Failed to create account", "error");
-        return false;
+        const errorMsg = resData.error || "Failed to create account";
+        addToast(errorMsg, "error");
+        return { success: false, error: errorMsg };
       }
     } catch {
-      addToast("Network error during signup", "error");
-      return false;
+      const errorMsg = "Network error during signup";
+      addToast(errorMsg, "error");
+      return { success: false, error: errorMsg };
     }
   };
 
@@ -669,7 +671,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithPassword = async (identifier: string, password: string) => {
+  const loginWithPassword = async (identifier: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -689,14 +691,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setAuthRedirectUrl(null);
           window.location.href = dest;
         }
-        return true;
+        return { success: true };
       } else {
-        addToast(data.error || "Invalid credentials", "error");
-        return false;
+        const errorMsg = data.error || "Invalid mobile/email or password";
+        addToast(errorMsg, "error");
+        return { success: false, error: errorMsg };
       }
     } catch {
-      addToast("Network error during login", "error");
-      return false;
+      const errorMsg = "Network error during login";
+      addToast(errorMsg, "error");
+      return { success: false, error: errorMsg };
     }
   };
 
