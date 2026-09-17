@@ -20,71 +20,77 @@ import { HeroBannerSlider } from "@/components/home/HeroBannerSlider";
 import { prisma } from "@/lib/prisma";
 
 export default async function HomePage() {
-  const prismaProducts = await prisma.product.findMany({
-    where: { isFeatured: true },
-    take: 8,
-    include: {
-      brand: true,
-      category: true,
-      variants: {
-        include: {
-          inventory: true,
+  // Graceful DB fetch — falls back to empty arrays if DB not connected (safe for Vercel cold start)
+  let featuredProducts: any[] = [];
+  let featuredKits: any[] = [];
+
+  try {
+    const prismaProducts = await prisma.product.findMany({
+      where: { isFeatured: true },
+      take: 8,
+      include: {
+        brand: true,
+        category: true,
+        variants: {
+          include: {
+            inventory: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  const featuredProducts = prismaProducts.map((p) => ({
-    id: p.id,
-    name: p.name,
-    slug: p.slug,
-    brand: p.brand.name,
-    category: p.category.name,
-    description: p.description,
-    details: p.details || "",
-    specs: (typeof p.specs === "object" && p.specs !== null ? p.specs : {}) as Record<string, string>,
-    pinoutUrl: p.pinoutUrl || undefined,
-    datasheetUrl: p.datasheetUrl || undefined,
-    rating: p.rating,
-    reviewCount: p.reviewCount,
-    isFeatured: p.isFeatured,
-    isBestseller: p.isBestseller,
-    images: Array.isArray(p.images) ? (p.images as string[]) : [],
-    tags: [],
-    variants: p.variants.map((v) => ({
-      id: v.id,
-      name: v.name,
-      sku: v.sku,
-      price: Number(v.price),
-      mrp: Number(v.mrp),
-      discount: v.discount,
-      stock: v.inventory?.available || 0,
-    })),
-  }));
+    featuredProducts = prismaProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      brand: p.brand.name,
+      category: p.category.name,
+      description: p.description,
+      details: p.details || "",
+      specs: (typeof p.specs === "object" && p.specs !== null ? p.specs : {}) as Record<string, string>,
+      pinoutUrl: p.pinoutUrl || undefined,
+      datasheetUrl: p.datasheetUrl || undefined,
+      rating: p.rating,
+      reviewCount: p.reviewCount,
+      isFeatured: p.isFeatured,
+      isBestseller: p.isBestseller,
+      images: Array.isArray(p.images) ? (p.images as string[]) : [],
+      tags: [],
+      variants: p.variants.map((v) => ({
+        id: v.id,
+        name: v.name,
+        sku: v.sku,
+        price: Number(v.price),
+        mrp: Number(v.mrp),
+        discount: v.discount,
+        stock: v.inventory?.available || 0,
+      })),
+    }));
 
-  const prismaKits = await prisma.projectKit.findMany({
-    take: 4,
-  });
-
-  const featuredKits = prismaKits.map((k) => ({
-    id: k.id,
-    title: k.title,
-    slug: k.slug,
-    category: k.category,
-    difficulty: k.difficulty as any,
-    buildTime: k.buildTime,
-    price: Number(k.price),
-    mrp: Number(k.mrp),
-    description: k.description,
-    circuitDiagramUrl: k.circuitDiagramUrl || undefined,
-    sourceCodeUrl: k.sourceCodeUrl || undefined,
-    assemblyGuideUrl: k.assemblyGuideUrl || undefined,
-    includes: Array.isArray(k.includes) ? (k.includes as string[]) : [],
-    optionalAddons: Array.isArray(k.optionalAddons) ? (k.optionalAddons as any[]) : [],
-    images: Array.isArray(k.images) ? (k.images as string[]) : [],
-    rating: 4.8,
-    reviewsCount: 0,
-  }));
+    const prismaKits = await prisma.projectKit.findMany({ take: 4 });
+    featuredKits = prismaKits.map((k) => ({
+      id: k.id,
+      title: k.title,
+      slug: k.slug,
+      category: k.category,
+      difficulty: k.difficulty as any,
+      buildTime: k.buildTime,
+      price: Number(k.price),
+      mrp: Number(k.mrp),
+      description: k.description,
+      circuitDiagramUrl: k.circuitDiagramUrl || undefined,
+      sourceCodeUrl: k.sourceCodeUrl || undefined,
+      assemblyGuideUrl: k.assemblyGuideUrl || undefined,
+      includes: Array.isArray(k.includes) ? (k.includes as string[]) : [],
+      optionalAddons: Array.isArray(k.optionalAddons) ? (k.optionalAddons as any[]) : [],
+      images: Array.isArray(k.images) ? (k.images as string[]) : [],
+      rating: 4.8,
+      reviewsCount: 0,
+    }));
+  } catch (e) {
+    // DB not available (Vercel preview / no DATABASE_URL set) — page renders without products
+    console.warn("DB fetch failed on homepage, rendering without products:", e);
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 selection:bg-[#ff6a00] selection:text-slate-900">
