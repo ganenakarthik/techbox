@@ -9,17 +9,17 @@ export default function PrivacyPolicyPage() {
           <Lock className="w-3.5 h-3.5" />
           <span>Data Protection</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Privacy <span className="text-[#ff6a00]">Policy</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Last updated: September 2026. How Partsly handles your student data, project schematics, and payment details.
         </p>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#111111] border border-[#262626] text-xs text-neutral-300 space-y-8 leading-relaxed">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-xs text-slate-600 space-y-8 leading-relaxed">
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">1.</span> Confidentiality of Student Project Files & Intellectual Property
           </h2>
           <p>
@@ -28,13 +28,13 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">2.</span> Information We Collect
           </h2>
           <p>
             To fulfill orders and deliver to college campuses, we collect:
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-neutral-400">
+          <ul className="list-disc pl-5 space-y-1 text-slate-500">
             <li>Name, college email address, and mobile contact number.</li>
             <li>College name, campus gate, department, and hostel block details for delivery routing.</li>
             <li>Purchase history, transaction reference IDs, and support ticket correspondence.</li>
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">3.</span> Security of Banking & Payment Details
           </h2>
           <p>
@@ -51,7 +51,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">4.</span> Cookies & Session Authentication
           </h2>
           <p>

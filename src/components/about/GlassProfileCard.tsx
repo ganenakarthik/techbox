@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
@@ -65,7 +65,7 @@ export function GlassProfileCard({
       onClick={handleCardClick}
       className={`relative w-[280px] sm:w-[320px] md:w-[340px] h-[450px] sm:h-[490px] rounded-3xl p-6 flex flex-col justify-between cursor-pointer select-none transition-all duration-300 overflow-hidden group ${
         isActive
-          ? "bg-[#141414]/85 border-2 border-[#ff6a00]/60 shadow-[0_0_40px_rgba(255,106,0,0.22),0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-[#ff6a00]/30"
+          ? "bg-slate-50/85 border-2 border-[#ff6a00]/60 shadow-[0_0_40px_rgba(255,106,0,0.22),0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-[#ff6a00]/30"
           : "bg-[#101010]/60 border border-white/10 hover:border-[#ff6a00]/30 shadow-[0_15px_35px_rgba(0,0,0,0.7)]"
       }`}
       style={{
@@ -103,18 +103,18 @@ export function GlassProfileCard({
             className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase transition-colors ${
               isActive
                 ? "bg-[#ff6a00]/20 text-[#ff6a00] border border-[#ff6a00]/40 shadow-sm shadow-[#ff6a00]/20"
-                : "bg-white/5 text-neutral-400 border border-white/10"
+                : "bg-white/5 text-slate-500 border border-white/10"
             }`}
           >
             {member.tag}
           </span>
-          <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
             {member.domain}
           </span>
         </div>
 
         {/* Member Portrait */}
-        <div className="relative w-full aspect-square max-w-[210px] mx-auto rounded-2xl overflow-hidden bg-[#161616] border border-white/10 group-hover:border-[#ff6a00]/40 transition-colors shadow-inner select-none pointer-events-none">
+        <div className="relative w-full aspect-square max-w-[210px] mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-white/10 group-hover:border-[#ff6a00]/40 transition-colors shadow-inner select-none pointer-events-none">
           <Image
             src={member.image}
             alt={member.name}
@@ -129,8 +129,8 @@ export function GlassProfileCard({
 
           {/* Mini Stat Badge over image */}
           <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 text-[10px] pointer-events-none select-none">
-            <span className="text-white font-mono font-bold">{member.stat}</span>
-            <span className="text-neutral-400 text-[9px] truncate ml-1">{member.statLabel}</span>
+            <span className="text-slate-900 font-mono font-bold">{member.stat}</span>
+            <span className="text-slate-500 text-[9px] truncate ml-1">{member.statLabel}</span>
           </div>
         </div>
       </div>
@@ -138,16 +138,16 @@ export function GlassProfileCard({
       {/* Card Content & Details */}
       <div className="relative z-10 pt-3 border-t border-white/5 space-y-2">
         <div>
-          <h3 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center justify-between group-hover:text-[#ff6a00] transition-colors">
+          <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center justify-between group-hover:text-[#ff6a00] transition-colors">
             <span>{member.name}</span>
-            <ArrowUpRight className="w-4 h-4 text-neutral-500 group-hover:text-[#ff6a00] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-[#ff6a00] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </h3>
-          <p className="text-xs font-semibold text-neutral-300 mt-0.5 line-clamp-1">
+          <p className="text-xs font-semibold text-slate-600 mt-0.5 line-clamp-1">
             {member.role}
           </p>
         </div>
 
-        <p className="text-[11px] text-neutral-400 line-clamp-2 leading-relaxed">
+        <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
           {member.bio}
         </p>
 
@@ -162,7 +162,7 @@ export function GlassProfileCard({
             className={`w-full py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs font-mono font-bold transition-all duration-200 cursor-pointer ${
               isActive
                 ? "bg-[#ff6a00] hover:bg-[#ff7a1a] text-black shadow-lg shadow-[#ff6a00]/30 hover:scale-[1.02] active:scale-[0.98]"
-                : "bg-white/10 hover:bg-[#ff6a00]/20 text-neutral-300 hover:text-[#ff6a00] border border-white/15 hover:border-[#ff6a00]/40"
+                : "bg-white/10 hover:bg-[#ff6a00]/20 text-slate-600 hover:text-[#ff6a00] border border-white/15 hover:border-[#ff6a00]/40"
             }`}
           >
             <span className="inline-flex items-center gap-1.5">

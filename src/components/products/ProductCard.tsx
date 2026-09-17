@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -36,7 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="absolute top-2.5 left-2.5 right-2.5 z-10 flex items-center justify-between pointer-events-none">
           <div className="flex flex-col gap-1 items-start">
             {defaultVariant?.discount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-[#ff6a00] text-white shadow-xs">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-[#ff6a00] text-slate-900 shadow-xs">
                 {defaultVariant.discount}% OFF
               </span>
             )}
@@ -126,11 +126,11 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="flex flex-col">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-base font-black text-slate-900">
-                  ₹{defaultVariant?.price || 0}
+                  â‚¹{defaultVariant?.price || 0}
                 </span>
                 {defaultVariant?.mrp > defaultVariant?.price && (
                   <span className="text-xs text-slate-400 line-through">
-                    ₹{defaultVariant.mrp}
+                    â‚¹{defaultVariant.mrp}
                   </span>
                 )}
               </div>
@@ -161,7 +161,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className="flex items-center rounded-lg bg-emerald-600 text-white font-black text-xs shadow-xs border border-emerald-700 overflow-hidden"
+                className="flex items-center rounded-lg bg-emerald-600 text-slate-900 font-black text-xs shadow-xs border border-emerald-700 overflow-hidden"
               >
                 <button
                   onClick={() => {

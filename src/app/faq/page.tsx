@@ -45,10 +45,10 @@ export default function FAQPage() {
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Knowledge Base & Support</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Frequently Asked <span className="text-[#ff6a00]">Questions</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Everything you need to know about ordering components, campus delivery, custom fabrication, and return guarantees.
         </p>
       </div>
@@ -59,13 +59,13 @@ export default function FAQPage() {
           return (
             <div
               key={i}
-              className="rounded-2xl bg-[#111111] border border-[#262626] overflow-hidden transition-all"
+              className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all"
             >
               <button
                 onClick={() => setOpenIndex(isOpen ? null : i)}
-                className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-[#161616] transition-colors"
+                className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
               >
-                <span className="font-bold text-sm text-white">{faq.q}</span>
+                <span className="font-bold text-sm text-slate-900">{faq.q}</span>
                 <ChevronDown
                   className={`w-4 h-4 text-[#ff6a00] shrink-0 transition-transform duration-200 ${
                     isOpen ? "rotate-180" : ""
@@ -73,7 +73,7 @@ export default function FAQPage() {
                 />
               </button>
               {isOpen && (
-                <div className="px-5 pb-5 text-xs text-neutral-400 leading-relaxed border-t border-[#1c1c1c] pt-3">
+                <div className="px-5 pb-5 text-xs text-slate-500 leading-relaxed border-t border-slate-200 pt-3">
                   {faq.a}
                 </div>
               )}
@@ -82,9 +82,9 @@ export default function FAQPage() {
         })}
       </div>
 
-      <div className="mt-12 p-8 rounded-3xl bg-gradient-to-r from-[#141414] to-[#1a1a1a] border border-[#262626] text-center space-y-3">
-        <h3 className="text-base font-bold text-white">Still have questions?</h3>
-        <p className="text-xs text-neutral-400">
+      <div className="mt-12 p-8 rounded-3xl bg-gradient-to-r from-[#141414] to-[#1a1a1a] border border-slate-200 text-center space-y-3">
+        <h3 className="text-base font-bold text-slate-900">Still have questions?</h3>
+        <p className="text-xs text-slate-500">
           Our engineering support team is available Mon-Sat to help with circuit schematics, pinouts, and custom orders.
         </p>
         <div className="pt-2">

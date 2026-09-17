@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -96,7 +96,7 @@ export function ExpandedProfileModal({
               mass: 0.9,
             }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-4xl bg-[#121212]/90 border border-white/15 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_60px_rgba(255,106,0,0.18),0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden my-auto"
+            className="relative w-full max-w-4xl bg-white/90 border border-white/15 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_60px_rgba(255,106,0,0.18),0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden my-auto"
             style={{
               backdropFilter: "blur(28px)",
               WebkitBackdropFilter: "blur(28px)",
@@ -116,7 +116,7 @@ export function ExpandedProfileModal({
             <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
               <button
                 onClick={onClose}
-                className="inline-flex items-center gap-2 text-xs font-mono text-neutral-400 hover:text-white transition-colors group"
+                className="inline-flex items-center gap-2 text-xs font-mono text-slate-500 hover:text-slate-900 transition-colors group"
               >
                 <ArrowLeft className="w-4 h-4 text-[#ff6a00] group-hover:-translate-x-1 transition-transform" />
                 <span>Return to 3D System</span>
@@ -124,7 +124,7 @@ export function ExpandedProfileModal({
 
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-400 hover:text-white transition-all active:scale-95"
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-500 hover:text-slate-900 transition-all active:scale-95"
                 title="Close Profile (Esc)"
               >
                 <X className="w-5 h-5" />
@@ -140,7 +140,7 @@ export function ExpandedProfileModal({
                 transition={{ duration: 0.45, delay: 0.1 }}
                 className="md:col-span-5 flex flex-col items-center text-center"
               >
-                <div className="relative w-full max-w-[280px] aspect-square rounded-3xl overflow-hidden bg-[#161616] border-2 border-[#ff6a00]/50 shadow-2xl shadow-[#ff6a00]/20 p-1">
+                <div className="relative w-full max-w-[280px] aspect-square rounded-3xl overflow-hidden bg-slate-50 border-2 border-[#ff6a00]/50 shadow-2xl shadow-[#ff6a00]/20 p-1">
                   <div className="relative w-full h-full rounded-[22px] overflow-hidden">
                     <Image
                       src={member.image}
@@ -155,10 +155,10 @@ export function ExpandedProfileModal({
                 </div>
 
                 {/* Key Stat Badge */}
-                <div className="mt-4 w-full max-w-[280px] p-3.5 rounded-2xl bg-[#181818] border border-white/10 flex items-center justify-between">
+                <div className="mt-4 w-full max-w-[280px] p-3.5 rounded-2xl bg-slate-50 border border-white/10 flex items-center justify-between">
                   <div className="text-left">
                     <div className="text-xs font-mono font-bold text-[#ff6a00]">{member.stat}</div>
-                    <div className="text-[10px] text-neutral-400">{member.statLabel}</div>
+                    <div className="text-[10px] text-slate-500">{member.statLabel}</div>
                   </div>
                   <div className="w-7 h-7 rounded-lg bg-[#ff6a00]/15 flex items-center justify-center text-[#ff6a00]">
                     <ShieldCheck className="w-4 h-4" />
@@ -179,15 +179,15 @@ export function ExpandedProfileModal({
                     <span className="px-3 py-1 rounded-full bg-[#ff6a00]/20 text-[#ff6a00] border border-[#ff6a00]/40 text-xs font-mono font-bold uppercase tracking-wider">
                       {member.tag}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-neutral-400 text-xs font-mono">
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-500 text-xs font-mono">
                       {member.domain}
                     </span>
                   </div>
 
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
                     {member.name}
                   </h2>
-                  <div className="text-sm font-semibold text-neutral-300">
+                  <div className="text-sm font-semibold text-slate-600">
                     {member.role}
                   </div>
                 </motion.div>
@@ -199,11 +199,11 @@ export function ExpandedProfileModal({
                   transition={{ duration: 0.4, delay: 0.25 }}
                   className="space-y-2"
                 >
-                  <div className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#ff6a00]" />
                     <span>Background & Mission</span>
                   </div>
-                  <p className="text-sm text-neutral-300 leading-relaxed">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     {member.bio}
                   </p>
                 </motion.div>
@@ -213,13 +213,13 @@ export function ExpandedProfileModal({
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.32 }}
-                  className="p-4 rounded-2xl bg-[#181818]/90 border border-white/10 space-y-1.5"
+                  className="p-4 rounded-2xl bg-slate-50/90 border border-white/10 space-y-1.5"
                 >
                   <div className="text-xs font-mono font-bold text-[#ff6a00] uppercase tracking-wider flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-[#ff6a00]" />
                     <span>Primary Responsibility at Partsly</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-white font-medium leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-900 font-medium leading-relaxed">
                     {member.focus}
                   </p>
                 </motion.div>
@@ -231,7 +231,7 @@ export function ExpandedProfileModal({
                   transition={{ duration: 0.4, delay: 0.38 }}
                   className="space-y-2"
                 >
-                  <div className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                     <Award className="w-3.5 h-3.5 text-[#ff6a00]" />
                     <span>Engineering Focus Areas</span>
                   </div>
@@ -239,7 +239,7 @@ export function ExpandedProfileModal({
                     {member.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-xs text-neutral-300 font-mono"
+                        className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-600 font-mono"
                       >
                         {skill}
                       </span>
@@ -252,7 +252,7 @@ export function ExpandedProfileModal({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4, delay: 0.45 }}
-                  className="pt-4 border-t border-white/10 text-xs text-neutral-500 font-medium"
+                  className="pt-4 border-t border-white/10 text-xs text-slate-500 font-medium"
                 >
                   {member.background}
                 </motion.div>

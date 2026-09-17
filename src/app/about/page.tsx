@@ -42,7 +42,7 @@ const stats = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-[#ff6a00] selection:text-white">
+    <div className="min-h-screen bg-white text-slate-900 selection:bg-[#ff6a00] selection:text-slate-900">
       {/* Hero */}
       <section className="bg-slate-50 border-b border-slate-200 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -147,7 +147,7 @@ export default function AboutPage() {
                 <Heart className="w-3.5 h-3.5" />
                 <span>Ready to build?</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
                 Have an idea for your capstone or mini project?
               </h2>
               <p className="text-sm text-slate-400 max-w-xl mx-auto mb-8">
@@ -156,14 +156,14 @@ export default function AboutPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/build"
-                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
+                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
                 >
                   <span>Build My Project</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/shop"
-                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-colors"
+                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-900 font-semibold text-sm transition-colors"
                 >
                   Shop Electronic Parts
                 </Link>

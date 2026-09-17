@@ -49,7 +49,7 @@ export default function ProjectsPage() {
 
           <Link
             href="/build"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-bold transition-all shadow-md shadow-[#ff6a00]/20 self-start md:self-auto"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 text-xs font-bold transition-all shadow-md shadow-[#ff6a00]/20 self-start md:self-auto"
           >
             <Sparkles className="w-4 h-4" />
             <span>Have a custom topic? Build My Project</span>
@@ -65,7 +65,7 @@ export default function ProjectsPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
                   selectedCategory === cat
-                    ? "bg-[#ff6a00] text-white shadow-2xs"
+                    ? "bg-[#ff6a00] text-slate-900 shadow-2xs"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
                 }`}
               >
@@ -170,7 +170,7 @@ export default function ProjectsPage() {
 
                   <button
                     onClick={() => addToCart({ kit })}
-                    className="py-2.5 px-3 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-[#ff6a00]/20 transition-all"
+                    className="py-2.5 px-3 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-[#ff6a00]/20 transition-all"
                   >
                     <ShoppingBag className="w-3.5 h-3.5" />
                     <span>Add Kit</span>

@@ -76,10 +76,10 @@ export default function ThreeDPrintingPage() {
           <Printer className="w-4 h-4" />
           <span>FDM & SLA Prototyping</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
           3D-Printed Project Enclosures & Parts
         </h1>
-        <p className="mt-2 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-2 text-xs sm:text-sm text-slate-500">
           Upload STL, OBJ, or STEP files. Custom sensor mounts, drone arms, and robot chassis printed on industrial machines.
         </p>
       </div>
@@ -87,12 +87,12 @@ export default function ThreeDPrintingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-7 space-y-6">
           {/* File Upload Box */}
-          <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626]">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
               01. Upload 3D CAD Model (.STL, .OBJ, .STEP)
             </h3>
 
-            <label className="border-2 border-dashed border-[#2c2c2c] hover:border-[#ff6a00] rounded-2xl p-6 text-center block cursor-pointer transition-colors bg-[#141414]">
+            <label className="border-2 border-dashed border-slate-300 hover:border-[#ff6a00] rounded-2xl p-6 text-center block cursor-pointer transition-colors bg-slate-50">
               <input
                 type="file"
                 accept=".stl,.obj,.step,.stp"
@@ -100,23 +100,23 @@ export default function ThreeDPrintingPage() {
                 className="hidden"
               />
               <UploadCloud className="w-8 h-8 text-[#ff6a00] mx-auto mb-2" />
-              <div className="text-xs font-bold text-white">
+              <div className="text-xs font-bold text-slate-900">
                 {fileName ? fileName : "Click to select or drop .STL or .STEP model"}
               </div>
-              <div className="text-[10px] text-neutral-500 mt-1">
+              <div className="text-[10px] text-slate-500 mt-1">
                 Max file size: 50MB • Automatic volume calculation
               </div>
             </label>
           </div>
 
           {/* Material selection */}
-          <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626] space-y-5">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               02. Material & Infill Parameters
             </h3>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-2">
+              <label className="text-xs font-semibold text-slate-600 block mb-2">
                 Filament / Resin Type:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -126,12 +126,12 @@ export default function ThreeDPrintingPage() {
                     onClick={() => setMaterial(m.name)}
                     className={`p-3.5 rounded-xl border cursor-pointer transition-colors ${
                       material === m.name
-                        ? "bg-[#ff6a00]/10 border-[#ff6a00] text-white"
-                        : "bg-[#141414] border-[#262626] text-neutral-300 hover:border-[#333333]"
+                        ? "bg-[#ff6a00]/10 border-[#ff6a00] text-slate-900"
+                        : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
                     }`}
                   >
                     <div className="text-xs font-bold">{m.name}</div>
-                    <div className="text-[11px] text-neutral-400 mt-0.5">{m.desc}</div>
+                    <div className="text-[11px] text-slate-500 mt-0.5">{m.desc}</div>
                     <div className="text-[10px] text-[#ff6a00] font-mono mt-1">₹{m.ratePerGram}/g</div>
                   </div>
                 ))}
@@ -141,7 +141,7 @@ export default function ThreeDPrintingPage() {
             {/* Infill Density Slider */}
             <div>
               <div className="flex justify-between text-xs mb-2">
-                <span className="font-semibold text-neutral-300">Infill Density:</span>
+                <span className="font-semibold text-slate-600">Infill Density:</span>
                 <span className="text-[#ff6a00] font-bold">{infill}%</span>
               </div>
               <input
@@ -151,9 +151,9 @@ export default function ThreeDPrintingPage() {
                 step="5"
                 value={infill}
                 onChange={(e) => setInfill(Number(e.target.value))}
-                className="w-full accent-[#ff6a00] bg-[#1e1e1e]"
+                className="w-full accent-[#ff6a00] bg-slate-50"
               />
-              <div className="flex justify-between text-[10px] text-neutral-500 mt-1">
+              <div className="flex justify-between text-[10px] text-slate-500 mt-1">
                 <span>10% (Light)</span>
                 <span>20% (Standard)</span>
                 <span>50% (Strong)</span>
@@ -163,7 +163,7 @@ export default function ThreeDPrintingPage() {
 
             {/* Color selection */}
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-2">
+              <label className="text-xs font-semibold text-slate-600 block mb-2">
                 Enclosure Color:
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -175,7 +175,7 @@ export default function ThreeDPrintingPage() {
                     className={`py-2 rounded-xl text-xs font-medium border transition-colors ${
                       color === c
                         ? "bg-[#ff6a00]/15 border-[#ff6a00] text-[#ff6a00] font-bold"
-                        : "bg-[#141414] border-[#262626] text-neutral-300"
+                        : "bg-slate-50 border-slate-200 text-slate-600"
                     }`}
                   >
                     {c}
@@ -188,38 +188,38 @@ export default function ThreeDPrintingPage() {
 
         {/* Right: Quote Box (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626] shadow-2xl space-y-6">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xl space-y-6">
             <div>
-              <div className="text-xs text-neutral-400 uppercase tracking-wider">
+              <div className="text-xs text-slate-500 uppercase tracking-wider">
                 Material Rate Benchmark
               </div>
-              <div className="text-3xl sm:text-4xl font-black text-white mt-1">
-                ₹{currentMat.ratePerGram}<span className="text-lg font-normal text-neutral-400"> / gram</span>
+              <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
+                ₹{currentMat.ratePerGram}<span className="text-lg font-normal text-slate-500"> / gram</span>
               </div>
-              <div className="text-[11px] text-neutral-400 mt-1">
+              <div className="text-[11px] text-slate-500 mt-1">
                 Baseline rate for {currentMat.name}. Final price is calculated after slicing your CAD model to measure exact filament weight and machine run-time.
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#222222] text-xs space-y-2">
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
               <div className="flex justify-between">
-                <span className="text-neutral-400">Selected Material:</span>
-                <span className="text-white font-medium">{material}</span>
+                <span className="text-slate-500">Selected Material:</span>
+                <span className="text-slate-900 font-medium">{material}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Rate per Gram:</span>
+                <span className="text-slate-500">Rate per Gram:</span>
                 <span className="text-[#ff6a00] font-semibold">₹{currentMat.ratePerGram}/g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Target Infill:</span>
-                <span className="text-white font-medium">{infill}% Grid</span>
+                <span className="text-slate-500">Target Infill:</span>
+                <span className="text-slate-900 font-medium">{infill}% Grid</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Slicing & Toolpath Check:</span>
+                <span className="text-slate-500">Slicing & Toolpath Check:</span>
                 <span className="text-[#22c55e] font-semibold">Included</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Campus Pickup:</span>
+                <span className="text-slate-500">Campus Pickup:</span>
                 <span className="text-[#22c55e] font-semibold">FREE</span>
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function ThreeDPrintingPage() {
                   <ShieldCheck className="w-4 h-4" />
                   <span>3D Print Order #{submittedOrder} Queued</span>
                 </div>
-                <p className="text-[11px] text-neutral-300">
+                <p className="text-[11px] text-slate-600">
                   Our digital fabrication lab is slicing your CAD model to compute exact material weight and generate your official quote.
                 </p>
                 <button
@@ -252,7 +252,7 @@ export default function ThreeDPrintingPage() {
               </button>
             )}
 
-            <div className="flex items-start gap-2 text-[11px] text-neutral-400 pt-2 border-t border-[#1c1c1c]">
+            <div className="flex items-start gap-2 text-[11px] text-slate-500 pt-2 border-t border-slate-200">
               <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0 mt-0.5" />
               <span>
                 Support removal, tolerance checks, and deburring included free with every project print.

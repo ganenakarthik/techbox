@@ -10,17 +10,17 @@ export default function ReturnsPolicyPage() {
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Customer Assurance</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Returns & <span className="text-[#ff6a00]">Replacements Guarantee</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Last updated: September 2026. Hardware testing protocol and hassle-free student replacement guarantee.
         </p>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#111111] border border-[#262626] text-xs text-neutral-300 space-y-8 leading-relaxed">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-xs text-slate-600 space-y-8 leading-relaxed">
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">1.</span> 7-Day Dead on Arrival (DOA) Replacement Policy
           </h2>
           <p>
@@ -29,10 +29,10 @@ export default function ReturnsPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">2.</span> Fast Replacement Procedure
           </h2>
-          <ol className="list-decimal pl-5 space-y-1.5 text-neutral-400">
+          <ol className="list-decimal pl-5 space-y-1.5 text-slate-500">
             <li>Open a ticket via your <Link href="/account/support" className="text-[#ff6a00] hover:underline">Student Account Support Desk</Link> or message our WhatsApp Helpline (+91 98450 12345).</li>
             <li>Provide your Order Reference Number (e.g. <code>TB-102941</code>) and a brief photo or 10-second video of your circuit wiring or serial monitor output.</li>
             <li>Once our lab technician verifies the hardware issue, our campus runner will deliver the replacement during the very next delivery run.</li>
@@ -40,17 +40,17 @@ export default function ReturnsPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">3.</span> Conditions for Return & Exchange
           </h2>
-          <ul className="list-disc pl-5 space-y-1 text-neutral-400">
+          <ul className="list-disc pl-5 space-y-1 text-slate-500">
             <li>Product must include all original headers, terminal blocks, packaging, and antistatic bags.</li>
             <li>Components showing visible physical burn marks from reverse polarity overvoltage or short circuits caused by incorrect wiring are subject to engineering inspection.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">4.</span> Refunds
           </h2>
           <p>

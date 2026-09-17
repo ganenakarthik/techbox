@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -282,7 +282,7 @@ export function AuthModal() {
         {/* Header */}
         <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-white text-base shadow-md shadow-[#ff6a00]/20">
+            <div className="w-8 h-8 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-slate-900 text-base shadow-md shadow-[#ff6a00]/20">
               P
             </div>
             <div>
@@ -378,7 +378,7 @@ export function AuthModal() {
                       </label>
                       <div className="flex items-center rounded-2xl bg-slate-50 border border-slate-300 focus-within:border-[#ff6a00] focus-within:ring-1 focus-within:ring-[#ff6a00] overflow-hidden transition-all">
                         <div className="px-3.5 py-3 bg-slate-100 border-r border-slate-300 text-xs font-bold text-slate-700 flex items-center gap-1.5 select-none">
-                          <span>🇮🇳</span>
+                          <span>ðŸ‡®ðŸ‡³</span>
                           <span>+91</span>
                         </div>
                         <input
@@ -396,7 +396,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || phone.length < 10}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -469,7 +469,7 @@ export function AuthModal() {
                           setOtp(digits);
                           otpInputRefs.current[5]?.focus();
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-[#ff6a00] text-white font-bold text-[11px] hover:bg-[#ea580c]"
+                        className="px-2.5 py-1 rounded-lg bg-[#ff6a00] text-slate-900 font-bold text-[11px] hover:bg-[#ea580c]"
                       >
                         Auto-fill
                       </button>
@@ -500,7 +500,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || otp.join("").length !== 6}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -590,7 +590,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || !name.trim()}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 mt-2 cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 mt-2 cursor-pointer"
                     >
                       {loading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -647,7 +647,7 @@ export function AuthModal() {
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
+                        placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                         className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#ff6a00]"
                       />
                     </div>
@@ -655,7 +655,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm transition-all shadow-md shadow-[#ff6a00]/25 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Sign In</span>}
                     </button>
@@ -671,7 +671,7 @@ export function AuthModal() {
                       }}
                       className="text-xs text-[#ff6a00] hover:underline font-bold"
                     >
-                      ← Login with Mobile OTP instead
+                      â† Login with Mobile OTP instead
                     </button>
                   </div>
                 </div>
@@ -711,7 +711,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || phone.length < 10}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm shadow-md shadow-[#ff6a00]/20"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm shadow-md shadow-[#ff6a00]/20"
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Send Reset OTP</span>}
                     </button>
@@ -726,7 +726,7 @@ export function AuthModal() {
                       }}
                       className="text-xs text-slate-500 hover:text-slate-900 font-medium"
                     >
-                      ← Back to Login
+                      â† Back to Login
                     </button>
                   </div>
                 </div>
@@ -801,7 +801,7 @@ export function AuthModal() {
                     <button
                       type="submit"
                       disabled={loading || otp.join("").length !== 6 || !newPassword}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-black text-sm shadow-md shadow-[#ff6a00]/20"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-black text-sm shadow-md shadow-[#ff6a00]/20"
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Reset Password & Login</span>}
                     </button>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useApp } from "@/context/AppContext";
@@ -24,12 +24,12 @@ export function ToastContainer() {
               exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
               className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-2xl backdrop-blur-xl ${
                 isSuccess
-                  ? "bg-[#111111]/95 border-[#22c55e]/30 text-white"
+                  ? "bg-white/95 border-[#22c55e]/30 text-slate-900"
                   : isError
-                  ? "bg-[#111111]/95 border-[#ef4444]/40 text-white"
+                  ? "bg-white/95 border-[#ef4444]/40 text-slate-900"
                   : isWarning
-                  ? "bg-[#111111]/95 border-[#f59e0b]/40 text-white"
-                  : "bg-[#111111]/95 border-[#262626] text-white"
+                  ? "bg-white/95 border-[#f59e0b]/40 text-slate-900"
+                  : "bg-white/95 border-slate-200 text-slate-900"
               }`}
             >
               <div className="shrink-0 mt-0.5">
@@ -39,13 +39,13 @@ export function ToastContainer() {
                 {toast.type === "info" && <Info className="w-5 h-5 text-[#ff6a00]" />}
               </div>
 
-              <div className="flex-1 text-sm leading-snug font-medium text-neutral-200">
+              <div className="flex-1 text-sm leading-snug font-medium text-slate-700">
                 {toast.message}
               </div>
 
               <button
                 onClick={() => removeToast(toast.id)}
-                className="shrink-0 text-neutral-400 hover:text-white transition-colors p-0.5 rounded-lg"
+                className="shrink-0 text-slate-500 hover:text-slate-900 transition-colors p-0.5 rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>

@@ -113,10 +113,10 @@ export default function BuildMyProjectPage() {
           <Sparkles className="w-3.5 h-3.5" />
           <span>Student Project Infrastructure</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
           You have the idea. <span className="text-[#ff6a00]">We help build it.</span>
         </h1>
-        <p className="mt-3 text-sm sm:text-base text-neutral-400 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-3 text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
           From schematic verification to custom PCB manufacturing, 3D enclosure printing, and working prototypes — configure exactly how much support you need.
         </p>
 
@@ -124,23 +124,23 @@ export default function BuildMyProjectPage() {
         <div className="mt-8 flex items-center justify-center gap-3 text-xs font-semibold">
           <span
             className={`px-3 py-1.5 rounded-lg ${
-              currentStep >= 1 ? "bg-[#ff6a00] text-black font-bold" : "bg-[#1c1c1c] text-neutral-500"
+              currentStep >= 1 ? "bg-[#ff6a00] text-black font-bold" : "bg-slate-100 text-slate-500"
             }`}
           >
             01. Upload or Specify
           </span>
-          <ArrowRight className="w-3 h-3 text-neutral-600" />
+          <ArrowRight className="w-3 h-3 text-slate-500" />
           <span
             className={`px-3 py-1.5 rounded-lg ${
-              currentStep >= 2 ? "bg-[#ff6a00] text-black font-bold" : "bg-[#1c1c1c] text-neutral-500"
+              currentStep >= 2 ? "bg-[#ff6a00] text-black font-bold" : "bg-slate-100 text-slate-500"
             }`}
           >
             02. Choose Build Level
           </span>
-          <ArrowRight className="w-3 h-3 text-neutral-600" />
+          <ArrowRight className="w-3 h-3 text-slate-500" />
           <span
             className={`px-3 py-1.5 rounded-lg ${
-              currentStep >= 3 ? "bg-[#ff6a00] text-black font-bold" : "bg-[#1c1c1c] text-neutral-500"
+              currentStep >= 3 ? "bg-[#ff6a00] text-black font-bold" : "bg-slate-100 text-slate-500"
             }`}
           >
             03. Instant Quote & Dispatch
@@ -151,8 +151,8 @@ export default function BuildMyProjectPage() {
       {/* Step 1: Upload or Document Drop */}
       <div className="mb-16">
         <div className="mb-6 text-center">
-          <h2 className="text-xl font-bold text-white">Step 1: Upload Project File or Synopsis</h2>
-          <p className="text-xs text-neutral-400 mt-1">
+          <h2 className="text-xl font-bold text-slate-900">Step 1: Upload Project File or Synopsis</h2>
+          <p className="text-xs text-slate-500 mt-1">
             Drag your IEEE abstract, circuit diagram, or list of parts below.
           </p>
         </div>
@@ -161,15 +161,15 @@ export default function BuildMyProjectPage() {
       </div>
 
       {/* Step 2: Choose Build Level */}
-      <div className="mb-16 pt-10 border-t border-[#1f1f1f]">
+      <div className="mb-16 pt-10 border-t border-slate-200">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="text-xs font-mono text-[#ff6a00] font-bold uppercase tracking-wider">
             Step 2: Execution Tier
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
             Select Your Project Build Level
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Choose whether you only need the raw parts or want our engineering team to deliver a bench-tested working prototype.
           </p>
         </div>
@@ -185,8 +185,8 @@ export default function BuildMyProjectPage() {
                 onClick={() => setSelectedBuildLevel(lvl.id)}
                 className={`rounded-3xl p-6 border cursor-pointer transition-all flex flex-col justify-between relative ${
                   isSelected
-                    ? "bg-[#141414] border-[#ff6a00] shadow-2xl shadow-[#ff6a00]/10 scale-[1.02]"
-                    : "bg-[#111111] border-[#222222] hover:border-[#333333]"
+                    ? "bg-slate-50 border-[#ff6a00] shadow-2xl shadow-[#ff6a00]/10 scale-[1.02]"
+                    : "bg-white border-slate-200 hover:border-slate-300"
                 }`}
               >
                 {lvl.popular && (
@@ -199,7 +199,7 @@ export default function BuildMyProjectPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div
                       className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                        isSelected ? "bg-[#ff6a00] text-black" : "bg-[#1c1c1c] text-[#ff6a00]"
+                        isSelected ? "bg-[#ff6a00] text-black" : "bg-slate-100 text-[#ff6a00]"
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -209,15 +209,15 @@ export default function BuildMyProjectPage() {
                     )}
                   </div>
 
-                  <h3 className="text-base font-bold text-white">{lvl.title}</h3>
-                  <p className="text-xs text-neutral-400 mt-1 leading-snug">{lvl.subtitle}</p>
+                  <h3 className="text-base font-bold text-slate-900">{lvl.title}</h3>
+                  <p className="text-xs text-slate-500 mt-1 leading-snug">{lvl.subtitle}</p>
 
-                  <div className="mt-4 pt-4 border-t border-[#1e1e1e]">
-                    <div className="text-2xl font-black text-white">₹{lvl.price}</div>
-                    <span className="text-[10px] text-neutral-500">Estimated base cost</span>
+                  <div className="mt-4 pt-4 border-t border-slate-200">
+                    <div className="text-2xl font-black text-slate-900">₹{lvl.price}</div>
+                    <span className="text-[10px] text-slate-500">Estimated base cost</span>
                   </div>
 
-                  <ul className="space-y-2 mt-4 text-xs text-neutral-300">
+                  <ul className="space-y-2 mt-4 text-xs text-slate-600">
                     {lvl.features.map((feat, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-[#22c55e] shrink-0 mt-0.5" />
@@ -227,12 +227,12 @@ export default function BuildMyProjectPage() {
                   </ul>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-[#1e1e1e]">
+                <div className="pt-6 mt-6 border-t border-slate-200">
                   <button
                     className={`w-full py-2.5 rounded-xl text-xs font-bold transition-colors ${
                       isSelected
                         ? "bg-[#ff6a00] text-black"
-                        : "bg-[#1c1c1c] text-neutral-300 hover:text-white"
+                        : "bg-slate-100 text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {isSelected ? "Active Choice" : "Select Level"}
@@ -245,46 +245,46 @@ export default function BuildMyProjectPage() {
       </div>
 
       {/* Step 3: Quotation Summary & Instant Campus Delivery */}
-      <div className="pt-10 border-t border-[#1f1f1f]">
-        <div className="max-w-3xl mx-auto rounded-3xl bg-[#111111] border border-[#262626] p-8 shadow-2xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#222222]">
+      <div className="pt-10 border-t border-slate-200">
+        <div className="max-w-3xl mx-auto rounded-3xl bg-white border border-slate-200 p-8 shadow-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
             <div>
               <div className="text-xs font-mono text-[#ff6a00] uppercase tracking-wider">
                 Step 3: Verified Project Quotation
               </div>
-              <h3 className="text-xl font-bold text-white mt-1">Project Quote Summary</h3>
-              <p className="text-xs text-neutral-400">
+              <h3 className="text-xl font-bold text-slate-900 mt-1">Project Quote Summary</h3>
+              <p className="text-xs text-slate-500">
                 Itemized breakdown based on selected {activeLevel.title}
               </p>
             </div>
 
             <div className="text-right">
-              <span className="text-xs text-neutral-400 block">Total Est. Quote</span>
+              <span className="text-xs text-slate-500 block">Total Est. Quote</span>
               <span className="text-3xl font-black text-[#ff6a00]">₹{totalCalculated}</span>
             </div>
           </div>
 
           <div className="py-6 space-y-3 text-xs">
-            <div className="flex justify-between py-1 border-b border-[#1c1c1c]">
-              <span className="text-neutral-300 font-medium">Selected Tier: {activeLevel.title}</span>
-              <span className="text-white font-bold">₹{activeLevel.price}</span>
+            <div className="flex justify-between py-1 border-b border-slate-200">
+              <span className="text-slate-600 font-medium">Selected Tier: {activeLevel.title}</span>
+              <span className="text-slate-900 font-bold">₹{activeLevel.price}</span>
             </div>
             {pcbAddon > 0 && (
-              <div className="flex justify-between py-1 border-b border-[#1c1c1c]">
-                <span className="text-neutral-300">Custom FR-4 2-Layer PCB Manufacturing</span>
-                <span className="text-white font-bold">+₹{pcbAddon}</span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-600">Custom FR-4 2-Layer PCB Manufacturing</span>
+                <span className="text-slate-900 font-bold">+₹{pcbAddon}</span>
               </div>
             )}
             {printAddon > 0 && (
-              <div className="flex justify-between py-1 border-b border-[#1c1c1c]">
-                <span className="text-neutral-300">3D-Printed Custom Sensor Enclosure</span>
-                <span className="text-white font-bold">+₹{printAddon}</span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-600">3D-Printed Custom Sensor Enclosure</span>
+                <span className="text-slate-900 font-bold">+₹{printAddon}</span>
               </div>
             )}
             {docAddon > 0 && (
-              <div className="flex justify-between py-1 border-b border-[#1c1c1c]">
-                <span className="text-neutral-300">Project Report & Presentation PPT Deck</span>
-                <span className="text-white font-bold">+₹{docAddon}</span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-600">Project Report & Presentation PPT Deck</span>
+                <span className="text-slate-900 font-bold">+₹{docAddon}</span>
               </div>
             )}
             <div className="flex justify-between py-1 text-[#22c55e]">
@@ -295,7 +295,7 @@ export default function BuildMyProjectPage() {
 
           {/* Action Footer */}
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs text-neutral-400">
+            <div className="flex items-center gap-2 text-xs text-slate-500">
               <ShieldCheck className="w-4 h-4 text-[#22c55e]" />
               <span>Full testing & code walkthrough guarantee included</span>
             </div>

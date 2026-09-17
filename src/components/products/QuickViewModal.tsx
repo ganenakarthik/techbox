@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -80,18 +80,18 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 <Star className="w-3.5 h-3.5 fill-amber-500" />
                 <span className="font-bold text-slate-800">{product.rating}</span>
               </div>
-              <span className="text-slate-300">•</span>
+              <span className="text-slate-300">â€¢</span>
               <span className="text-slate-500">{product.reviewCount} verified lab reviews</span>
             </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-2 mt-4">
               <span className="text-2xl font-black text-slate-900">
-                ₹{selectedVariant.price}
+                â‚¹{selectedVariant.price}
               </span>
               {selectedVariant.mrp > selectedVariant.price && (
                 <span className="text-sm text-slate-400 line-through">
-                  ₹{selectedVariant.mrp}
+                  â‚¹{selectedVariant.mrp}
                 </span>
               )}
               {selectedVariant.discount > 0 && (
@@ -119,7 +119,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       }`}
                     >
                       <span>{v.name}</span>
-                      <span className="font-bold text-slate-900">₹{v.price}</span>
+                      <span className="font-bold text-slate-900">â‚¹{v.price}</span>
                     </button>
                   ))}
                 </div>
@@ -143,7 +143,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
             <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600 font-semibold">
               <ShieldCheck className="w-4 h-4" />
-              <span>In stock • Dispatched to {selectedCollege.code} in 24h</span>
+              <span>In stock â€¢ Dispatched to {selectedCollege.code} in 24h</span>
             </div>
           </div>
 
@@ -154,7 +154,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 addToCart({ product, variant: selectedVariant });
                 onClose();
               }}
-              className="flex-1 py-3 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all"
+              className="flex-1 py-3 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Add to Cart</span>

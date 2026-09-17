@@ -31,29 +31,29 @@ export default function AccountOrdersPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="pb-6 border-b border-[#1f1f1f] mb-8">
-        <div className="text-xs text-neutral-400 mb-1">
-          <Link href="/account" className="hover:text-white">Account</Link> / <span className="text-white">Orders</span>
+      <div className="pb-6 border-b border-slate-200 mb-8">
+        <div className="text-xs text-slate-500 mb-1">
+          <Link href="/account" className="hover:text-slate-900">Account</Link> / <span className="text-slate-900">Orders</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white">Your Campus Orders</h1>
-        <p className="text-xs text-neutral-400 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Your Campus Orders</h1>
+        <p className="text-xs text-slate-500 mt-1">
           Track real-time courier runners, gate delivery slots, and invoices from PostgreSQL database.
         </p>
       </div>
 
       {loading ? (
-        <div className="text-center py-20 rounded-3xl bg-[#111111] border border-[#222222]">
+        <div className="text-center py-20 rounded-3xl bg-white border border-slate-200">
           <Loader2 className="w-8 h-8 text-[#ff6a00] animate-spin mx-auto mb-3" />
-          <p className="text-xs text-neutral-400">Loading order history...</p>
+          <p className="text-xs text-slate-500">Loading order history...</p>
         </div>
       ) : orders.length === 0 ? (
-        <div className="text-center py-20 rounded-3xl bg-[#111111] border border-[#222222] space-y-4">
-          <div className="w-16 h-16 rounded-full bg-[#181818] border border-[#262626] flex items-center justify-center mx-auto text-neutral-500">
+        <div className="text-center py-20 rounded-3xl bg-white border border-slate-200 space-y-4">
+          <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto text-slate-500">
             <Package className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">No orders yet</h3>
-            <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">
+            <h3 className="text-lg font-bold text-slate-900">No orders yet</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               Start building your first project or explore our certified catalog of microcontrollers and sensors.
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function AccountOrdersPage() {
             </Link>
             <Link
               href="/build"
-              className="py-2.5 px-5 rounded-xl bg-[#161616] hover:bg-[#222222] border border-[#262626] text-white font-semibold text-xs transition-colors"
+              className="py-2.5 px-5 rounded-xl bg-slate-50 hover:bg-[#222222] border border-slate-200 text-slate-900 font-semibold text-xs transition-colors"
             >
               Build My Project
             </Link>
@@ -87,11 +87,11 @@ export default function AccountOrdersPage() {
             return (
               <div
                 key={order.id}
-                className="p-6 rounded-3xl bg-[#111111] border border-[#262626] hover:border-[#ff6a00]/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6"
+                className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-[#ff6a00]/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6"
               >
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-base font-bold text-white">
+                    <span className="font-mono text-base font-bold text-slate-900">
                       {order.orderNumber}
                     </span>
                     <span
@@ -107,10 +107,10 @@ export default function AccountOrdersPage() {
                     </span>
                   </div>
 
-                  <div className="text-xs text-neutral-400 space-y-1">
-                    <div>Address / Hub: <strong className="text-neutral-200">{order.campusDetail}</strong></div>
-                    <div>Recipient: <span className="text-neutral-300">{order.recipientName} ({order.recipientPhone})</span></div>
-                    <div className="text-[11px] text-neutral-500 font-mono">Date: {formattedDate} • Items: {order.items.length}</div>
+                  <div className="text-xs text-slate-500 space-y-1">
+                    <div>Address / Hub: <strong className="text-slate-700">{order.campusDetail}</strong></div>
+                    <div>Recipient: <span className="text-slate-600">{order.recipientName} ({order.recipientPhone})</span></div>
+                    <div className="text-[11px] text-slate-500 font-mono">Date: {formattedDate} • Items: {order.items.length}</div>
                     {order.shipment?.trackingNumber && (
                       <div className="text-[11px] text-[#ff6a00] font-mono">
                         Tracking: {order.shipment.trackingNumber} ({order.shipment.currentCheckpoint})
@@ -121,8 +121,8 @@ export default function AccountOrdersPage() {
 
                 <div className="flex items-center gap-6 self-start md:self-auto">
                   <div className="text-right">
-                    <div className="text-xs text-neutral-400">Total Paid</div>
-                    <div className="text-lg font-black text-white">₹{order.total}</div>
+                    <div className="text-xs text-slate-500">Total Paid</div>
+                    <div className="text-lg font-black text-slate-900">₹{order.total}</div>
                   </div>
 
                   <Link

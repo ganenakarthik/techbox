@@ -109,13 +109,13 @@ export default function SupportPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#1f1f1f] mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
         <div>
-          <div className="text-xs text-neutral-400 mb-1">
-            <Link href="/account" className="hover:text-white">Account</Link> / <span className="text-white">Support</span>
+          <div className="text-xs text-slate-500 mb-1">
+            <Link href="/account" className="hover:text-slate-900">Account</Link> / <span className="text-slate-900">Support</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">Student Lab Helpdesk</h1>
-          <p className="text-xs text-neutral-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Student Lab Helpdesk</h1>
+          <p className="text-xs text-slate-500 mt-1">
             Get prompt assistance with circuit schematics, delivery coordinates, or hardware troubleshooting.
           </p>
         </div>
@@ -123,7 +123,7 @@ export default function SupportPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={fetchTickets}
-            className="p-2.5 rounded-xl bg-[#1c1c1c] border border-[#262626] text-neutral-400 hover:text-white"
+            className="p-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-900"
             title="Refresh tickets"
           >
             <RefreshCw className="w-4 h-4" />
@@ -140,41 +140,41 @@ export default function SupportPage() {
 
       {/* New Ticket Form Modal/Drawer */}
       {isCreating && (
-        <div className="p-6 rounded-3xl bg-[#111111] border border-[#ff6a00]/40 shadow-2xl mb-8 space-y-4">
-          <h2 className="text-base font-bold text-white">Open a New Support Ticket</h2>
+        <div className="p-6 rounded-3xl bg-white border border-[#ff6a00]/40 shadow-2xl mb-8 space-y-4">
+          <h2 className="text-base font-bold text-slate-900">Open a New Support Ticket</h2>
 
           <form onSubmit={handleCreateTicket} className="space-y-4 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-neutral-300 block mb-1 font-semibold">Subject:</label>
+                <label className="text-slate-600 block mb-1 font-semibold">Subject:</label>
                 <input
                   type="text"
                   required
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="e.g. Ultrasonic sensor reading zero in lab"
-                  className="w-full bg-[#161616] border border-[#262626] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#ff6a00]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                 />
               </div>
 
               <div>
-                <label className="text-neutral-300 block mb-1 font-semibold">Related Order # (optional):</label>
+                <label className="text-slate-600 block mb-1 font-semibold">Related Order # (optional):</label>
                 <input
                   type="text"
                   value={orderId}
                   onChange={(e) => setOrderId(e.target.value)}
                   placeholder="e.g. TB-849201"
-                  className="w-full bg-[#161616] border border-[#262626] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#ff6a00]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-neutral-300 block mb-1 font-semibold">Category:</label>
+              <label className="text-slate-600 block mb-1 font-semibold">Category:</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#161616] border border-[#262626] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#ff6a00]"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
               >
                 <option>Component Pinout & Datasheet Help</option>
                 <option>Campus Delivery / Courier Runner Coordination</option>
@@ -185,14 +185,14 @@ export default function SupportPage() {
             </div>
 
             <div>
-              <label className="text-neutral-300 block mb-1 font-semibold">Describe the issue:</label>
+              <label className="text-slate-600 block mb-1 font-semibold">Describe the issue:</label>
               <textarea
                 rows={4}
                 required
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Include baud rate, operating voltage, or pickup gate instructions."
-                className="w-full bg-[#161616] border border-[#262626] rounded-xl p-3.5 text-white focus:outline-none focus:border-[#ff6a00]"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
               />
             </div>
 
@@ -200,7 +200,7 @@ export default function SupportPage() {
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
-                className="py-2.5 px-4 rounded-xl bg-[#1c1c1c] text-neutral-300 hover:text-white"
+                className="py-2.5 px-4 rounded-xl bg-slate-100 text-slate-600 hover:text-slate-900"
               >
                 Cancel
               </button>
@@ -220,12 +220,12 @@ export default function SupportPage() {
       {/* Tickets List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="p-12 text-center text-neutral-500 rounded-3xl bg-[#111111] border border-[#262626]">
+          <div className="p-12 text-center text-slate-500 rounded-3xl bg-white border border-slate-200">
             <Loader2 className="w-6 h-6 animate-spin text-[#ff6a00] mx-auto mb-2" />
             <span>Loading support tickets...</span>
           </div>
         ) : tickets.length === 0 ? (
-          <div className="p-12 text-center text-neutral-500 rounded-3xl bg-[#111111] border border-[#262626]">
+          <div className="p-12 text-center text-slate-500 rounded-3xl bg-white border border-slate-200">
             No support tickets open yet. Click &quot;New Support Ticket&quot; if you need engineering or delivery help.
           </div>
         ) : (
@@ -237,12 +237,12 @@ export default function SupportPage() {
             return (
               <div
                 key={tkt.id}
-                className="p-6 rounded-3xl bg-[#111111] border border-[#262626] space-y-4 hover:border-[#333] transition-colors"
+                className="p-6 rounded-3xl bg-white border border-slate-200 space-y-4 hover:border-[#333] transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-3">
                     <span className="font-mono text-xs font-bold text-[#ff6a00]">{tkt.ticketNumber || tkt.id}</span>
-                    <h3 className="text-sm font-bold text-white">{tkt.subject}</h3>
+                    <h3 className="text-sm font-bold text-slate-900">{tkt.subject}</h3>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ export default function SupportPage() {
                     >
                       {tkt.status}
                     </span>
-                    <span className="text-[11px] text-neutral-500">
+                    <span className="text-[11px] text-slate-500">
                       {new Date(tkt.createdAt || Date.now()).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
@@ -268,13 +268,13 @@ export default function SupportPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs text-neutral-400">
-                  <span className="px-2 py-0.5 rounded bg-[#1c1c1c] text-neutral-300 font-mono text-[11px]">
+                <div className="flex items-center gap-3 text-xs text-slate-500">
+                  <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-mono text-[11px]">
                     {tkt.category}
                   </span>
                   {tkt.order?.orderNumber && (
-                    <span className="text-neutral-500">
-                      Order: <span className="text-white font-mono">{tkt.order.orderNumber}</span>
+                    <span className="text-slate-500">
+                      Order: <span className="text-slate-900 font-mono">{tkt.order.orderNumber}</span>
                     </span>
                   )}
                 </div>
@@ -288,16 +288,16 @@ export default function SupportPage() {
                         key={idx}
                         className={`p-3 rounded-2xl text-xs flex items-start gap-2.5 ${
                           isStaff
-                            ? "bg-[#181512] border border-[#ff6a00]/30 text-neutral-200"
-                            : "bg-[#161616] border border-[#222222] text-neutral-300"
+                            ? "bg-[#181512] border border-[#ff6a00]/30 text-slate-700"
+                            : "bg-slate-50 border border-slate-200 text-slate-600"
                         }`}
                       >
-                        <MessageSquare className={`w-4 h-4 shrink-0 mt-0.5 ${isStaff ? "text-[#ff6a00]" : "text-neutral-400"}`} />
+                        <MessageSquare className={`w-4 h-4 shrink-0 mt-0.5 ${isStaff ? "text-[#ff6a00]" : "text-slate-500"}`} />
                         <div className="flex-1">
-                          <div className="flex items-center justify-between text-[11px] font-semibold text-neutral-400 mb-1">
-                            <span className={isStaff ? "text-[#ff6a00]" : "text-white"}>{msg.sender}</span>
+                          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-1">
+                            <span className={isStaff ? "text-[#ff6a00]" : "text-slate-900"}>{msg.sender}</span>
                             {msg.timestamp && (
-                              <span className="text-[10px] text-neutral-500">
+                              <span className="text-[10px] text-slate-500">
                                 {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                               </span>
                             )}
@@ -330,7 +330,7 @@ export default function SupportPage() {
                           if (e.key === "Enter") handleSendReply(tkt.id);
                         }}
                         placeholder="Type a follow-up reply for the engineering team..."
-                        className="flex-1 bg-[#161616] border border-[#262626] rounded-xl px-3.5 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-neutral-500 focus:outline-none focus:border-[#ff6a00]"
                       />
                       <button
                         onClick={() => handleSendReply(tkt.id)}

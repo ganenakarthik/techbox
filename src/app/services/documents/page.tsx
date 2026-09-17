@@ -75,16 +75,16 @@ export default function DocumentationPage() {
           <FileText className="w-4 h-4" />
           <span>Professional Engineering Documentation</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
           Project Reports, PPTs & Viva Preparation
         </h1>
-        <p className="mt-2 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-2 text-xs sm:text-sm text-slate-500">
           Professional presentation and technical documentation formatting for college mini and capstone projects.
         </p>
 
         {/* Professional Ethics Callout */}
-        <div className="mt-4 p-3 rounded-xl bg-[#141414] border border-[#222222] text-[11px] text-neutral-400 max-w-lg mx-auto">
-          <strong className="text-white">Academic Integrity Notice:</strong> Partsly documentation services provide structural formatting, vector schematics, and presentation design support to help students communicate their authentic engineering work clearly to examiners.
+        <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500 max-w-lg mx-auto">
+          <strong className="text-slate-900">Academic Integrity Notice:</strong> Partsly documentation services provide structural formatting, vector schematics, and presentation design support to help students communicate their authentic engineering work clearly to examiners.
         </div>
       </div>
 
@@ -96,23 +96,23 @@ export default function DocumentationPage() {
           return (
             <div
               key={service.title}
-              className="p-8 rounded-3xl bg-[#111111] border border-[#262626] hover:border-[#ff6a00]/40 transition-all flex flex-col justify-between shadow-xl"
+              className="p-8 rounded-3xl bg-white border border-slate-200 hover:border-[#ff6a00]/40 transition-all flex flex-col justify-between shadow-xl"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-[#ff6a00]">
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-[#ff6a00]">
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-white">₹{service.price}</span>
-                    <span className="text-[10px] text-neutral-500 block">Digital delivery in 24h</span>
+                    <span className="text-2xl font-black text-slate-900">₹{service.price}</span>
+                    <span className="text-[10px] text-slate-500 block">Digital delivery in 24h</span>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-white">{service.title}</h3>
-                <p className="text-xs text-neutral-400 mt-1 leading-relaxed">{service.subtitle}</p>
+                <h3 className="text-lg font-bold text-slate-900">{service.title}</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">{service.subtitle}</p>
 
-                <ul className="space-y-2 mt-6 pt-6 border-t border-[#1c1c1c] text-xs text-neutral-300">
+                <ul className="space-y-2 mt-6 pt-6 border-t border-slate-200 text-xs text-slate-600">
                   {service.deliverables.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#22c55e] shrink-0 mt-0.5" />
@@ -122,7 +122,7 @@ export default function DocumentationPage() {
                 </ul>
               </div>
 
-              <div className="pt-8 mt-6 border-t border-[#1c1c1c]">
+              <div className="pt-8 mt-6 border-t border-slate-200">
                 <button
                   onClick={() => {
                     if (!user) {
@@ -145,16 +145,16 @@ export default function DocumentationPage() {
 
       {/* Order Modal */}
       {selectedService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#111111] border border-[#262626] rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-[#222222] pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <span className="text-[10px] font-mono uppercase text-[#ff6a00] tracking-wider">Configure Order</span>
-                <h3 className="text-base font-bold text-white">{selectedService.title}</h3>
+                <h3 className="text-base font-bold text-slate-900">{selectedService.title}</h3>
               </div>
               <button
                 onClick={() => setSelectedService(null)}
-                className="w-8 h-8 rounded-full bg-[#1e1e1e] text-neutral-400 hover:text-white flex items-center justify-center text-sm"
+                className="w-8 h-8 rounded-full bg-slate-50 text-slate-500 hover:text-slate-900 flex items-center justify-center text-sm"
               >
                 ✕
               </button>
@@ -163,8 +163,8 @@ export default function DocumentationPage() {
             {orderConfirmation ? (
               <div className="p-6 rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/30 text-center space-y-3">
                 <CheckCircle2 className="w-10 h-10 text-[#22c55e] mx-auto" />
-                <h4 className="text-sm font-bold text-white">Documentation Order #{orderConfirmation} Queued!</h4>
-                <p className="text-xs text-neutral-300">
+                <h4 className="text-sm font-bold text-slate-900">Documentation Order #{orderConfirmation} Queued!</h4>
+                <p className="text-xs text-slate-600">
                   Our academic technical writers and formatting team have received your outline and will begin working on your drafts.
                 </p>
                 <button
@@ -216,7 +216,7 @@ export default function DocumentationPage() {
                 className="space-y-4"
               >
                 <div>
-                  <label className="text-xs font-semibold text-neutral-300 block mb-1">
+                  <label className="text-xs font-semibold text-slate-600 block mb-1">
                     Your Project Title / Hardware Topic:
                   </label>
                   <input
@@ -225,19 +225,19 @@ export default function DocumentationPage() {
                     value={projectTitle}
                     onChange={(e) => setProjectTitle(e.target.value)}
                     placeholder="e.g. AI-Powered Autonomous Agricultural Drone"
-                    className="w-full bg-[#181818] border border-[#2a2a2a] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-neutral-300 block mb-1">
+                    <label className="text-xs font-semibold text-slate-600 block mb-1">
                       Formatting Standard:
                     </label>
                     <select
                       value={formattingStyle}
                       onChange={(e) => setFormattingStyle(e.target.value)}
-                      className="w-full bg-[#181818] border border-[#2a2a2a] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                     >
                       <option>IEEE Standard 2-Column</option>
                       <option>University Standard Thesis</option>
@@ -246,28 +246,28 @@ export default function DocumentationPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-neutral-300 block mb-1">
+                    <label className="text-xs font-semibold text-slate-600 block mb-1">
                       Target Review / Viva Date:
                     </label>
                     <input
                       type="date"
                       value={deadline}
                       onChange={(e) => setDeadline(e.target.value)}
-                      className="w-full bg-[#181818] border border-[#2a2a2a] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                     />
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#161616] border border-[#222222] flex justify-between items-center text-xs">
-                  <span className="text-neutral-400">Total Price:</span>
-                  <span className="text-base font-bold text-white">₹{selectedService.price}</span>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center text-xs">
+                  <span className="text-slate-500">Total Price:</span>
+                  <span className="text-base font-bold text-slate-900">₹{selectedService.price}</span>
                 </div>
 
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setSelectedService(null)}
-                    className="flex-1 py-2.5 rounded-xl border border-[#2a2a2a] text-xs text-neutral-400 hover:text-white"
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-500 hover:text-slate-900"
                   >
                     Cancel
                   </button>

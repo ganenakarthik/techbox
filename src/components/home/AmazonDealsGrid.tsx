@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Image from "next/image";
@@ -21,7 +21,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                 Dev Boards & MCUs
               </h3>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                From ₹349
+                From â‚¹349
               </span>
             </div>
 
@@ -41,7 +41,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">Arduino Uno R3</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹449</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹449</span>
               </Link>
 
               <Link
@@ -58,7 +58,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">ESP32 DevKit</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹389</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹389</span>
               </Link>
 
               <Link
@@ -75,7 +75,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">RPi Pico W</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹649</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹649</span>
               </Link>
 
               <Link
@@ -114,7 +114,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                 Essential Sensors
               </h3>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                From ₹79
+                From â‚¹79
               </span>
             </div>
 
@@ -134,7 +134,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">HC-SR04 Sonar</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹79</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹79</span>
               </Link>
 
               <Link
@@ -151,7 +151,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">0.96" OLED I2C</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹219</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹219</span>
               </Link>
 
               <Link
@@ -168,7 +168,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">DHT11 Sensor</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹89</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹89</span>
               </Link>
 
               <Link
@@ -185,7 +185,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">MPU-6050 IMU</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹145</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹145</span>
               </Link>
             </div>
           </div>
@@ -207,7 +207,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                 Robotics & Power
               </h3>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                From ₹85
+                From â‚¹85
               </span>
             </div>
 
@@ -227,7 +227,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">SG90 Servo 9g</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹85</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹85</span>
               </Link>
 
               <Link
@@ -244,7 +244,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">L298N Driver</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹139</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹139</span>
               </Link>
 
               <Link
@@ -261,7 +261,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
                   />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 line-clamp-1">2-Ch 5V Relay</span>
-                <span className="text-[10px] font-extrabold text-[#ff6a00]">₹115</span>
+                <span className="text-[10px] font-extrabold text-[#ff6a00]">â‚¹115</span>
               </Link>
 
               <Link
@@ -316,7 +316,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
               </div>
               <div className="flex items-center gap-2 text-[11px] text-slate-700 bg-white/80 p-2 rounded-lg border border-orange-100 shadow-2xs font-medium">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>100% Tested • Zero-DOA Guarantee</span>
+                <span>100% Tested â€¢ Zero-DOA Guarantee</span>
               </div>
             </div>
           </div>
@@ -324,7 +324,7 @@ export function AmazonDealsGrid({ onUploadClick }: AmazonDealsGridProps) {
           <div>
             <button
               onClick={onUploadClick}
-              className="w-full py-2.5 px-3 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] active:scale-98 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#ff6a00]/25 transition-all cursor-pointer mb-2"
+              className="w-full py-2.5 px-3 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] active:scale-98 text-slate-900 font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#ff6a00]/25 transition-all cursor-pointer mb-2"
             >
               <UploadCloud className="w-4 h-4" />
               <span>Upload BOM / Circuit</span>

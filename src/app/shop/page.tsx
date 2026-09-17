@@ -295,7 +295,7 @@ function ShopContent() {
                 </p>
                 <button
                   onClick={resetFilters}
-                  className="px-4 py-2 bg-[#ff6a00] text-white font-bold text-xs rounded-xl shadow-xs"
+                  className="px-4 py-2 bg-[#ff6a00] text-slate-900 font-bold text-xs rounded-xl shadow-xs"
                 >
                   Reset All Filters
                 </button>

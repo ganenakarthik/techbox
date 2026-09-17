@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef } from "react";
 import { useApp } from "@/context/AppContext";
@@ -244,7 +244,7 @@ export function ProjectDropzone() {
             Upload your project synopsis, IEEE paper, circuit schematic (PDF/Image) or BOM spreadsheet. Our server-side catalog engine matches parts against genuine inventory.
           </p>
 
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-extrabold text-xs shadow-md shadow-[#ff6a00]/25 transition-all group-hover:scale-[1.02]">
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-extrabold text-xs shadow-md shadow-[#ff6a00]/25 transition-all group-hover:scale-[1.02]">
             <FileSpreadsheet className="w-4 h-4" />
             <span>Browse Project PDF, Image, or BOM</span>
           </div>
@@ -262,7 +262,7 @@ export function ProjectDropzone() {
             <span className="px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700">
               PNG / JPG Schematic
             </span>
-            <span className="text-slate-400 text-[11px]">• Max 15MB</span>
+            <span className="text-slate-400 text-[11px]">â€¢ Max 15MB</span>
           </div>
         </div>
       )}
@@ -380,7 +380,7 @@ export function ProjectDropzone() {
                 </h4>
               </div>
               <span className="text-xs text-slate-500 font-mono">
-                Est. Parts Total: <strong className="text-slate-900">₹{totalDetectedCost}</strong>
+                Est. Parts Total: <strong className="text-slate-900">â‚¹{totalDetectedCost}</strong>
               </span>
             </div>
 
@@ -393,12 +393,12 @@ export function ProjectDropzone() {
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-slate-800 text-xs shrink-0 shadow-xs">
-                        ×{item.quantity}
+                        Ã—{item.quantity}
                       </div>
                       <div className="truncate">
                         <div className="font-semibold text-slate-900 truncate">{item.name}</div>
                         <div className="text-[11px] text-slate-500 font-mono">
-                          SKU: {item.sku} • {item.category}
+                          SKU: {item.sku} â€¢ {item.category}
                         </div>
                       </div>
                     </div>
@@ -407,7 +407,7 @@ export function ProjectDropzone() {
                       <span className={item.available ? "text-emerald-600 font-semibold" : "text-slate-400"}>
                         {item.available ? `In Stock (${item.stock})` : "Special Order"}
                       </span>
-                      <span className="font-bold text-slate-900">₹{item.totalPrice}</span>
+                      <span className="font-bold text-slate-900">â‚¹{item.totalPrice}</span>
                     </div>
                   </div>
 
@@ -433,10 +433,10 @@ export function ProjectDropzone() {
             <div className="mt-8 pt-6 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
                 onClick={handleAddAllDetected}
-                className="py-3 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all"
+                className="py-3 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20 transition-all"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span>Add Available Parts to Cart (₹{totalDetectedCost})</span>
+                <span>Add Available Parts to Cart (â‚¹{totalDetectedCost})</span>
               </button>
 
               <button

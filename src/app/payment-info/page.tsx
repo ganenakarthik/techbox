@@ -9,36 +9,36 @@ export default function PaymentInfoPage() {
           <CreditCard className="w-3.5 h-3.5" />
           <span>Billing & Gateway Architecture</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Payment <span className="text-[#ff6a00]">Information</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Last updated: September 2026. Secure, student-friendly payment options across campuses.
         </p>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#111111] border border-[#262626] text-xs text-neutral-300 space-y-8 leading-relaxed">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-xs text-slate-600 space-y-8 leading-relaxed">
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">1.</span> Supported Payment Modes
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div className="p-4 rounded-xl bg-[#161616] border border-[#262626]">
-              <div className="flex items-center gap-2 text-white font-bold mb-1">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center gap-2 text-slate-900 font-bold mb-1">
                 <QrCode className="w-4 h-4 text-[#ff6a00]" />
                 <span>UPI & QR Codes</span>
               </div>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-slate-500">
                 Instant zero-fee payments via Google Pay, PhonePe, Paytm, BHIM, and bank VPAs.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#161616] border border-[#262626]">
-              <div className="flex items-center gap-2 text-white font-bold mb-1">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center gap-2 text-slate-900 font-bold mb-1">
                 <CreditCard className="w-4 h-4 text-[#ff6a00]" />
                 <span>Cards & Net Banking</span>
               </div>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-slate-500">
                 Visa, Mastercard, RuPay, and Net Banking across 50+ nationalized and private Indian banks.
               </p>
             </div>
@@ -46,7 +46,7 @@ export default function PaymentInfoPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">2.</span> Cash on Delivery (COD)
           </h2>
           <p>
@@ -55,7 +55,7 @@ export default function PaymentInfoPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">3.</span> Invoices & GST Billing
           </h2>
           <p>

@@ -72,10 +72,10 @@ export default function PcbServicePage() {
           <Layers className="w-4 h-4" />
           <span>Rapid PCB Prototyping</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
           Custom PCB Manufacturing
         </h1>
-        <p className="mt-2 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-2 text-xs sm:text-sm text-slate-500">
           Upload Gerber ZIP files. 1 to 4 layer FR-4 military-grade copper clad boards, delivered directly to campus.
         </p>
       </div>
@@ -83,8 +83,8 @@ export default function PcbServicePage() {
       {submittedOrder && (
         <div className="max-w-xl mx-auto mb-8 p-6 rounded-3xl bg-[#22c55e]/10 border border-[#22c55e]/30 text-center space-y-2">
           <CheckCircle2 className="w-8 h-8 text-[#22c55e] mx-auto mb-1" />
-          <h3 className="text-lg font-bold text-white">PCB Order #{submittedOrder} Received!</h3>
-          <p className="text-xs text-neutral-300">
+          <h3 className="text-lg font-bold text-slate-900">PCB Order #{submittedOrder} Received!</h3>
+          <p className="text-xs text-slate-600">
             Our hardware engineers will run DFM (Design for Manufacturing) rule checks and confirm your trace clearances within 2 business hours.
           </p>
         </div>
@@ -94,12 +94,12 @@ export default function PcbServicePage() {
         {/* Left: Configurator (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Gerber Upload Box */}
-          <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626]">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
               01. Upload Gerber Archive (.ZIP / .RAR)
             </h3>
 
-            <label className="border-2 border-dashed border-[#2c2c2c] hover:border-[#ff6a00] rounded-2xl p-6 text-center block cursor-pointer transition-colors bg-[#141414]">
+            <label className="border-2 border-dashed border-slate-300 hover:border-[#ff6a00] rounded-2xl p-6 text-center block cursor-pointer transition-colors bg-slate-50">
               <input
                 type="file"
                 accept=".zip,.rar,.tar.gz"
@@ -107,24 +107,24 @@ export default function PcbServicePage() {
                 className="hidden"
               />
               <UploadCloud className="w-8 h-8 text-[#ff6a00] mx-auto mb-2" />
-              <div className="text-xs font-bold text-white">
+              <div className="text-xs font-bold text-slate-900">
                 {fileName ? fileName : "Click to select or drop Gerber .ZIP file"}
               </div>
-              <div className="text-[10px] text-neutral-500 mt-1">
+              <div className="text-[10px] text-slate-500 mt-1">
                 Supports KiCad, Altium, Eagle & EasyEDA exports
               </div>
             </label>
           </div>
 
           {/* Specifications */}
-          <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626] space-y-5">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               02. Board Parameters
             </h3>
 
             {/* Layer Count */}
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-2">
+              <label className="text-xs font-semibold text-slate-600 block mb-2">
                 Layer Count:
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -136,7 +136,7 @@ export default function PcbServicePage() {
                     className={`py-2 px-3 rounded-xl text-xs font-bold border transition-colors ${
                       layers === l
                         ? "bg-[#ff6a00] text-black border-[#ff6a00]"
-                        : "bg-[#161616] text-neutral-300 border-[#262626] hover:border-[#3a3a3a]"
+                        : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
                     }`}
                   >
                     {l} Layer{l > 1 ? "s" : ""}
@@ -148,32 +148,32 @@ export default function PcbServicePage() {
             {/* Dimensions */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-neutral-300 block mb-1.5">
+                <label className="text-xs font-semibold text-slate-600 block mb-1.5">
                   Width (mm):
                 </label>
                 <input
                   type="number"
                   value={dimensions.width}
                   onChange={(e) => setDimensions({ ...dimensions, width: Number(e.target.value) })}
-                  className="w-full bg-[#161616] border border-[#262626] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-neutral-300 block mb-1.5">
+                <label className="text-xs font-semibold text-slate-600 block mb-1.5">
                   Height (mm):
                 </label>
                 <input
                   type="number"
                   value={dimensions.height}
                   onChange={(e) => setDimensions({ ...dimensions, height: Number(e.target.value) })}
-                  className="w-full bg-[#161616] border border-[#262626] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6a00]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                 />
               </div>
             </div>
 
             {/* Quantity */}
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-2">
+              <label className="text-xs font-semibold text-slate-600 block mb-2">
                 Batch Quantity (Pcs):
               </label>
               <div className="flex gap-2">
@@ -185,7 +185,7 @@ export default function PcbServicePage() {
                     className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors ${
                       quantity === q
                         ? "bg-[#ff6a00] text-black border-[#ff6a00]"
-                        : "bg-[#161616] text-neutral-300 border-[#262626]"
+                        : "bg-slate-50 text-slate-600 border-slate-200"
                     }`}
                   >
                     {q} pcs
@@ -196,7 +196,7 @@ export default function PcbServicePage() {
 
             {/* Solder Mask Color */}
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-2">
+              <label className="text-xs font-semibold text-slate-600 block mb-2">
                 Solder Mask Color:
               </label>
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
@@ -208,7 +208,7 @@ export default function PcbServicePage() {
                     className={`py-2 rounded-xl text-xs font-medium border transition-colors ${
                       solderColor === col
                         ? "bg-[#ff6a00]/15 border-[#ff6a00] text-[#ff6a00] font-bold"
-                        : "bg-[#161616] border-[#262626] text-neutral-300"
+                        : "bg-slate-50 border-slate-200 text-slate-600"
                     }`}
                   >
                     {col}
@@ -221,38 +221,38 @@ export default function PcbServicePage() {
 
         {/* Right: Quote Box (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="p-6 rounded-3xl bg-[#111111] border border-[#262626] shadow-2xl space-y-6">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xl space-y-6">
             <div>
-              <div className="text-xs text-neutral-400 uppercase tracking-wider">
+              <div className="text-xs text-slate-500 uppercase tracking-wider">
                 Preliminary Benchmark Estimate
               </div>
-              <div className="text-3xl sm:text-4xl font-black text-white mt-1">
+              <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
                 ₹{estimatedTotal}*
               </div>
-              <div className="text-[11px] text-neutral-400 mt-1">
+              <div className="text-[11px] text-slate-500 mt-1">
                 *Reference price for {quantity} pcs of {layers}-Layer {dimensions.width}×{dimensions.height}mm boards. Final quote is calculated after DFM review of trace widths and layer stackup.
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[#161616] border border-[#222222] text-xs space-y-2">
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
               <div className="flex justify-between">
-                <span className="text-neutral-400">Base Substrate:</span>
-                <span className="text-white font-medium">FR-4 Standard TG130-140</span>
+                <span className="text-slate-500">Base Substrate:</span>
+                <span className="text-slate-900 font-medium">FR-4 Standard TG130-140</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Copper Weight:</span>
-                <span className="text-white font-medium">1 oz Cu (35μm)</span>
+                <span className="text-slate-500">Copper Weight:</span>
+                <span className="text-slate-900 font-medium">1 oz Cu (35μm)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Surface Finish:</span>
-                <span className="text-white font-medium">{surfaceFinish}</span>
+                <span className="text-slate-500">Surface Finish:</span>
+                <span className="text-slate-900 font-medium">{surfaceFinish}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Solder Mask:</span>
+                <span className="text-slate-500">Solder Mask:</span>
                 <span className="text-[#ff6a00] font-semibold">{solderColor}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-400">Engineering Review:</span>
+                <span className="text-slate-500">Engineering Review:</span>
                 <span className="text-[#22c55e] font-semibold">Included</span>
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function PcbServicePage() {
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            <div className="flex items-start gap-2 text-[11px] text-neutral-400 pt-2 border-t border-[#1c1c1c]">
+            <div className="flex items-start gap-2 text-[11px] text-slate-500 pt-2 border-t border-slate-200">
               <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0 mt-0.5" />
               <span>
                 Partsly hardware engineers perform 100% trace and clearance rule checks before production.

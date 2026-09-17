@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { ChevronLeft, ChevronRight, Compass } from "lucide-react";
@@ -24,16 +24,16 @@ export function CarouselControls({
   return (
     <div className="flex flex-col items-center gap-4 mt-6 select-none">
       {/* Active Member Tracker Pill */}
-      <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-[#141414]/80 backdrop-blur-xl border border-white/10 shadow-lg text-xs font-mono">
+      <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-slate-50/80 backdrop-blur-xl border border-white/10 shadow-lg text-xs font-mono">
         <span className="text-[#ff6a00] font-bold">
           0{activeIndex + 1} / 0{members.length}
         </span>
-        <span className="text-neutral-600">•</span>
-        <span className="text-white font-semibold uppercase tracking-wider">
+        <span className="text-neutral-600">â€¢</span>
+        <span className="text-slate-900 font-semibold uppercase tracking-wider">
           {current.name}
         </span>
-        <span className="text-neutral-600">•</span>
-        <span className="text-neutral-400 text-[11px] font-sans">
+        <span className="text-neutral-600">â€¢</span>
+        <span className="text-slate-500 text-[11px] font-sans">
           {current.tag}
         </span>
       </div>
@@ -44,13 +44,13 @@ export function CarouselControls({
         <button
           onClick={onPrev}
           aria-label="Previous Team Card"
-          className="w-10 h-10 rounded-2xl bg-[#151515]/80 hover:bg-[#1f1f1f] backdrop-blur-md border border-white/10 hover:border-[#ff6a00]/50 flex items-center justify-center text-neutral-300 hover:text-white transition-all active:scale-95 shadow-lg group"
+          className="w-10 h-10 rounded-2xl bg-slate-50/80 hover:bg-[#1f1f1f] backdrop-blur-md border border-white/10 hover:border-[#ff6a00]/50 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all active:scale-95 shadow-lg group"
         >
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
         </button>
 
         {/* 8 Interactive Indicator Dots */}
-        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-[#121212]/80 backdrop-blur-md border border-white/10">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/80 backdrop-blur-md border border-white/10">
           {members.map((m, idx) => {
             const isActive = idx === activeIndex;
             return (
@@ -73,16 +73,16 @@ export function CarouselControls({
         <button
           onClick={onNext}
           aria-label="Next Team Card"
-          className="w-10 h-10 rounded-2xl bg-[#151515]/80 hover:bg-[#1f1f1f] backdrop-blur-md border border-white/10 hover:border-[#ff6a00]/50 flex items-center justify-center text-neutral-300 hover:text-white transition-all active:scale-95 shadow-lg group"
+          className="w-10 h-10 rounded-2xl bg-slate-50/80 hover:bg-[#1f1f1f] backdrop-blur-md border border-white/10 hover:border-[#ff6a00]/50 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all active:scale-95 shadow-lg group"
         >
           <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>
 
       {/* Subtle Interaction Guide */}
-      <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
+      <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
         <Compass className="w-3 h-3 text-[#ff6a00]" />
-        <span>Drag to rotate • Keyboard ← / → • Click to expand profile</span>
+        <span>Drag to rotate â€¢ Keyboard â† / â†’ â€¢ Click to expand profile</span>
       </div>
     </div>
   );

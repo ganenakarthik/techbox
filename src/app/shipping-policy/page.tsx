@@ -10,17 +10,17 @@ export default function ShippingPolicyPage() {
           <Truck className="w-3.5 h-3.5" />
           <span>Fulfillment & Logistics</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Campus Shipping & <span className="text-[#ff6a00]">Delivery Policy</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Last updated: September 2026. Official delivery guidelines for colleges and universities across India.
         </p>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#111111] border border-[#262626] text-xs text-neutral-300 space-y-8 leading-relaxed">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-xs text-slate-600 space-y-8 leading-relaxed">
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">1.</span> Dedicated Campus Runner Network
           </h2>
           <p>
@@ -29,20 +29,20 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">2.</span> Daily Campus Dispatch Slots
           </h2>
           <p>
             Orders placed on Partsly are dispatched in two regular daily batches:
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-neutral-400">
+          <ul className="list-disc pl-5 space-y-1 text-slate-500">
             <li><strong>Morning Run (10:30 AM – 1:00 PM):</strong> For orders placed before 8:00 AM.</li>
             <li><strong>Evening Run (4:30 PM – 7:30 PM):</strong> For orders placed before 2:00 PM, coordinated with post-class student hostel returns.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">3.</span> Emergency Viva & Competition Priority
           </h2>
           <p>
@@ -51,7 +51,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">4.</span> Shipping Charges & Free Thresholds
           </h2>
           <p>
@@ -60,7 +60,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">5.</span> Pickup Verification & ID Requirement
           </h2>
           <p>

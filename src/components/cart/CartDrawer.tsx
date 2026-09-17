@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
@@ -74,11 +74,11 @@ export function CartDrawer() {
                 </div>
                 {cart.length === 0 ? (
                   <span className="text-slate-500 text-[11px]">
-                    Free Delivery over <span className="text-slate-900 font-bold">₹499</span>
+                    Free Delivery over <span className="text-slate-900 font-bold">â‚¹499</span>
                   </span>
                 ) : remainingForFree > 0 ? (
                   <span className="text-slate-600 font-medium text-xs">
-                    Add <span className="text-[#ff6a00] font-bold">₹{remainingForFree}</span> for FREE
+                    Add <span className="text-[#ff6a00] font-bold">â‚¹{remainingForFree}</span> for FREE
                   </span>
                 ) : (
                   <span className="text-emerald-700 font-bold text-xs flex items-center gap-1">
@@ -98,9 +98,9 @@ export function CartDrawer() {
               </div>
 
               <div className="flex items-center justify-between text-[10px] text-slate-500 mt-1.5 font-mono">
-                <span>{subtotal > 0 ? `₹${subtotal} in cart` : "Cart empty (₹0)"}</span>
+                <span>{subtotal > 0 ? `â‚¹${subtotal} in cart` : "Cart empty (â‚¹0)"}</span>
                 <span className={remainingForFree === 0 ? "text-emerald-600 font-bold" : "text-slate-500"}>
-                  {remainingForFree === 0 ? "Unlocked!" : "₹499 Goal"}
+                  {remainingForFree === 0 ? "Unlocked!" : "â‚¹499 Goal"}
                 </span>
               </div>
             </div>
@@ -120,7 +120,7 @@ export function CartDrawer() {
                     <Link
                       href="/shop"
                       onClick={() => setIsCartDrawerOpen(false)}
-                      className="w-full py-2.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-bold rounded-xl text-center transition-all shadow-xs"
+                      className="w-full py-2.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 text-xs font-bold rounded-xl text-center transition-all shadow-xs"
                     >
                       Shop Components
                     </Link>
@@ -172,11 +172,11 @@ export function CartDrawer() {
                       <div className="flex items-center justify-between mt-2.5">
                         <div className="flex items-center gap-1.5">
                           <span className="text-sm font-black text-slate-900">
-                            ₹{item.price * item.quantity}
+                            â‚¹{item.price * item.quantity}
                           </span>
                           {item.originalPrice > item.price && (
                             <span className="text-[11px] text-slate-400 line-through">
-                              ₹{item.originalPrice * item.quantity}
+                              â‚¹{item.originalPrice * item.quantity}
                             </span>
                           )}
                         </div>
@@ -250,21 +250,21 @@ export function CartDrawer() {
                 <div className="space-y-1.5 text-xs text-slate-600">
                   <div className="flex justify-between">
                     <span>Items Subtotal</span>
-                    <span className="text-slate-900 font-bold">₹{subtotal}</span>
+                    <span className="text-slate-900 font-bold">â‚¹{subtotal}</span>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex justify-between text-emerald-600 font-semibold">
                       <span>Discount</span>
-                      <span>-₹{discountAmount}</span>
+                      <span>-â‚¹{discountAmount}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span>Campus Delivery</span>
-                    <span>{remainingForFree === 0 ? "FREE" : "₹40"}</span>
+                    <span>{remainingForFree === 0 ? "FREE" : "â‚¹40"}</span>
                   </div>
                   <div className="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-slate-200">
                     <span>Estimated Total</span>
-                    <span className="text-[#ff6a00]">₹{finalTotal + (remainingForFree === 0 ? 0 : 40)}</span>
+                    <span className="text-[#ff6a00]">â‚¹{finalTotal + (remainingForFree === 0 ? 0 : 40)}</span>
                   </div>
                 </div>
 
@@ -280,7 +280,7 @@ export function CartDrawer() {
                   <Link
                     href="/checkout"
                     onClick={() => setIsCartDrawerOpen(false)}
-                    className="py-2.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#ff6a00]/20"
+                    className="py-2.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#ff6a00]/20"
                   >
                     Checkout <ArrowRight className="w-3.5 h-3.5" />
                   </Link>

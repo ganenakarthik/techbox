@@ -9,17 +9,17 @@ export default function TermsPage() {
           <FileText className="w-3.5 h-3.5" />
           <span>Legal Agreement</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Terms & <span className="text-[#ff6a00]">Conditions</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Last updated: September 2026. Standard terms of use for Partsly marketplace and services.
         </p>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#111111] border border-[#262626] text-xs text-neutral-300 space-y-8 leading-relaxed">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-xs text-slate-600 space-y-8 leading-relaxed">
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">1.</span> Acceptance of Terms
           </h2>
           <p>
@@ -28,7 +28,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">2.</span> Product Specifications & Technical Datasheets
           </h2>
           <p>
@@ -37,7 +37,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">3.</span> Custom Engineering & Fabrication Services
           </h2>
           <p>
@@ -46,7 +46,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">4.</span> Order Cancellation
           </h2>
           <p>

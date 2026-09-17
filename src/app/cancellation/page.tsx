@@ -10,17 +10,17 @@ export default function CancellationPage() {
           <XCircle className="w-3.5 h-3.5" />
           <span>Order Management</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
           Cancellation <span className="text-[#ff6a00]">Policy</span>
         </h1>
-        <p className="mt-3 text-xs sm:text-sm text-neutral-400">
+        <p className="mt-3 text-xs sm:text-sm text-slate-500">
           Last updated: September 2026. Cancellation windows and instant refund processing rules.
         </p>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#111111] border border-[#262626] text-xs text-neutral-300 space-y-8 leading-relaxed">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-xs text-slate-600 space-y-8 leading-relaxed">
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">1.</span> Hardware Component Orders
           </h2>
           <p>
@@ -29,20 +29,20 @@ export default function CancellationPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">2.</span> Custom Engineering & Fabrication Services
           </h2>
           <p>
             For PCB manufacturing, 3D printing, and documentation services:
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-neutral-400">
+          <ul className="list-disc pl-5 space-y-1 text-slate-500">
             <li><strong>Before Approval:</strong> 100% free cancellation at any time while the status is <code>REQUESTED</code> or <code>QUOTE_SENT</code>.</li>
             <li><strong>After Approval:</strong> Once a quote is accepted and production status advances to <code>IN_PRODUCTION</code>, material costs incurred cannot be reversed.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span className="text-[#ff6a00]">3.</span> Refund Timelines on Cancellation
           </h2>
           <p>
