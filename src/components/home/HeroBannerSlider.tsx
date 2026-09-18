@@ -121,8 +121,11 @@ export function HeroBannerSlider() {
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-slate-800" />
         </button>
 
+        {/* Amazon-style Bottom Gradient Fade to #eaeded */}
+        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-36 bg-gradient-to-t from-[#eaeded] via-[#eaeded]/60 to-transparent pointer-events-none z-20" />
+
         {/* Bottom Pagination Dots */}
-        <div className="absolute bottom-3 sm:bottom-5 inset-x-0 z-30 flex items-center justify-center gap-2">
+        <div className="absolute bottom-4 sm:bottom-6 inset-x-0 z-30 flex items-center justify-center gap-2">
           {SLIDES.map((slide, idx) => (
             <button
               key={slide.id}

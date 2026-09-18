@@ -6,22 +6,31 @@ declare global {
 }
 
 function resolveDatabaseUrl(): string | undefined {
-  const isProd = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
   const direct = process.env.DATABASE_URL;
+  const directUrl = process.env.DIRECT_URL;
   const remote = process.env.REMOTE_DATABASE_URL;
+  const isProd = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
 
-  if (isProd && (!direct || direct.includes("localhost") || direct.includes("127.0.0.1"))) {
-    return remote || direct;
+  if (isProd) {
+    if (direct && !direct.includes("localhost") && !direct.includes("127.0.0.1")) {
+      return direct;
+    }
+    return directUrl || remote || direct;
   }
-  return direct || remote;
+
+  return direct || directUrl || remote;
 }
 
 const resolvedUrl = resolveDatabaseUrl();
 
+if (resolvedUrl && (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes("localhost"))) {
+  process.env.DATABASE_URL = resolvedUrl;
+}
+
 export const prisma =
   globalThis.prismaGlobal ??
   new PrismaClient({
-    datasourceUrl: resolvedUrl,
+    ...(resolvedUrl ? { datasourceUrl: resolvedUrl } : {}),
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 

@@ -139,31 +139,29 @@ export default function AboutPage() {
       {/* CTA Banner */}
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-slate-900 rounded-3xl p-10 md:p-14 text-center relative overflow-hidden">
-            {/* Subtle orange glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a00]/10 via-transparent to-transparent pointer-events-none" />
+          <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100/60 border border-orange-200/80 rounded-3xl p-10 md:p-14 text-center relative overflow-hidden shadow-sm">
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff6a00]/15 border border-[#ff6a00]/30 text-[#ff6a00] text-xs font-bold mb-5">
-                <Heart className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-orange-200 text-[#ff6a00] text-xs font-bold mb-5 shadow-xs">
+                <Heart className="w-3.5 h-3.5 fill-[#ff6a00]" />
                 <span>Ready to build?</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4 tracking-tight">
                 Have an idea for your capstone or mini project?
               </h2>
-              <p className="text-sm text-slate-400 max-w-xl mx-auto mb-8">
+              <p className="text-sm text-slate-600 max-w-xl mx-auto mb-8 leading-relaxed">
                 Upload your synopsis or component list today and let Partsly turn your vision into working hardware.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/build"
-                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
+                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 transition-all"
                 >
                   <span>Build My Project</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/shop"
-                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-900 font-semibold text-sm transition-colors"
+                  className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-sm shadow-xs transition-colors"
                 >
                   Shop Electronic Parts
                 </Link>
