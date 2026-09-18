@@ -5,8 +5,21 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const startTime = Date.now();
+
+  const envAudit = {
+    DATABASE_URL: Boolean(process.env.DATABASE_URL),
+    POSTGRES_PRISMA_URL: Boolean(process.env.POSTGRES_PRISMA_URL),
+    POSTGRES_URL: Boolean(process.env.POSTGRES_URL),
+    DIRECT_URL: Boolean(process.env.DIRECT_URL),
+    REMOTE_DATABASE_URL: Boolean(process.env.REMOTE_DATABASE_URL),
+    AUTH_SECRET: Boolean(process.env.AUTH_SECRET),
+    FAST2SMS_API_KEY: Boolean(process.env.FAST2SMS_API_KEY),
+    TWILIO_AUTH_TOKEN: Boolean(process.env.TWILIO_AUTH_TOKEN),
+    SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+  };
+
   try {
-    // Probe PostgreSQL connectivity with a simple fast query
+    // Probe PostgreSQL connectivity with a fast query
     await prisma.$queryRaw`SELECT 1`;
     const latencyMs = Date.now() - startTime;
 
@@ -16,6 +29,7 @@ export async function GET() {
         service: "partsly-core",
         database: "connected",
         dbLatencyMs: latencyMs,
+        environmentVariables: envAudit,
         timestamp: new Date().toISOString(),
       },
       {
@@ -35,6 +49,7 @@ export async function GET() {
         service: "partsly-core",
         database: "disconnected",
         dbLatencyMs: latencyMs,
+        environmentVariables: envAudit,
         error: error?.message || "Database connectivity check failed",
         timestamp: new Date().toISOString(),
       },
