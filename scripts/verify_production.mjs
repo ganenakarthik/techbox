@@ -1,6 +1,6 @@
 import https from "node:https";
 
-const BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://techbox-omega.vercel.app";
+const BASE_URL = process.env.TARGET_URL || "https://partsly.in";
 
 async function request(path, options = {}) {
   const url = new URL(path, BASE_URL);
