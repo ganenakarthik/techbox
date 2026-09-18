@@ -49,6 +49,15 @@ const DISALLOWED_EXTENSIONS = new Set([
 
 export async function POST(req: Request) {
   try {
+    const { getCurrentUser } = await import("@/lib/auth");
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required to upload project files. Please sign in or create an account." },
+        { status: 401 }
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -82,15 +91,6 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "File size exceeds 15MB limit" },
         { status: 400 }
-      );
-    }
-
-    const { getCurrentUser } = await import("@/lib/auth");
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required to upload project files. Please sign in or create an account." },
-        { status: 401 }
       );
     }
 

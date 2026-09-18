@@ -35,7 +35,7 @@ export async function GET() {
         service: "partsly-core",
         database: "disconnected",
         dbLatencyMs: latencyMs,
-        error: "Database connectivity check failed",
+        error: error?.message || "Database connectivity check failed",
         timestamp: new Date().toISOString(),
       },
       {
