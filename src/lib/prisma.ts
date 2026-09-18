@@ -11,7 +11,6 @@ function resolveDatabaseUrl(): string | undefined {
   const remote = process.env.REMOTE_DATABASE_URL;
   const postgresPrisma = process.env.POSTGRES_PRISMA_URL;
   const postgresUrl = process.env.POSTGRES_URL;
-  const supabaseDb = process.env.SUPABASE_DATABASE_URL;
 
   const candidates = [
     direct,
@@ -19,7 +18,6 @@ function resolveDatabaseUrl(): string | undefined {
     postgresUrl,
     remote,
     directUrl,
-    supabaseDb,
   ].filter(Boolean) as string[];
 
   const isProd = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);

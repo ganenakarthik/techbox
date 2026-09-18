@@ -35,7 +35,7 @@ npm run start
 ```
 
 ### 6. Database Operations (PostgreSQL + Prisma)
-When connecting to a live PostgreSQL instance (e.g. Supabase, Neon, RDS, or local Postgres):
+When connecting to a live PostgreSQL instance (e.g. Neon, AWS RDS, Cloud SQL, or local Postgres):
 ```powershell
 # Push the canonical schema to your database
 npx prisma db push

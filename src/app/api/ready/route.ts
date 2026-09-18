@@ -15,7 +15,6 @@ export async function GET() {
     AUTH_SECRET: Boolean(process.env.AUTH_SECRET),
     FAST2SMS_API_KEY: Boolean(process.env.FAST2SMS_API_KEY),
     TWILIO_AUTH_TOKEN: Boolean(process.env.TWILIO_AUTH_TOKEN),
-    SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
   };
 
   try {
