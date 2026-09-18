@@ -2,11 +2,16 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import { Role } from "@prisma/client";
+import {
+  COOKIE_NAME,
+  LEGACY_COOKIE_NAME,
+  SESSION_MAX_AGE,
+  SessionPayload,
+  verifySessionToken as verifySessionTokenWebCrypto,
+} from "./session";
 
-const AUTH_SECRET = process.env.AUTH_SECRET || "partsly_super_secret_session_key_production_grade";
-export const COOKIE_NAME = "partsly_session";
-export const LEGACY_COOKIE_NAME = "techbox_session";
-const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days in seconds
+export { COOKIE_NAME, LEGACY_COOKIE_NAME, SESSION_MAX_AGE };
+export type { SessionPayload };
 
 export interface SessionUser {
   id: string;
@@ -21,12 +26,27 @@ export interface SessionUser {
   collegeName?: string | null;
 }
 
-export interface SessionPayload {
-  userId: string;
-  role: Role;
-  email?: string | null;
-  phone?: string | null;
-  exp: number;
+/**
+ * Validates that AUTH_SECRET is properly set in production.
+ * Refuses to use predictable fallbacks in production environments.
+ */
+function getAuthSecret(): string {
+  const secret = process.env.AUTH_SECRET;
+  const isProduction = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+
+  if (!secret || secret.trim().length < 16) {
+    if (isProduction) {
+      throw new Error(
+        "[FATAL AUTH CONFIGURATION ERROR] AUTH_SECRET is not configured or is too short in production. Refusing to operate with an insecure session key."
+      );
+    }
+    console.warn(
+      "[DEV WARNING] AUTH_SECRET not configured. Using local development key. Set AUTH_SECRET in .env for production."
+    );
+    return "partsly_dev_only_local_session_signing_secret_do_not_use_in_prod";
+  }
+
+  return secret.trim();
 }
 
 /**
@@ -47,6 +67,7 @@ export async function verifyPassword(password: string, storedHash: string): Prom
     if (!salt || !key) return false;
     const keyBuffer = Buffer.from(key, "hex");
     const derivedKey = crypto.scryptSync(password, salt, 64);
+    if (keyBuffer.length !== derivedKey.length) return false;
     return crypto.timingSafeEqual(keyBuffer, derivedKey);
   } catch {
     return false;
@@ -57,37 +78,45 @@ export async function verifyPassword(password: string, storedHash: string): Prom
  * Sign session payload with HMAC-SHA256
  */
 export function signSession(payload: Omit<SessionPayload, "exp">): string {
+  const secret = getAuthSecret();
   const fullPayload: SessionPayload = {
     ...payload,
     exp: Date.now() + SESSION_MAX_AGE * 1000,
   };
   const data = Buffer.from(JSON.stringify(fullPayload)).toString("base64url");
-  const hmac = crypto.createHmac("sha256", AUTH_SECRET);
+  const hmac = crypto.createHmac("sha256", secret);
   hmac.update(data);
   const sig = hmac.digest("base64url");
   return `${data}.${sig}`;
 }
 
 /**
- * Verify and decode session token
+ * Verify and decode session token using timing-safe comparison
  */
 export function verifySessionToken(token: string): SessionPayload | null {
   try {
+    if (!token || typeof token !== "string") return null;
     const parts = token.split(".");
     if (parts.length !== 2) return null;
     const [data, sig] = parts;
 
-    const hmac = crypto.createHmac("sha256", AUTH_SECRET);
+    const secret = getAuthSecret();
+    const hmac = crypto.createHmac("sha256", secret);
     hmac.update(data);
     const expectedSig = hmac.digest("base64url");
 
-    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
+    const sigBuf = Buffer.from(sig);
+    const expBuf = Buffer.from(expectedSig);
+    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
       return null;
     }
 
     const payload: SessionPayload = JSON.parse(Buffer.from(data, "base64url").toString("utf8"));
-    if (payload.exp < Date.now()) {
+    if (!payload.exp || payload.exp < Date.now()) {
       return null; // Expired
+    }
+    if (!payload.userId) {
+      return null;
     }
     return payload;
   } catch {
@@ -100,9 +129,10 @@ export function verifySessionToken(token: string): SessionPayload | null {
  */
 export async function setSessionCookie(token: string) {
   const cookieStore = await cookies();
+  const isProduction = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProduction,
     sameSite: "lax",
     path: "/",
     maxAge: SESSION_MAX_AGE,
@@ -119,7 +149,7 @@ export async function clearSessionCookie() {
 }
 
 /**
- * Retrieve current authenticated user from request cookie
+ * Retrieve current authenticated user from request cookie and verify database record
  */
 export async function getCurrentUser(): Promise<SessionUser | null> {
   try {

@@ -1,8 +1,30 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required to analyze project BOM requirements." },
+        { status: 401 }
+      );
+    }
+
+    const clientIp = getClientIp(req);
+    const rateCheck = checkRateLimit(`bom_analyze:${user.id || clientIp}`, 15, 10 * 60);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many BOM analysis requests. Please try again in a few minutes.",
+          retryAfterSeconds: rateCheck.resetInSeconds,
+        },
+        { status: 429 }
+      );
+    }
+
     const { text } = await req.json();
 
     if (!text || typeof text !== "string") {
@@ -15,7 +37,7 @@ export async function POST(req: Request) {
       .map((l) => l.trim())
       .filter((l) => l.length > 2 && !l.startsWith("#") && !l.toLowerCase().startsWith("extracted from"));
 
-    // Fetch all products with variants & inventory from database
+    // Fetch products with variants & inventory from database
     const dbProducts = await prisma.product.findMany({
       include: {
         variants: {
@@ -85,55 +107,62 @@ export async function POST(req: Request) {
           id: `bom-${index}-${bestMatch.id}`,
           originalLine: line,
           productId: bestMatch.id,
-          variantId: variant?.id,
+          variantId: variant?.id || null,
           name: bestMatch.name,
           sku: variant?.sku || "SKU-AUTO",
-          category: bestMatch.category.name,
+          category: bestMatch.category?.name || "Components",
           quantity: qty,
-          unitPrice: variant ? Number(variant.price) : 100,
-          totalPrice: (variant ? Number(variant.price) : 100) * qty,
+          unitPrice: variant ? Number(variant.price) : 0,
+          totalPrice: (variant ? Number(variant.price) : 0) * qty,
           image: (bestMatch.images as string[])?.[0] || "/placeholder.png",
           available: availableStock >= qty,
           stock: availableStock,
+          isCatalogMatch: true,
           confidence,
-          needsReview: confidence < 0.8,
-          reviewPrompt: confidence < 0.8 ? "Please review this component." : null,
+          needsReview: confidence < 0.8 || availableStock < qty,
+          reviewPrompt: confidence < 0.8 ? "Please verify this matched component." : (availableStock < qty ? "Stock backorder required." : null),
         });
       } else {
-        // Unmatched fallback component
+        // Transparent Unmatched Component: No mock $50 or fake 99 stock
         matchedComponents.push({
           id: `bom-${index}-unmatched`,
           originalLine: line,
           productId: null,
           variantId: null,
           name: line,
-          sku: "CUSTOM-PART",
-          category: "General Hardware",
+          sku: "UNMATCHED-ITEM",
+          category: "Custom Hardware",
           quantity: qty,
-          unitPrice: 50,
-          totalPrice: 50 * qty,
-          image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80",
-          available: true,
-          stock: 99,
-          confidence: 0.4,
+          unitPrice: null,
+          totalPrice: 0,
+          image: null,
+          available: false,
+          stock: 0,
+          isCatalogMatch: false,
+          confidence: 0,
           needsReview: true,
-          reviewPrompt: "Component not in primary catalog. Manual quote will be attached.",
+          reviewPrompt: "Custom or unmatched component — manual review and quotation required by engineering operations team.",
         });
       }
     }
 
     const totalDetected = matchedComponents.length;
+    const matchedCount = matchedComponents.filter((c) => c.isCatalogMatch).length;
     const totalAvailable = matchedComponents.filter((c) => c.available).length;
     const estimatedKitPrice = matchedComponents.reduce((sum, c) => sum + c.totalPrice, 0);
 
     return NextResponse.json({
       success: true,
+      serviceType: "Smart BOM Catalog Matcher",
       matchedComponents,
       summary: {
         totalDetected,
+        matchedCount,
+        unmatchedCount: totalDetected - matchedCount,
         totalAvailable,
         estimatedKitPrice,
-        catalogMatchRate: totalDetected > 0 ? Math.round((totalAvailable / totalDetected) * 100) : 0,
+        catalogMatchRate: totalDetected > 0 ? Math.round((matchedCount / totalDetected) * 100) : 0,
+        manualReviewRequired: totalDetected - matchedCount > 0,
       },
     });
   } catch (error) {

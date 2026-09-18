@@ -87,6 +87,12 @@ export async function POST(req: Request) {
 
     const { getCurrentUser } = await import("@/lib/auth");
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required to upload project files. Please sign in or create an account." },
+        { status: 401 }
+      );
+    }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const { uploadProjectFile } = await import("@/lib/storage");
@@ -94,7 +100,7 @@ export async function POST(req: Request) {
       buffer,
       originalName,
       file.type || "application/octet-stream",
-      user?.id
+      user.id
     );
 
     const fileUrl = uploaded.fileUrl;

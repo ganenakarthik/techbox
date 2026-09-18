@@ -92,10 +92,15 @@ export async function uploadProjectFile(
     }
   }
 
-  // 3. Fallback: Private Local Storage (NOT served via /public web root)
-  // Stored in private storage directory accessible ONLY through /api/projects/[id]/files/[fileId]
-  // In serverless / Vercel, /tmp is the only writable directory
-  const baseDir = process.env.VERCEL ? path.join("/tmp", ".private_storage") : path.join(process.cwd(), ".private_storage");
+  // 3. Fallback: Private Local Storage (ONLY in local development environment)
+  // In serverless / Vercel production, ephemeral /tmp is not persistent and is strictly rejected.
+  if (process.env.VERCEL) {
+    throw new Error(
+      "Persistent cloud storage is unavailable. Please configure SUPABASE_SERVICE_ROLE_KEY in your production environment."
+    );
+  }
+
+  const baseDir = path.join(process.cwd(), ".private_storage");
   const privateStorageDir = path.join(baseDir, customerFolder);
   if (!fs.existsSync(privateStorageDir)) {
     fs.mkdirSync(privateStorageDir, { recursive: true });

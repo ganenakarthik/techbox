@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { logAdminAction } from "@/lib/audit";
-import { sendNotification } from "@/lib/email";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 
 export async function PATCH(
@@ -27,6 +25,7 @@ export async function PATCH(
         OR: [{ id }, { orderNumber: id }],
       },
       include: {
+        items: true,
         shipment: true,
         user: { select: { id: true, name: true, email: true } },
       },
@@ -46,14 +45,27 @@ export async function PATCH(
     }
 
     if (action === "APPROVE") {
-      // ATOMIC TRANSACTION: Order + Payment + Shipment + OrderEvent + Notification + AuditLog
+      // ATOMIC TRANSACTION: Order + Inventory Allocation + Payment + Shipment + OrderEvent + Notification + AuditLog
       const result = await prisma.$transaction(async (tx) => {
         // 1. Verify current status is PAYMENT_SUBMITTED or PENDING
         if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.CONFIRMED) {
           throw new Error(`Order in state ${order.status} cannot undergo payment verification.`);
         }
 
-        // 2. Update Order
+        // 2. Move inventory from reserved to allocated
+        for (const item of order.items) {
+          if (item.variantId) {
+            await tx.inventory.updateMany({
+              where: { variantId: item.variantId },
+              data: {
+                reserved: { decrement: item.quantity },
+                allocated: { increment: item.quantity },
+              },
+            });
+          }
+        }
+
+        // 3. Update Order
         const updatedOrder = await tx.order.update({
           where: { id: order.id },
           data: {
@@ -64,7 +76,7 @@ export async function PATCH(
           },
         });
 
-        // 3. Update PaymentTransaction
+        // 4. Update PaymentTransaction
         await tx.paymentTransaction.updateMany({
           where: { orderId: order.id },
           data: {
@@ -72,7 +84,7 @@ export async function PATCH(
           },
         });
 
-        // 4. Update Shipment Checkpoints
+        // 5. Update Shipment Checkpoints
         if (order.shipment) {
           const history = Array.isArray(order.shipment.checkpointHistory)
             ? (order.shipment.checkpointHistory as any[])
@@ -93,42 +105,28 @@ export async function PATCH(
           });
         }
 
-        // 5. Create OrderEvent
+        // 6. Create OrderEvent
         await tx.orderEvent.create({
           data: {
             orderId: order.id,
             eventType: "PAYMENT_VERIFIED",
             actor: `OPERATOR:${user.id}`,
-            message: `Bank payment verified by operator for UTR ${order.utrNumber || "N/A"} (₹${order.total})`,
-            metadata: {
-              utrNumber: order.utrNumber,
-              amount: Number(order.total),
-              verifiedBy: user.name || user.email,
-            },
+            message: `Bank payment verified by ${user.name}. Order status moved to CONFIRMED.`,
+            metadata: { utrNumber: order.utrNumber, paymentStatus: PaymentStatus.PAYMENT_VERIFIED },
           },
         });
 
-        await tx.orderEvent.create({
-          data: {
-            orderId: order.id,
-            eventType: "ORDER_CONFIRMED",
-            actor: `OPERATOR:${user.id}`,
-            message: `Order marked CONFIRMED following payment verification`,
-            metadata: { confirmedAt: new Date().toISOString() },
-          },
-        });
-
-        // 6. Persist customer in-app Notification
+        // 7. Customer Notification
         await tx.notification.create({
           data: {
             userId: order.userId,
-            title: `Payment Verified for Order ${order.orderNumber}!`,
-            message: `Your payment of ₹${order.total} has been verified by our operations desk. Your hardware kit is now confirmed!`,
+            title: `Payment Confirmed - Order #${order.orderNumber}`,
+            message: `Your payment of ₹${order.total} has been verified successfully. Your order is now confirmed and queued for packing!`,
             link: `/orders/${order.orderNumber}`,
           },
         });
 
-        // 7. Persist AdminAuditLog
+        // 8. Persist AdminAuditLog
         await tx.adminAuditLog.create({
           data: {
             adminId: user.id,
@@ -136,7 +134,7 @@ export async function PATCH(
             target: `Order ${order.orderNumber}`,
             previousValue: { paymentStatus: order.paymentStatus, status: order.status },
             newValue: { paymentStatus: PaymentStatus.PAYMENT_VERIFIED, status: OrderStatus.CONFIRMED },
-            details: `Atomic verification of UTR ${order.utrNumber || "N/A"} for ₹${order.total}`,
+            details: `Atomic verification of UTR ${order.utrNumber || "N/A"} for ₹${order.total}. Allocated reserved inventory.`,
           },
         });
 
@@ -149,8 +147,22 @@ export async function PATCH(
         order: result,
       });
     } else {
-      // ATOMIC REJECT TRANSACTION
+      // ATOMIC REJECT TRANSACTION: Restore reserved inventory back to available stock
       const result = await prisma.$transaction(async (tx) => {
+        // 1. Release reserved stock back to available inventory
+        for (const item of order.items) {
+          if (item.variantId) {
+            await tx.inventory.updateMany({
+              where: { variantId: item.variantId },
+              data: {
+                reserved: { decrement: item.quantity },
+                available: { increment: item.quantity },
+              },
+            });
+          }
+        }
+
+        // 2. Update Order
         const updatedOrder = await tx.order.update({
           where: { id: order.id },
           data: {
@@ -158,6 +170,7 @@ export async function PATCH(
           },
         });
 
+        // 3. Update Payment Transactions
         await tx.paymentTransaction.updateMany({
           where: { orderId: order.id },
           data: {
@@ -165,25 +178,28 @@ export async function PATCH(
           },
         });
 
+        // 4. Create Order Event
         await tx.orderEvent.create({
           data: {
             orderId: order.id,
             eventType: "PAYMENT_FAILED",
             actor: `OPERATOR:${user.id}`,
-            message: `Bank payment rejected: ${reason || "Invalid transaction details"}`,
+            message: `Bank payment rejected: ${reason || "Invalid transaction details"}. Released reserved inventory.`,
             metadata: { reason, utrNumber: order.utrNumber },
           },
         });
 
+        // 5. Customer Notification
         await tx.notification.create({
           data: {
             userId: order.userId,
-            title: `Payment Verification Issue - Order ${order.orderNumber}`,
+            title: `Payment Verification Issue - Order #${order.orderNumber}`,
             message: `The UTR provided (${order.utrNumber || "None"}) could not be verified: ${reason || "Invalid transaction details"}. Please re-submit your UTR or contact support.`,
             link: `/orders/${order.orderNumber}`,
           },
         });
 
+        // 6. Admin Audit Log
         await tx.adminAuditLog.create({
           data: {
             adminId: user.id,
@@ -191,7 +207,7 @@ export async function PATCH(
             target: `Order ${order.orderNumber}`,
             previousValue: { paymentStatus: order.paymentStatus },
             newValue: { paymentStatus: PaymentStatus.PAYMENT_FAILED },
-            details: `Rejected UTR. Reason: ${reason || "Invalid bank transaction reference"}`,
+            details: `Rejected UTR. Reason: ${reason || "Invalid bank transaction reference"}. Restored reserved inventory.`,
           },
         });
 
@@ -200,7 +216,7 @@ export async function PATCH(
 
       return NextResponse.json({
         success: true,
-        message: "Payment marked FAILED. Customer notified to re-submit UTR.",
+        message: "Payment marked FAILED. Reserved inventory released back to available stock.",
         order: result,
       });
     }
@@ -209,4 +225,3 @@ export async function PATCH(
     return NextResponse.json({ error: error.message || "Failed to verify payment" }, { status: 500 });
   }
 }
-

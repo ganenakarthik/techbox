@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, signSession, setSessionCookie } from "@/lib/auth";
 import { validateAndNormalizeIndianPhone } from "@/lib/phone";
+import { checkRateLimit, resetRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
   try {
+    const clientIp = getClientIp(req);
     const body = await req.json();
     const { identifier, email, phone, password, guestCartItems = [] } = body;
 
@@ -17,10 +19,31 @@ export async function POST(req: Request) {
       );
     }
 
-    const cleanInput = String(input).trim();
+    const cleanInput = String(input).trim().toLowerCase();
+
+    // 1. IP & Identifier Rate Limiting (Brute-force protection: max 5 attempts per 15 mins)
+    const ipLimit = checkRateLimit(`login:ip:${clientIp}`, 5, 15 * 60);
+    const idLimit = checkRateLimit(`login:id:${cleanInput}`, 5, 15 * 60);
+
+    if (!ipLimit.allowed || !idLimit.allowed) {
+      const waitSeconds = Math.max(ipLimit.resetInSeconds, idLimit.resetInSeconds);
+      const waitMinutes = Math.ceil(waitSeconds / 60);
+      return NextResponse.json(
+        {
+          error: `Too many failed login attempts. Account temporarily locked for security. Please try again in ${waitMinutes} minutes.`,
+          code: "TOO_MANY_ATTEMPTS",
+          retryAfterSeconds: waitSeconds,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(waitSeconds) },
+        }
+      );
+    }
+
     let user = null;
 
-    // Check if input is a phone number
+    // Check if input is an Indian phone number
     const phoneCheck = validateAndNormalizeIndianPhone(cleanInput);
     if (phoneCheck.isValid) {
       user = await prisma.user.findFirst({
@@ -32,24 +55,16 @@ export async function POST(req: Request) {
     // If not found by phone, check by email
     if (!user) {
       user = await prisma.user.findUnique({
-        where: { email: cleanInput.toLowerCase() },
+        where: { email: cleanInput },
         include: { college: true },
       });
     }
 
-    if (!user) {
+    // Generic rejection if user not found or no password hash (prevents account enumeration)
+    if (!user || !user.passwordHash) {
       return NextResponse.json(
         { error: "Invalid mobile/email or password" },
         { status: 401 }
-      );
-    }
-
-    if (!user.passwordHash) {
-      return NextResponse.json(
-        {
-          error: "This account does not have a password set. Please log in using Mobile OTP.",
-        },
-        { status: 400 }
       );
     }
 
@@ -63,7 +78,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Merge guest cart if provided
+    // 2. Authentication Succeeded -> Reset rate limits
+    resetRateLimit(`login:ip:${clientIp}`);
+    resetRateLimit(`login:id:${cleanInput}`);
+
+    // 3. Merge guest cart with strict inventory validation
     if (Array.isArray(guestCartItems) && guestCartItems.length > 0) {
       let cart = await prisma.cart.findUnique({ where: { userId: user.id } });
       if (!cart) {
@@ -72,28 +91,42 @@ export async function POST(req: Request) {
 
       for (const item of guestCartItems) {
         if (!item.variantId) continue;
+
+        // Verify available stock before merging
+        const variant = await prisma.productVariant.findUnique({
+          where: { id: item.variantId },
+          include: { inventory: true },
+        });
+
+        const available = variant?.inventory?.available ?? 0;
+        if (available <= 0) continue; // Skip out-of-stock items
+
+        const requestedQty = Math.max(1, Number(item.quantity) || 1);
+        const cappedQty = Math.min(requestedQty, available);
+
         const existing = await prisma.cartItem.findFirst({
           where: { cartId: cart.id, variantId: item.variantId },
         });
 
         if (existing) {
+          const finalQty = Math.min(existing.quantity + cappedQty, available);
           await prisma.cartItem.update({
             where: { id: existing.id },
-            data: { quantity: existing.quantity + (item.quantity || 1) },
+            data: { quantity: finalQty },
           });
         } else {
           await prisma.cartItem.create({
             data: {
               cartId: cart.id,
               variantId: item.variantId,
-              quantity: item.quantity || 1,
+              quantity: cappedQty,
             },
           });
         }
       }
     }
 
-    // Sign session
+    // 4. Sign session token and set HTTP-only cookie
     const token = signSession({
       userId: user.id,
       email: user.email,

@@ -329,7 +329,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             return;
           }
         } catch {
-          // fallback to client state
+          addToast("Network error adding item to cart", "error");
+          return;
         }
       }
 
@@ -497,7 +498,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Real production login against PostgreSQL API
-  const login = async (email: string, password = "password123", role: "CUSTOMER" | "ADMIN" | "STAFF" = "CUSTOMER"): Promise<boolean> => {
+  const login = async (email: string, password?: string, role: "CUSTOMER" | "ADMIN" | "STAFF" = "CUSTOMER"): Promise<boolean> => {
+    if (!password) {
+      addToast("Password is required", "error");
+      return false;
+    }
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",

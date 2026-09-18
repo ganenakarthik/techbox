@@ -2,7 +2,21 @@ import crypto from "crypto";
 import { prisma } from "./prisma";
 import { validateAndNormalizeIndianPhone } from "./phone";
 
-const AUTH_SECRET = process.env.AUTH_SECRET || "partsly_super_secret_session_key_production_grade";
+function getAuthSecret(): string {
+  const secret = process.env.AUTH_SECRET;
+  const isProduction = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+
+  if (!secret || secret.trim().length < 16) {
+    if (isProduction) {
+      throw new Error(
+        "[FATAL AUTH CONFIGURATION ERROR] AUTH_SECRET is not configured or is too short in production. Refusing to operate with an insecure OTP key."
+      );
+    }
+    return "partsly_dev_only_local_session_signing_secret_do_not_use_in_prod";
+  }
+  return secret.trim();
+}
+
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_RESEND_COOLDOWN_SECONDS = 45;
 const OTP_MAX_ATTEMPTS = 4;
@@ -29,7 +43,8 @@ export class OtpService {
    * Hashes the 6-digit OTP using HMAC-SHA256 for secure storage in database
    */
   static hashOtp(phone: string, otp: string): string {
-    const hmac = crypto.createHmac("sha256", AUTH_SECRET);
+    const secret = getAuthSecret();
+    const hmac = crypto.createHmac("sha256", secret);
     hmac.update(`${phone}:${otp}`);
     return hmac.digest("hex");
   }
@@ -92,18 +107,133 @@ export class OtpService {
       };
     }
 
-    // 3. Generate secure OTP
-    // In production, NEVER use fallback or hardcoded OTP
-    const isProduction = process.env.NODE_ENV === "production";
+    // 3. Provider Configuration Check
+    const isProduction = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
     const configuredProvider = (process.env.OTP_PROVIDER || (isProduction ? "FAST2SMS" : "DEV")).toUpperCase();
-    const isDev = !isProduction && configuredProvider === "DEV";
-    const otp = this.generateOtp();
-    const otpHash = this.hashOtp(phone, otp);
 
+    const hasSmsConfigured = Boolean(
+      (configuredProvider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) ||
+      (configuredProvider === "TWILIO" && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) ||
+      (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY)
+    );
+
+    if (isProduction && !hasSmsConfigured) {
+      return {
+        success: false,
+        error: "SMS_GATEWAY_NOT_CONFIGURED",
+        message: "SMS gateway is not configured in production. Please configure FAST2SMS_API_KEY, TWILIO_ACCOUNT_SID, or MSG91_AUTH_KEY.",
+        resendAfterSeconds: 0,
+      };
+    }
+
+    const otp = this.generateOtp();
+    let dispatchSuccess = false;
+
+    // 4. Dispatch SMS first through configured provider
+    if (configuredProvider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) {
+      try {
+        const res = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+          method: "POST",
+          headers: {
+            authorization: process.env.FAST2SMS_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            route: "otp",
+            variables_values: otp,
+            numbers: validated.national,
+          }),
+        });
+
+        if (res.ok) {
+          const json = await res.json().catch(() => ({}));
+          dispatchSuccess = json.return === true || json.status_code === 200;
+          if (!dispatchSuccess) {
+            console.error("Fast2SMS gateway returned error status:", json.message || "Unknown provider error");
+          }
+        } else {
+          console.error(`Fast2SMS HTTP error: ${res.status} ${res.statusText}`);
+        }
+      } catch (smsErr) {
+        console.error("Fast2SMS network failure:", smsErr);
+      }
+    } else if (
+      configuredProvider === "TWILIO" &&
+      process.env.TWILIO_ACCOUNT_SID &&
+      process.env.TWILIO_AUTH_TOKEN
+    ) {
+      try {
+        const auth = Buffer.from(
+          `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`
+        ).toString("base64");
+        const res = await fetch(
+          `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${auth}`,
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              To: `+91${validated.national}`,
+              From: process.env.TWILIO_PHONE_NUMBER || "",
+              Body: `Your Partsly verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
+            }),
+          }
+        );
+        dispatchSuccess = res.ok;
+        if (!res.ok) {
+          const errText = await res.text().catch(() => "");
+          console.error(`Twilio gateway HTTP error (${res.status}):`, errText);
+        }
+      } catch (twilioErr) {
+        console.error("Twilio network failure:", twilioErr);
+      }
+    } else if (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY) {
+      try {
+        const res = await fetch("https://api.msg91.com/api/v5/otp", {
+          method: "POST",
+          headers: {
+            authkey: process.env.MSG91_AUTH_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            template_id: process.env.MSG91_OTP_TEMPLATE_ID,
+            mobile: `91${validated.national}`,
+            otp,
+          }),
+        });
+        dispatchSuccess = res.ok;
+        if (!res.ok) {
+          console.error(`MSG91 gateway HTTP error (${res.status})`);
+        }
+      } catch (msgErr) {
+        console.error("MSG91 network failure:", msgErr);
+      }
+    } else if (!isProduction) {
+      // Local development only: log to console
+      dispatchSuccess = true;
+      console.log(`\n======================================================`);
+      console.log(`[DEV OTP SERVICE] Mobile: ${phone} | Purpose: ${purpose}`);
+      console.log(`[DEV OTP CODE] >>> ${otp} <<< (Expires in 5 mins)`);
+      console.log(`======================================================\n`);
+    }
+
+    if (!dispatchSuccess) {
+      return {
+        success: false,
+        error: "SMS_DISPATCH_FAILED",
+        message: "Failed to dispatch SMS verification code. Please try again or use password login.",
+        resendAfterSeconds: 0,
+      };
+    }
+
+    // 5. Provider confirmed -> Commit OTP record (hash only, never plaintext)
+    const otpHash = this.hashOtp(phone, otp);
     const expiresAt = new Date(now.getTime() + OTP_EXPIRY_MINUTES * 60 * 1000);
     const resendAfter = new Date(now.getTime() + OTP_RESEND_COOLDOWN_SECONDS * 1000);
 
-    // 4. Invalidate any existing unverified OTPs for this phone & purpose
+    // Invalidate any previous unverified OTPs for this phone & purpose
     await prisma.otpVerification.deleteMany({
       where: {
         phone,
@@ -112,7 +242,6 @@ export class OtpService {
       },
     });
 
-    // 5. Save new OTP record (hash only, never plaintext)
     await prisma.otpVerification.create({
       data: {
         phone,
@@ -126,92 +255,16 @@ export class OtpService {
       },
     });
 
-    // 6. Dispatch SMS through configured provider
-    if (configuredProvider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) {
-      try {
-        await fetch("https://www.fast2sms.com/dev/bulkV2", {
-          method: "POST",
-          headers: {
-            authorization: process.env.FAST2SMS_API_KEY,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            route: "otp",
-            variables_values: otp,
-            numbers: validated.national,
-          }),
-        });
-      } catch (smsErr) {
-        console.error("Fast2SMS dispatch error:", smsErr);
-      }
-    } else if (configuredProvider === "TWILIO" && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      try {
-        const auth = Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64");
-        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${auth}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            To: `+91${validated.national}`,
-            From: process.env.TWILIO_PHONE_NUMBER || "",
-            Body: `Your Partsly verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
-          }),
-        });
-      } catch (twilioErr) {
-        console.error("Twilio dispatch error:", twilioErr);
-      }
-    } else if (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY) {
-      try {
-        await fetch("https://api.msg91.com/api/v5/otp", {
-          method: "POST",
-          headers: {
-            authkey: process.env.MSG91_AUTH_KEY,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            template_id: process.env.MSG91_OTP_TEMPLATE_ID,
-            mobile: `91${validated.national}`,
-            otp,
-          }),
-        });
-      } catch (msgErr) {
-        console.error("MSG91 dispatch error:", msgErr);
-      }
-    } else {
-      // In DEV provider mode:
-      console.log(`\n======================================================`);
-      console.log(`[DEV OTP SERVICE] Mobile: ${phone} | Purpose: ${purpose}`);
-      console.log(`[DEV OTP CODE] >>> ${otp} <<< (Expires in 5 mins)`);
-      console.log(`======================================================\n`);
-    }
-
-    const hasSmsConfigured = Boolean(
-      (configuredProvider === "FAST2SMS" && process.env.FAST2SMS_API_KEY) ||
-      (configuredProvider === "TWILIO" && process.env.TWILIO_ACCOUNT_SID) ||
-      (configuredProvider === "MSG91" && process.env.MSG91_AUTH_KEY)
-    );
-
-    if (isProduction && !hasSmsConfigured) {
-      return {
-        success: false,
-        error: "SMS_GATEWAY_NOT_CONFIGURED",
-        message: "SMS gateway is not configured in production. Please configure FAST2SMS_API_KEY, TWILIO_ACCOUNT_SID, or MSG91_AUTH_KEY in production environment.",
-        resendAfterSeconds: 0,
-      };
-    }
-
     return {
       success: true,
-      message: `OTP sent successfully to ${validated.formatted}`,
+      message: `Verification code sent to ${validated.formatted}`,
       resendAfterSeconds: OTP_RESEND_COOLDOWN_SECONDS,
-      devOtp: isDev ? otp : undefined,
+      devOtp: !isProduction ? otp : undefined,
     };
   }
 
   /**
-   * Verifies an OTP submitted by the user
+   * Verifies an OTP code for a given phone and purpose
    */
   static async verifyOtp(
     rawPhone: string,
@@ -220,105 +273,106 @@ export class OtpService {
   ): Promise<OtpVerifyResult> {
     const validated = validateAndNormalizeIndianPhone(rawPhone);
     if (!validated.isValid) {
-      return { success: false, message: validated.error || "Invalid mobile number", phone: rawPhone, error: "INVALID_PHONE" };
+      return {
+        success: false,
+        message: validated.error || "Invalid mobile number",
+        phone: rawPhone,
+        error: validated.error,
+      };
     }
 
     const phone = validated.normalized;
-    const cleanOtp = String(inputOtp).trim();
-
-    if (!/^\d{6}$/.test(cleanOtp)) {
-      return { success: false, message: "Please enter a valid 6-digit OTP code", phone, error: "INVALID_FORMAT" };
-    }
-
     const now = new Date();
 
-    // 1. Fetch latest OTP record for this phone & purpose
-    const record = await prisma.otpVerification.findFirst({
-      where: { phone, purpose },
+    const otpRecord = await prisma.otpVerification.findFirst({
+      where: {
+        phone,
+        purpose,
+        verified: false,
+      },
       orderBy: { createdAt: "desc" },
     });
 
-    if (!record) {
+    if (!otpRecord) {
       return {
         success: false,
-        message: "No active OTP request found. Please request a new OTP.",
+        message: "No active verification code found. Please request a new OTP.",
         phone,
-        error: "NO_OTP_REQUEST",
+        error: "OTP_NOT_FOUND",
       };
     }
 
-    // 2. Check if already verified (prevent reuse)
-    if (record.verified) {
+    // 1. Check expiration
+    if (now > otpRecord.expiresAt) {
+      await prisma.otpVerification.delete({ where: { id: otpRecord.id } });
       return {
         success: false,
-        message: "This OTP has already been used. Please request a new OTP.",
-        phone,
-        error: "ALREADY_USED",
-      };
-    }
-
-    // 3. Check expiration
-    if (now > record.expiresAt) {
-      await prisma.otpVerification.delete({ where: { id: record.id } }).catch(() => {});
-      return {
-        success: false,
-        message: "This OTP has expired. Please request a fresh OTP.",
+        message: "Verification code has expired. Please request a new code.",
         phone,
         error: "OTP_EXPIRED",
       };
     }
 
-    // 4. Check maximum attempts
-    if (record.attempts >= record.maxAttempts) {
-      await prisma.otpVerification.delete({ where: { id: record.id } }).catch(() => {});
+    // 2. Check maximum attempts
+    if (otpRecord.attempts >= otpRecord.maxAttempts) {
+      await prisma.otpVerification.delete({ where: { id: otpRecord.id } });
       return {
         success: false,
-        message: "Too many incorrect attempts. For your security, please request a new OTP.",
+        message: "Maximum verification attempts exceeded. Please request a new OTP.",
         phone,
         error: "MAX_ATTEMPTS_EXCEEDED",
       };
     }
 
-    // 5. Compare hash
-    const expectedHash = this.hashOtp(phone, cleanOtp);
-    if (record.otpHash !== expectedHash) {
-      const updatedAttempts = record.attempts + 1;
-      const remaining = record.maxAttempts - updatedAttempts;
+    // 3. Timing-safe cryptographic comparison of hash
+    const inputHash = this.hashOtp(phone, inputOtp.trim());
+    const expectedHash = otpRecord.otpHash;
 
-      await prisma.otpVerification.update({
-        where: { id: record.id },
-        data: { attempts: updatedAttempts },
-      });
+    const inputBuf = Buffer.from(inputHash, "hex");
+    const expectedBuf = Buffer.from(expectedHash, "hex");
 
-      if (remaining <= 0) {
-        await prisma.otpVerification.delete({ where: { id: record.id } }).catch(() => {});
+    const isMatch =
+      inputBuf.length === expectedBuf.length &&
+      crypto.timingSafeEqual(inputBuf, expectedBuf);
+
+    if (!isMatch) {
+      const newAttempts = otpRecord.attempts + 1;
+      const attemptsRemaining = otpRecord.maxAttempts - newAttempts;
+
+      if (attemptsRemaining <= 0) {
+        await prisma.otpVerification.delete({ where: { id: otpRecord.id } });
         return {
           success: false,
-          message: "Too many incorrect attempts. This OTP has been invalidated.",
+          message: "Incorrect code. Maximum attempts reached. Please request a new OTP.",
           phone,
-          error: "MAX_ATTEMPTS_EXCEEDED",
+          error: "INCORRECT_OTP_LOCKED",
           attemptsRemaining: 0,
         };
       }
 
+      await prisma.otpVerification.update({
+        where: { id: otpRecord.id },
+        data: { attempts: newAttempts },
+      });
+
       return {
         success: false,
-        message: `Incorrect OTP. ${remaining} attempt${remaining > 1 ? "s" : ""} remaining.`,
+        message: `Incorrect code. ${attemptsRemaining} attempt${attemptsRemaining === 1 ? "" : "s"} remaining.`,
         phone,
         error: "INCORRECT_OTP",
-        attemptsRemaining: remaining,
+        attemptsRemaining,
       };
     }
 
-    // 6. Success! Invalidate immediately to prevent reuse
+    // 4. Success -> Mark as verified
     await prisma.otpVerification.update({
-      where: { id: record.id },
+      where: { id: otpRecord.id },
       data: { verified: true },
     });
 
     return {
       success: true,
-      message: "Mobile number verified successfully!",
+      message: "Mobile number verified successfully",
       phone,
     };
   }
