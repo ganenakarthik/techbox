@@ -19,6 +19,8 @@ export async function GET() {
       totalUsers,
       lowStockCount,
       totalProjects,
+      openTicketsCount,
+      pendingQuotesCount,
       recentOrders,
       recentAudits,
     ] = await Promise.all([
@@ -35,6 +37,8 @@ export async function GET() {
         where: { available: { lte: 5 } },
       }),
       prisma.project.count(),
+      prisma.supportTicket.count({ where: { status: { in: ["OPEN", "IN_PROGRESS"] } } }),
+      prisma.quote.count({ where: { status: { in: ["SENT", "VIEWED", "PAYMENT_SUBMITTED"] } } }),
       prisma.order.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
@@ -62,6 +66,8 @@ export async function GET() {
         totalUsers,
         lowStockCount,
         totalProjects,
+        openTicketsCount,
+        pendingQuotesCount,
       },
       recentOrders: recentOrders.map((o) => ({
         id: o.id,

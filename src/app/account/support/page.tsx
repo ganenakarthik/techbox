@@ -86,7 +86,7 @@ export default function SupportPage() {
 
     setSendingReply(ticketId);
     try {
-      const res = await fetch(`/api/support/tickets/${ticketId}`, {
+      const res = await fetch(`/api/support/tickets/${ticketId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
