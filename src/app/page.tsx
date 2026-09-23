@@ -18,78 +18,11 @@ import {
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProjectDropzone } from "@/components/projects/ProjectDropzone";
 import { HeroBannerSlider } from "@/components/home/HeroBannerSlider";
-import { prisma } from "@/lib/prisma";
+import { getProducts, getProjectKits } from "@/lib/data";
 
 export default async function HomePage() {
-  let featuredProducts: any[] = [];
-  let featuredKits: any[] = [];
-
-  try {
-    const prismaProducts = await prisma.product.findMany({
-      where: { isFeatured: true },
-      take: 8,
-      include: {
-        brand: true,
-        category: true,
-        variants: {
-          include: {
-            inventory: true,
-          },
-        },
-      },
-    });
-
-    featuredProducts = prismaProducts.map((p) => ({
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      brand: p.brand.name,
-      category: p.category.name,
-      description: p.description,
-      details: p.details || "",
-      specs: (typeof p.specs === "object" && p.specs !== null ? p.specs : {}) as Record<string, string>,
-      pinoutUrl: p.pinoutUrl || undefined,
-      datasheetUrl: p.datasheetUrl || undefined,
-      rating: p.rating,
-      reviewCount: p.reviewCount,
-      isFeatured: p.isFeatured,
-      isBestseller: p.isBestseller,
-      images: Array.isArray(p.images) ? (p.images as string[]) : [],
-      tags: [],
-      variants: p.variants.map((v) => ({
-        id: v.id,
-        name: v.name,
-        sku: v.sku,
-        price: Number(v.price),
-        mrp: Number(v.mrp),
-        discount: v.discount,
-        stock: v.inventory?.available || 0,
-      })),
-    }));
-
-    const prismaKits = await prisma.projectKit.findMany({ take: 4 });
-    featuredKits = prismaKits.map((k) => ({
-      id: k.id,
-      title: k.title,
-      slug: k.slug,
-      category: k.category,
-      difficulty: k.difficulty as any,
-      buildTime: k.buildTime,
-      price: Number(k.price),
-      mrp: Number(k.mrp),
-      description: k.description,
-      circuitDiagramUrl: k.circuitDiagramUrl || undefined,
-      sourceCodeUrl: k.sourceCodeUrl || undefined,
-      assemblyGuideUrl: k.assemblyGuideUrl || undefined,
-      includes: Array.isArray(k.includes) ? (k.includes as string[]) : [],
-      optionalAddons: Array.isArray(k.optionalAddons) ? (k.optionalAddons as any[]) : [],
-      images: Array.isArray(k.images) ? (k.images as string[]) : [],
-      rating: 4.8,
-      reviewsCount: 0,
-    }));
-  } catch (e) {
-    console.warn("Database fetch failed on homepage:", e);
-  }
+  const featuredProducts = await getProducts({ limit: 8 });
+  const featuredKits = (await getProjectKits()).slice(0, 4);
 
   // Amazon Quad Grid Categories Data
   const quadDevBoards = [
@@ -121,7 +54,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#eaeded] text-slate-900 selection:bg-[#ff9900] selection:text-slate-900">
+    <div className="flex flex-col min-h-screen bg-[#eaeded] text-slate-900 selection:bg-[#ff6a00] selection:text-white">
       {/* 1. HERO BANNER SLIDESHOW WITH BOTTOM FADE */}
       <HeroBannerSlider />
 
@@ -146,7 +79,7 @@ export default async function HomePage() {
                         className="object-contain p-2 group-hover:scale-105 transition-transform"
                       />
                     </div>
-                    <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#007185]">
+                    <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#ff6a00] transition-colors">
                       {item.name}
                     </span>
                   </Link>
@@ -155,7 +88,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/shop?category=development-boards"
-              className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline mt-4 inline-block"
+              className="text-xs font-semibold text-[#ff6a00] hover:text-[#ea580c] hover:underline mt-4 inline-block"
             >
               See all development boards
             </Link>
@@ -179,7 +112,7 @@ export default async function HomePage() {
                         className="object-contain p-2 group-hover:scale-105 transition-transform"
                       />
                     </div>
-                    <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#007185]">
+                    <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#ff6a00] transition-colors">
                       {item.name}
                     </span>
                   </Link>
@@ -188,9 +121,9 @@ export default async function HomePage() {
             </div>
             <Link
               href="/shop?category=sensors-modules"
-              className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline mt-4 inline-block"
+              className="text-xs font-semibold text-[#ff6a00] hover:text-[#ea580c] hover:underline mt-4 inline-block"
             >
-              Explore sensors & modules
+              Explore all sensors
             </Link>
           </div>
 
@@ -209,10 +142,10 @@ export default async function HomePage() {
                         alt={item.name}
                         fill
                         sizes="140px"
-                        className="object-cover group-hover:scale-105 transition-transform"
+                        className="object-contain p-2 group-hover:scale-105 transition-transform"
                       />
                     </div>
-                    <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#007185]">
+                    <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#ff6a00] transition-colors">
                       {item.name}
                     </span>
                   </Link>
@@ -221,9 +154,9 @@ export default async function HomePage() {
             </div>
             <Link
               href="/projects"
-              className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline mt-4 inline-block"
+              className="text-xs font-semibold text-[#ff6a00] hover:text-[#ea580c] hover:underline mt-4 inline-block"
             >
-              See all project kits
+              Browse all project kits
             </Link>
           </div>
 
@@ -234,16 +167,16 @@ export default async function HomePage() {
                 Campus Engineering Services
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                {quadServices.map((service) => {
-                  const Icon = service.icon;
+                {quadServices.map((item) => {
+                  const Icon = item.icon;
                   return (
-                    <Link key={service.name} href={service.href} className="group block text-center">
-                      <div className="aspect-square w-full bg-orange-50/70 border border-orange-200/60 rounded-sm flex flex-col items-center justify-center p-2 mb-1.5 group-hover:bg-orange-100/70 transition-colors">
-                        <Icon className="w-7 h-7 text-[#ff6a00] mb-1 group-hover:scale-105 transition-transform" />
-                        <span className="text-[10px] text-slate-500 font-medium">{service.desc}</span>
+                    <Link key={item.name} href={item.href} className="group block text-center">
+                      <div className="aspect-square w-full bg-slate-50 border border-slate-100 rounded-sm flex flex-col items-center justify-center p-2 mb-1.5 group-hover:bg-orange-50/50 group-hover:border-orange-200 transition-colors">
+                        <Icon className="w-7 h-7 text-[#ff6a00] mb-1.5 group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
                       </div>
-                      <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#007185]">
-                        {service.name}
+                      <span className="text-[11px] text-slate-700 font-medium line-clamp-1 group-hover:text-[#ff6a00] transition-colors">
+                        {item.name}
                       </span>
                     </Link>
                   );
@@ -252,9 +185,9 @@ export default async function HomePage() {
             </div>
             <Link
               href="/services/pcb"
-              className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline mt-4 inline-block"
+              className="text-xs font-semibold text-[#ff6a00] hover:text-[#ea580c] hover:underline mt-4 inline-block"
             >
-              Request instant fabrication quote
+              View fabrication hub
             </Link>
           </div>
         </div>
@@ -274,7 +207,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/shop"
-              className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#ff6a00] hover:text-[#ea580c] hover:underline flex items-center gap-1"
             >
               <span>See all deals</span>
               <ArrowRight className="w-3 h-3" />
@@ -289,7 +222,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="py-8 text-center text-slate-500 text-sm">
-              Connecting to live catalog...
+              Featured components will display here.
             </div>
           )}
         </div>
@@ -309,7 +242,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/projects"
-              className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#ff6a00] hover:text-[#ea580c] hover:underline flex items-center gap-1"
             >
               <span>See all project kits</span>
               <ArrowRight className="w-3 h-3" />
@@ -346,7 +279,7 @@ export default async function HomePage() {
                     </div>
 
                     <Link href={`/projects/${kit.slug}`}>
-                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#c7511f] transition-colors line-clamp-2 leading-snug">
+                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors line-clamp-2 leading-snug">
                         {kit.title}
                       </h3>
                     </Link>
@@ -379,7 +312,7 @@ export default async function HomePage() {
 
                   <Link
                     href={`/projects/${kit.slug}`}
-                    className="w-full py-2 px-3 rounded-sm bg-[#ffd814] hover:bg-[#f7ca00] active:bg-[#f0b800] text-slate-900 border border-[#fcd200] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                    className="w-full py-2 px-3 rounded-sm bg-[#ff6a00] hover:bg-[#ea580c] active:bg-[#d95b00] text-white border border-[#ff6a00] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
                   >
                     <span>View Kit Details</span>
                     <ArrowRight className="w-3.5 h-3.5" />

@@ -1,6 +1,7 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -124,6 +125,9 @@ model User {
   notifications Notification[]
   cart          Cart?
   wishlist      Wishlist?
+  sourcingRequests ComponentSourcingRequest[]
+  quotes        Quote[]
+  storedFiles   StoredFile[]
 }
 
 model College {
@@ -456,6 +460,7 @@ model Project {
 
   files       ProjectFile[]
   quotes      ProjectQuote[]
+  unifiedQuotes Quote[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -654,5 +659,166 @@ model OtpVerification {
   updatedAt   DateTime @updatedAt
 
   @@index([phone, purpose])
+}
+
+enum SourcingStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  QUOTE_READY
+  CUSTOMER_ACCEPTED
+  PAYMENT_PENDING
+  PAYMENT_SUBMITTED
+  PAYMENT_VERIFIED
+  SOURCING
+  READY_FOR_DISPATCH
+  DELIVERED
+  REJECTED
+  CANCELLED
+}
+
+model ComponentSourcingRequest {
+  id                String         @id @default(uuid())
+  requestNumber     String         @unique
+  userId            String
+  user              User           @relation(fields: [userId], references: [id])
+  componentName     String
+  manufacturer      String?
+  mpn               String?
+  quantity          Int            @default(1)
+  packageType       String?
+  preferredBrand    String?
+  specifications    String?
+  acceptableAlts    String?
+  targetUnitPrice   Decimal?
+  urgency           String         @default("Standard (5-7 days)")
+  notes             String?
+  referenceFileUrl  String?
+  referenceFileName String?
+
+  status            SourcingStatus @default(SUBMITTED)
+
+  quotedUnitPrice   Decimal?
+  quotedShippingFee Decimal?       @default(0)
+  quotedTotalAmount Decimal?
+  quoteValidUntil   DateTime?
+
+  utrNumber         String?
+  utrSubmittedAt    DateTime?
+  paymentVerifiedAt DateTime?
+  paymentVerifiedBy String?
+
+  adminNotes        String?
+  quote             Quote?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+enum ServiceType {
+  COMPONENT_SOURCING
+  CUSTOM_PROJECT
+  PCB_MANUFACTURING
+  THREE_D_PRINTING
+  PROTOTYPE_DEVELOPMENT
+  DOCUMENTATION
+}
+
+enum UnifiedQuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  PAYMENT_PENDING
+  PAYMENT_SUBMITTED
+  PAYMENT_VERIFIED
+  REJECTED
+  CANCELLED
+}
+
+model Quote {
+  id                    String              @id @default(uuid())
+  quoteNumber           String              @unique
+  userId                String
+  user                  User                @relation(fields: [userId], references: [id])
+  serviceType           ServiceType         @default(CUSTOM_PROJECT)
+  title                 String
+  description           String?
+  status                UnifiedQuoteStatus  @default(DRAFT)
+
+  subtotal              Decimal             @default(0)
+  shippingFee           Decimal             @default(0)
+  tax                   Decimal             @default(0)
+  discount              Decimal             @default(0)
+  totalAmount           Decimal             @default(0)
+  currency              String              @default("INR")
+
+  validUntil            DateTime?
+  notes                 String?
+  terms                 String?
+
+  sourcingRequestId     String?             @unique
+  sourcingRequest       ComponentSourcingRequest? @relation(fields: [sourcingRequestId], references: [id], onDelete: SetNull)
+
+  projectId             String?
+  project               Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  utrNumber             String?
+  utrSubmittedAt        DateTime?
+  paymentVerifiedAt     DateTime?
+  paymentVerifiedBy     String?
+
+  adminNotes            String?
+  createdById           String?
+
+  items                 QuoteItem[]
+
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  @@index([userId, status])
+}
+
+model QuoteItem {
+  id          String   @id @default(uuid())
+  quoteId     String
+  quote       Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  description String
+  unitPrice   Decimal  @default(0)
+  quantity    Int      @default(1)
+  totalPrice  Decimal  @default(0)
+  createdAt   DateTime @default(now())
+}
+
+enum FileCategory {
+  BOM
+  PCB
+  THREE_D_MODEL
+  PROJECT_REFERENCE
+  DOCUMENTATION
+  PROTOTYPE
+  SOURCING_REFERENCE
+  OTHER
+}
+
+model StoredFile {
+  id           String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  originalName String
+  storageKey   String       @unique
+  fileUrl      String
+  mimeType     String
+  sizeBytes    Int
+  category     FileCategory @default(OTHER)
+
+  entityType   String?
+  entityId     String?
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([userId, category])
+  @@index([entityType, entityId])
 }
 

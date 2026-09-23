@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -64,6 +64,12 @@ export function Navbar() {
   }, []);
 
   const services = [
+    {
+      name: "Component Sourcing",
+      desc: "Procure unlisted ICs, sensors & rare modules",
+      href: "/services/component-sourcing",
+      icon: Cpu,
+    },
     {
       name: "PCB Manufacturing",
       desc: "1 to 4 layer rapid FR-4 custom boards",
@@ -203,7 +209,7 @@ export function Navbar() {
                 href="/"
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-semibold text-slate-800 transition-all shadow-xs"
               >
-                <span>â† Exit to Store</span>
+                <span>← Exit to Store</span>
               </Link>
             </div>
           </div>
@@ -248,9 +254,9 @@ export function Navbar() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <kbd className="hidden lg:inline-flex items-center px-2 py-0.5 text-[10px] text-slate-500 bg-white border border-slate-200 rounded font-mono font-semibold shadow-xs">
-                    âŒ˜K
+                    ⌘K
                   </kbd>
-                  <span className="px-3 py-1.5 rounded-lg bg-[#ff6a00] text-slate-900 font-bold text-xs shadow-xs hover:bg-[#ea580c] transition-colors">
+                  <span className="px-3 py-1.5 rounded-lg bg-[#ff6a00] text-white font-bold text-xs shadow-xs hover:bg-[#ea580c] transition-colors">
                     Search
                   </span>
                 </div>
@@ -285,7 +291,7 @@ export function Navbar() {
               >
                 <Heart className="w-4 h-4" />
                 {wishlist.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ff6a00] text-slate-900 text-[10px] font-bold flex items-center justify-center shadow">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ff6a00] text-white text-[10px] font-bold flex items-center justify-center shadow">
                     {wishlist.length}
                   </span>
                 )}
@@ -306,7 +312,7 @@ export function Navbar() {
               {/* Cart Button (Blinkit / Flipkart Style) */}
               <button
                 onClick={() => setIsCartDrawerOpen(true)}
-                className="flex items-center gap-2 h-10 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-slate-900 font-extrabold text-xs transition-all shadow-sm active:scale-95"
+                className="flex items-center gap-2 h-10 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-extrabold text-xs transition-all shadow-sm active:scale-95"
               >
                 <ShoppingBag className="w-4 h-4" />
                 <span className="hidden sm:inline">Cart</span>
@@ -383,7 +389,7 @@ export function Navbar() {
                               onClick={() => setIsServicesDropdownOpen(false)}
                               className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors group"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] shrink-0 group-hover:bg-[#ff6a00] group-hover:text-slate-900 transition-colors">
+                              <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] shrink-0 group-hover:bg-[#ff6a00] group-hover:text-white transition-colors">
                                 <Icon className="w-4 h-4" />
                               </div>
                               <div className="min-w-0">
@@ -470,7 +476,7 @@ export function Navbar() {
                   className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-orange-50 text-[#ff6a00] border border-orange-200"
                 >
                   <span>Build My Project</span>
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-[#ff6a00] text-slate-900">
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-[#ff6a00] text-white">
                     POPULAR
                   </span>
                 </Link>
@@ -525,7 +531,7 @@ export function Navbar() {
             </div>
 
             <div className="pt-6 border-t border-slate-200 text-center text-xs text-slate-400">
-              {BRAND.displayName} â€¢ Same-Day Campus Dispatch
+              {BRAND.displayName} • Same-Day Campus Dispatch
             </div>
           </div>
         </div>

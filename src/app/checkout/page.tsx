@@ -5,24 +5,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import confetti from "canvas-confetti";
 import {
   ShieldCheck,
   CheckCircle2,
   Truck,
-  CreditCard,
   QrCode,
   MapPin,
   Clock,
   ArrowRight,
-  ArrowLeft,
   ShoppingBag,
-  Sparkles,
   AlertCircle,
-  HelpCircle,
   MessageSquare,
+  Copy,
+  ExternalLink,
 } from "lucide-react";
-import { generateWhatsAppOrderUrl } from "@/lib/whatsapp";
+import { validateIndianPhone, validateUTR } from "@/lib/validation";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -39,13 +36,12 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<number>(1);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const [trackingNumber, setTrackingNumber] = useState<string | null>(null);
 
   // Form State
-  const [contactName, setContactName] = useState(user?.name || "Arjun Sharma");
-  const [contactEmail, setContactEmail] = useState(user?.email || "arjun@campus.edu");
-  const [contactPhone, setContactPhone] = useState(user?.phone || "+91 98450 12345");
-  const [alternatePhone, setAlternatePhone] = useState("+91 94440 67890");
+  const [contactName, setContactName] = useState(user?.name || "");
+  const [contactEmail, setContactEmail] = useState(user?.email || "");
+  const [contactPhone, setContactPhone] = useState(user?.phone || "");
+  const [alternatePhone, setAlternatePhone] = useState("");
 
   // Keep form updated when user logs in
   React.useEffect(() => {
@@ -56,24 +52,29 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-  // Freeform Campus & Delivery Details (No hardcoded forced colleges)
-  const [collegeName, setCollegeName] = useState("National Institute of Technology");
-  const [department, setDepartment] = useState("Electronics & Communication (ECE)");
-  const [pickupPoint, setPickupPoint] = useState("Main Campus Security Desk / Gate 1");
-  const [hostelBlock, setHostelBlock] = useState("Hostel Block 4, Room 312");
-  const [cityState, setCityState] = useState("Bengaluru, Karnataka");
+  // Campus & Delivery Details
+  const [collegeName, setCollegeName] = useState(user?.college || "");
+  const [department, setDepartment] = useState("");
+  const [pickupPoint, setPickupPoint] = useState("");
+  const [hostelBlock, setHostelBlock] = useState(user?.room || "");
+  const [cityState, setCityState] = useState("");
 
   // Delivery Speed
   const [deliverySpeed, setDeliverySpeed] = useState<"standard" | "urgent">("standard");
   const [deliverySlot, setDeliverySlot] = useState("Evening Slot (4:30 PM - 7:30 PM)");
 
-  // Payment Method
-  const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "cod" | "test_mode">("upi");
-  const [upiId, setUpiId] = useState("student@oksbi");
+  // Payment
   const [utrNumber, setUtrNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [placedOrderNumber, setPlacedOrderNumber] = useState<string | null>(null);
-  const [placedOrderData, setPlacedOrderData] = useState<any>(null);
+
+  // Real order confirmation state — only populated after successful API response
+  const [confirmedOrder, setConfirmedOrder] = useState<{
+    orderNumber: string;
+    total: number;
+    whatsappUrl?: string;
+    paymentStatus: string;
+    utrNumber: string | null;
+  } | null>(null);
 
   const speedFee = deliverySpeed === "urgent" ? 99 : 0;
   const campusDeliveryFee = subtotal >= 499 ? 0 : 40;
@@ -84,7 +85,7 @@ export default function CheckoutPage() {
     setCheckoutError(null);
 
     if (!user) {
-      addToast("Please sign in or create an account to complete campus checkout", "warning");
+      addToast("Please log in to place an order", "warning");
       setIsAuthModalOpen(true);
       return;
     }
@@ -94,153 +95,221 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!contactName.trim()) {
+      addToast("Please enter your name", "error");
+      setStep(1);
+      return;
+    }
+
+    const phoneValidation = validateIndianPhone(contactPhone);
+    if (!phoneValidation.isValid) {
+      addToast(phoneValidation.error || "Please enter a valid 10-digit Indian mobile number", "error");
+      setStep(1);
+      return;
+    }
+
+    if (!collegeName.trim()) {
+      addToast("Campus / College name is required for delivery", "error");
+      setStep(2);
+      return;
+    }
+
+    if (!hostelBlock.trim()) {
+      addToast("Hostel block / room number is required for campus delivery", "error");
+      setStep(2);
+      return;
+    }
+
+    if (!pickupPoint.trim()) {
+      addToast("Campus pickup point is required", "error");
+      setStep(2);
+      return;
+    }
+
+    const cleanUtr = utrNumber.trim();
+    if (cleanUtr) {
+      const utrValidation = validateUTR(cleanUtr);
+      if (!utrValidation.isValid) {
+        addToast(utrValidation.error || "Invalid UTR format. Must be a 12-digit number.", "error");
+        setStep(4);
+        return;
+      }
+    }
+
     setIsProcessing(true);
 
     try {
-      // 1. Call transactional checkout API
+      const payload = {
+        items: cart.map((item) => ({
+          variantId: item.variantId,
+          name: item.name,
+          quantity: item.quantity,
+        })),
+        recipientName: contactName.trim(),
+        recipientPhone: phoneValidation.normalized || contactPhone.trim(),
+        collegeName: collegeName.trim(),
+        campusName: cityState.trim() || undefined,
+        department: department.trim() || undefined,
+        pickupPoint: pickupPoint.trim(),
+        hostelBlock: hostelBlock.trim(),
+        deliverySlot,
+        deliverySpeed,
+        paymentMethod: "upi",
+        couponCode: couponCode || undefined,
+        utrNumber: cleanUtr || undefined,
+      };
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: cart,
-          recipientName: contactName,
-          recipientPhone: contactPhone,
-          collegeName,
-          campusName: collegeName,
-          department,
-          pickupPoint,
-          hostelBlock,
-          deliverySlot,
-          deliverySpeed,
-          paymentMethod,
-          couponCode,
-          utrNumber: utrNumber.trim() || undefined,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to create order");
+        // API returned an error — show it, do NOT clear cart
+        const errorMsg = data.error || "Order could not be placed. Please try again.";
+        setCheckoutError(errorMsg);
+        addToast(errorMsg, "error");
+        return;
       }
 
-      const orderNum = data.orderNumber;
-      setPlacedOrderNumber(orderNum);
-      setPlacedOrderData({
-        orderNumber: orderNum,
-        orderId: data.orderId,
-        total: data.total || grandTotal,
-        paymentStatus: utrNumber.trim() ? "PAYMENT_SUBMITTED" : "PAYMENT_PENDING",
-        utrNumber: utrNumber.trim() || null,
-        recipientName: contactName,
-        recipientPhone: contactPhone,
-        campusDetail: `${collegeName} | ${pickupPoint} | ${hostelBlock}`,
-        items: cart.map((c) => ({
-          productName: c.name,
-          quantity: c.quantity,
-          unitPrice: c.price,
-        })),
-      });
-
-      // Confetti celebration
-      try {
-        confetti({
-          particleCount: 120,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
-      } catch {
-        // ignore
-      }
-
+      // Order successfully created — NOW clear cart and show confirmation
       clearCart();
-      addToast(`Order ${orderNum} created! Inventory reserved in database.`, "success");
+      setConfirmedOrder({
+        orderNumber: data.orderNumber,
+        total: data.total,
+        whatsappUrl: data.whatsappUrl,
+        paymentStatus: cleanUtr ? "PAYMENT_SUBMITTED" : "PAYMENT_PENDING",
+        utrNumber: cleanUtr || null,
+      });
+      addToast(`Order ${data.orderNumber} confirmed!`, "success");
     } catch (err: any) {
-      console.error("Checkout failure:", err);
-      setCheckoutError(err.message || "An error occurred during checkout");
-      addToast(err.message || "Checkout failed", "error");
+      // Network/server error — show error, do NOT clear cart
+      const errorMsg =
+        "Unable to reach the order server. Please check your connection and try again.";
+      setCheckoutError(errorMsg);
+      addToast(errorMsg, "error");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Order Confirmed Celebration Screen
-  if (placedOrderNumber && placedOrderData) {
-    const waUrl = generateWhatsAppOrderUrl(placedOrderData);
-
+  // ─── Confirmed Order Screen ────────────────────────────────────────────────
+  if (confirmedOrder) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <div className="w-20 h-20 rounded-3xl bg-[#ff6a00]/15 border border-[#ff6a00]/30 flex items-center justify-center mx-auto mb-6 text-[#ff6a00]">
+        <div className="w-20 h-20 rounded-3xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-6 text-emerald-600">
           <CheckCircle2 className="w-10 h-10" />
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ff6a00]/15 text-[#ff6a00] text-xs font-bold mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold mb-3">
           <Truck className="w-3.5 h-3.5" />
-          <span>Campus Order Placed</span>
+          <span>Order Confirmed — Campus Dispatch Queued</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900">
-          Order #{placedOrderNumber} Registered
+          Order #{confirmedOrder.orderNumber}
         </h1>
         <p className="text-sm text-slate-500 mt-2">
-          Your project hardware components have been safely reserved in database inventory.
+          {confirmedOrder.utrNumber
+            ? "Your payment reference has been submitted. Partsly will verify your UTR and confirm dispatch."
+            : "Your order is placed. Please complete UPI payment and submit your UTR reference to confirm dispatch."}
         </p>
 
-        {/* Verification Alert Banner */}
+        {/* Order Summary */}
         <div className="mt-6 p-6 rounded-3xl bg-white border border-slate-200 text-left text-xs space-y-3">
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-slate-500">Campus Pickup Point:</span>
-            <span className="text-slate-900 font-bold">{pickupPoint} ({collegeName})</span>
+            <span className="text-slate-500">Order Number:</span>
+            <span className="text-slate-900 font-mono font-bold">{confirmedOrder.orderNumber}</span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-slate-500">Scheduled Slot:</span>
-            <span className="text-slate-900 font-bold">{deliverySlot}</span>
+            <span className="text-slate-500">Amount Payable:</span>
+            <span className="text-[#ff6a00] font-black text-base">₹{confirmedOrder.total}</span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <span className="text-slate-500">Payment Status:</span>
-            <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold ${
-              placedOrderData.paymentStatus === "PAYMENT_SUBMITTED"
-                ? "bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/30"
-                : "bg-[#eab308]/20 text-[#eab308] border border-[#eab308]/30"
-            }`}>
-              {placedOrderData.paymentStatus === "PAYMENT_SUBMITTED" ? "PAYMENT SUBMITTED • PENDING VERIFICATION" : "PAYMENT PENDING"}
+            <span className={`font-bold ${confirmedOrder.paymentStatus === "PAYMENT_SUBMITTED" ? "text-emerald-600" : "text-amber-600"}`}>
+              {confirmedOrder.paymentStatus === "PAYMENT_SUBMITTED" ? "UTR Submitted — Pending Verification" : "Awaiting Payment"}
             </span>
           </div>
-          {placedOrderData.utrNumber ? (
+          {confirmedOrder.utrNumber && (
             <div className="flex items-center justify-between pt-1">
               <span className="text-slate-500">Submitted UTR:</span>
-              <span className="text-slate-900 font-mono font-bold">{placedOrderData.utrNumber}</span>
-            </div>
-          ) : (
-            <div className="p-3 rounded-xl bg-[#ff6a00]/10 border border-[#ff6a00]/25 text-[11px] text-slate-600">
-              Please pay via PhonePe QR and submit your 12-digit UTR on your order tracking page, or send screenshot directly on WhatsApp.
+              <span className="text-slate-900 font-mono font-bold">{confirmedOrder.utrNumber}</span>
             </div>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
+        {/* UPI QR — show if not yet paid */}
+        {!confirmedOrder.utrNumber && (
+          <div className="mt-6 p-5 rounded-3xl bg-[#ff6a00]/5 border border-[#ff6a00]/25 text-left space-y-3">
+            <p className="text-xs font-bold text-slate-900">Complete Your UPI Payment</p>
+            <p className="text-[11px] text-slate-600">
+              Pay ₹{confirmedOrder.total} to <strong>7032635858@ybl</strong> (PINNAM CHARLA CHARLA) using any UPI app, then submit your 12-digit UTR from the payment receipt.
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500">UPI ID:</span>
+              <code className="text-xs text-[#ff6a00] font-mono font-bold">7032635858@ybl</code>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText("7032635858@ybl");
+                  addToast("UPI ID copied", "success");
+                }}
+                className="p-1 rounded hover:bg-slate-100 transition-colors"
+              >
+                <Copy className="w-3.5 h-3.5 text-slate-500" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* WhatsApp Confirmation */}
+        {confirmedOrder.whatsappUrl && (
           <a
-            href={waUrl}
+            href={confirmedOrder.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-3.5 px-6 rounded-xl bg-[#22c55e] hover:bg-[#25b85a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#22c55e]/25 transition-all"
+            className="mt-4 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-lg shadow-[#25D366]/20"
           >
             <MessageSquare className="w-4 h-4" />
-            <span>Send Order on WhatsApp</span>
+            <span>Confirm Order on WhatsApp</span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-75" />
           </a>
+        )}
+
+        {/* Action Buttons */}
+        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
           <Link
-            href={`/orders/${placedOrderNumber}`}
+            href={`/account`}
             className="py-3.5 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
           >
-            <span>Track Order & Live Timeline</span>
+            <span>View My Orders</span>
             <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/shop"
+            className="py-3.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 transition-all"
+          >
+            <span>Continue Shopping</span>
           </Link>
         </div>
       </div>
     );
   }
 
+  // ─── Checkout Form ─────────────────────────────────────────────────────────
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Auth gate */}
+      {!user && (
+        <div className="mb-6 max-w-3xl mx-auto p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center gap-3 text-xs">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+          <span className="text-amber-800">
+            You need to <button onClick={() => setIsAuthModalOpen(true)} className="font-bold underline">sign in</button> to place an order.
+          </span>
+        </div>
+      )}
+
       {/* Steps indicator */}
       <div className="mb-10 max-w-3xl mx-auto">
         <div className="flex items-center justify-between text-xs font-bold">
@@ -248,7 +317,7 @@ export default function CheckoutPage() {
             { id: 1, name: "01 Contact" },
             { id: 2, name: "02 Campus Delivery" },
             { id: 3, name: "03 Speed & Slot" },
-            { id: 4, name: "04 Payment (Test Mode)" },
+            { id: 4, name: "04 Payment (PhonePe UPI)" },
             { id: 5, name: "05 Review & Order" },
           ].map((s) => (
             <button
@@ -269,7 +338,7 @@ export default function CheckoutPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left: Interactive Step Forms (8 cols) */}
+        {/* Left: Step Forms */}
         <div className="lg:col-span-8 space-y-6">
           {/* STEP 1: CONTACT */}
           {step === 1 && (
@@ -289,6 +358,7 @@ export default function CheckoutPage() {
                     required
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
+                    placeholder="e.g. Rahul Sharma"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
@@ -297,9 +367,9 @@ export default function CheckoutPage() {
                   <label className="text-slate-600 block mb-1 font-semibold">Student College Email:</label>
                   <input
                     type="email"
-                    required
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
+                    placeholder="e.g. rahul@campus.edu"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
@@ -311,6 +381,7 @@ export default function CheckoutPage() {
                     required
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="e.g. +91 98765 43210"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
@@ -321,6 +392,7 @@ export default function CheckoutPage() {
                     type="tel"
                     value={alternatePhone}
                     onChange={(e) => setAlternatePhone(e.target.value)}
+                    placeholder="e.g. +91 98765 43211 (optional)"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
@@ -339,7 +411,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* STEP 2: CAMPUS SELECTION (OPEN / NON-RESTRICTED) */}
+          {/* STEP 2: CAMPUS */}
           {step === 2 && (
             <div className="p-8 rounded-3xl bg-white border border-slate-200 space-y-6">
               <div>
@@ -387,7 +459,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Campus Pickup Point / Gate:</label>
+                  <label className="text-slate-600 block mb-1 font-semibold">Campus Pickup Point / Gate: *</label>
                   <input
                     type="text"
                     required
@@ -534,7 +606,7 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              {/* Single Official Payment Method: PhonePe UPI QR */}
+              {/* Official UPI Payment */}
               <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-5">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="relative w-52 h-52 rounded-2xl overflow-hidden bg-white border-2 border-slate-200 shadow-md shrink-0 p-3 flex items-center justify-center">
@@ -578,7 +650,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* UTR Input Section */}
+                {/* UTR Input */}
                 <div className="pt-4 border-t border-slate-200">
                   <label className="text-xs font-semibold text-slate-700 block mb-1.5">
                     Enter 12-Digit Bank Reference / UTR Number:
@@ -593,7 +665,7 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-                    Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. Partsly operations team verifies the bank credit and confirms your order. If you haven't paid yet, you can also submit your UTR after placing the order.
+                    Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. You can also submit your UTR after placing the order from your account page.
                   </p>
                 </div>
               </div>
@@ -629,28 +701,45 @@ export default function CheckoutPage() {
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
-                <div className="flex justify-between pb-2 border-b border-[#202020]">
+                <div className="flex justify-between pb-2 border-b border-slate-200">
                   <span className="text-slate-500">College / Campus:</span>
-                  <span className="text-slate-900 font-bold">{collegeName}</span>
+                  <span className="text-slate-900 font-bold">{collegeName || "—"}</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-[#202020]">
+                <div className="flex justify-between pb-2 border-b border-slate-200">
                   <span className="text-slate-500">Pickup Location:</span>
-                  <span className="text-slate-900 font-bold">{pickupPoint}</span>
+                  <span className="text-slate-900 font-bold">{pickupPoint || "—"}</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-[#202020]">
+                <div className="flex justify-between pb-2 border-b border-slate-200">
                   <span className="text-slate-500">Scheduled Run:</span>
                   <span className="text-slate-900 font-bold">{deliverySlot}</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-[#202020]">
+                <div className="flex justify-between pb-2 border-b border-slate-200">
                   <span className="text-slate-500">Recipient Contact:</span>
                   <span className="text-slate-900 font-bold">{contactName} ({contactPhone})</span>
                 </div>
+                {utrNumber.trim() && (
+                  <div className="flex justify-between pt-1">
+                    <span className="text-slate-500">Payment UTR:</span>
+                    <span className="text-slate-900 font-mono font-bold">{utrNumber.trim()}</span>
+                  </div>
+                )}
               </div>
 
+              {/* Error Banner */}
               {checkoutError && (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
-                  <span>{checkoutError}</span>
+                <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-500 mt-0.5" />
+                  <div>
+                    <span className="font-bold block mb-0.5">Order Failed</span>
+                    <span>{checkoutError}</span>
+                  </div>
+                </div>
+              )}
+
+              {!user && (
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>You must <button onClick={() => setIsAuthModalOpen(true)} className="font-bold underline">sign in</button> to place an order.</span>
                 </div>
               )}
 
@@ -664,12 +753,15 @@ export default function CheckoutPage() {
                 </button>
                 <button
                   type="button"
-                  disabled={isProcessing}
+                  disabled={isProcessing || !user}
                   onClick={handlePlaceOrder}
                   className="py-3.5 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all disabled:opacity-50"
                 >
                   {isProcessing ? (
-                    <span>Reserving Inventory & Creating Order...</span>
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <span>Reserving Inventory & Creating Order...</span>
+                    </>
                   ) : (
                     <>
                       <span>Authorize & Place Campus Order (₹{grandTotal})</span>
@@ -682,7 +774,7 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        {/* Right: Order Summary Sidebar (4 cols) */}
+        {/* Right: Order Summary Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xl space-y-6">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
@@ -706,7 +798,11 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            {/* Price Calculations */}
+            {cart.length === 0 && (
+              <p className="text-xs text-slate-500 text-center py-4">Your cart is empty.</p>
+            )}
+
+            {/* Price Summary */}
             <div className="space-y-2 text-xs text-slate-500 pt-4 border-t border-slate-200">
               <div className="flex justify-between">
                 <span>Items Subtotal</span>
@@ -738,7 +834,7 @@ export default function CheckoutPage() {
 
             <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-2 border-t border-slate-200">
               <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0" />
-              <span>Real-time inventory deduction guaranteed.</span>
+              <span>Orders dispatched directly from campus runner hub.</span>
             </div>
           </div>
         </div>

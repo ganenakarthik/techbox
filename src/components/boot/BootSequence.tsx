@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
@@ -175,7 +175,7 @@ export function BootSequence() {
                 )}
               </svg>
 
-              {/* 0.0s â€“ 0.4s: Initial Origin Point */}
+              {/* 0.0s – 0.4s: Initial Origin Point */}
               {phase < 2 && (
                 <motion.div
                   initial={{ scale: 0, opacity: 0 }}
@@ -191,7 +191,7 @@ export function BootSequence() {
                 />
               )}
 
-              {/* 1.0s â€“ 1.6s: Official Partsly Emblem Assembly */}
+              {/* 1.0s – 1.6s: Official Partsly Emblem Assembly */}
               {phase >= 2 && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.35, rotate: -12 }}
@@ -244,7 +244,7 @@ export function BootSequence() {
               )}
             </div>
 
-            {/* 1.6s â€“ 2.2s: Typographic Wordmark & Doctrine */}
+            {/* 1.6s – 2.2s: Typographic Wordmark & Doctrine */}
             <div className="relative z-20 text-center -mt-6 sm:-mt-8 space-y-3">
               {phase >= 3 && (
                 <motion.div
@@ -262,7 +262,7 @@ export function BootSequence() {
                   <div className="flex items-center justify-center gap-2">
                     <span className="h-[1px] w-6 sm:w-10 bg-gradient-to-r from-transparent to-[#ff6a00]/60" />
                     <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.3em] uppercase text-slate-500">
-                      BUILD <span className="text-[#ff6a00]">â€¢</span> CONNECT <span className="text-[#ff6a00]">â€¢</span> DELIVER
+                      BUILD <span className="text-[#ff6a00]">•</span> CONNECT <span className="text-[#ff6a00]">•</span> DELIVER
                     </span>
                     <span className="h-[1px] w-6 sm:w-10 bg-gradient-to-l from-transparent to-[#ff6a00]/60" />
                   </div>

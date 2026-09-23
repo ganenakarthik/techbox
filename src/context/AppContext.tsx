@@ -1,23 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { Product, ProductVariant, ProjectKit, COLLEGES, College } from "@/data/mockData";
+import {
+  Product,
+  ProductVariant,
+  ProjectKit,
+  College,
+  CartItem,
+  CAMPUSES,
+} from "@/lib/data";
 import { BRAND } from "@/config/brand";
 
-export interface CartItem {
-  id: string; // unique cart item id
-  productId?: string;
-  variantId?: string;
-  projectKitId?: string;
-  name: string;
-  sku: string;
-  price: number;
-  originalPrice: number;
-  image: string;
-  quantity: number;
-  stock?: number;
-  isKit?: boolean;
-}
+export type { CartItem };
 
 export interface UserProfile {
   id: string;
@@ -127,10 +121,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [user, setUser] = useState<UserProfile | null>(null);
 
-  const [selectedCollege, setSelectedCollege] = useState<College>(COLLEGES[0]);
-  const [selectedCampusName, setSelectedCampusName] = useState<string>(COLLEGES[0].campuses[0].name);
-  const [selectedPickupPoint, setSelectedPickupPoint] = useState<string>(COLLEGES[0].campuses[0].pickupLocations[0]);
-  const [selectedDeliverySlot, setSelectedDeliverySlot] = useState<string>(COLLEGES[0].campuses[0].deliverySlots[0]);
+  const [selectedCollege, setSelectedCollege] = useState<College>(CAMPUSES[0]);
+  const [selectedCampusName, setSelectedCampusName] = useState<string>(CAMPUSES[0].name);
+  const [selectedPickupPoint, setSelectedPickupPoint] = useState<string>(CAMPUSES[0].pickupLocations[0] || "");
+  const [selectedDeliverySlot, setSelectedDeliverySlot] = useState<string>(CAMPUSES[0].deliverySlots[0] || "");
 
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -146,89 +140,48 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // Fetch Cart from server
+  // CLIENT CART STATE (Primary Frontend State)
+  // Local persistence to localStorage guarantees 100% offline and frontend-first reliability.
+  // SERVER CART STATE (Future Backend Hook):
+  // When the backend is plugged in, sync local cart with user database session here.
   const refreshCart = useCallback(async () => {
-    try {
-      const res = await fetch("/api/cart");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.items) {
-          setCart(data.items);
-        }
-      }
-    } catch {
-      // ignore
-    }
+    // SERVER CART STATE: Hook for future backend synchronization
   }, []);
 
-  // Fetch Wishlist from server
   const refreshWishlist = useCallback(async () => {
+    // SERVER CART STATE: Hook for future backend synchronization
+  }, []);
+
+  // Hydrate local cart and wishlist on mount
+  useEffect(() => {
     try {
-      const res = await fetch("/api/wishlist");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.productIds) {
-          setWishlist(data.productIds);
-        }
-      }
+      const savedCart = localStorage.getItem(BRAND.cartStorageKey) || localStorage.getItem("techbox_cart");
+      if (savedCart) setCart(JSON.parse(savedCart));
+
+      const savedWishlist = localStorage.getItem(BRAND.wishlistStorageKey) || localStorage.getItem("techbox_wishlist");
+      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
     } catch {
       // ignore
     }
   }, []);
 
-  // Initial Session Hydration on Mount
+  // CLIENT CART STATE persistence
   useEffect(() => {
-    async function initSession() {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            setUser(data.user);
-            await refreshCart();
-            await refreshWishlist();
-            return;
-          }
-        }
-      } catch {
-        // network error, fallback to guest
-      }
-
-      // Guest: Load from localStorage (partsly_cart with legacy techbox_cart fallback)
-      try {
-        const savedCart = localStorage.getItem(BRAND.cartStorageKey) || localStorage.getItem("techbox_cart");
-        if (savedCart) setCart(JSON.parse(savedCart));
-
-        const savedWishlist = localStorage.getItem(BRAND.wishlistStorageKey) || localStorage.getItem("techbox_wishlist");
-        if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
-      } catch {
-        // ignore
-      }
+    try {
+      localStorage.setItem(BRAND.cartStorageKey, JSON.stringify(cart));
+    } catch {
+      // ignore
     }
+  }, [cart]);
 
-    initSession();
-  }, [refreshCart, refreshWishlist]);
-
-  // Guest Cart persistence to localStorage
+  // Wishlist persistence
   useEffect(() => {
-    if (!user) {
-      try {
-        localStorage.setItem(BRAND.cartStorageKey, JSON.stringify(cart));
-      } catch {
-        // ignore
-      }
+    try {
+      localStorage.setItem(BRAND.wishlistStorageKey, JSON.stringify(wishlist));
+    } catch {
+      // ignore
     }
-  }, [cart, user]);
-
-  useEffect(() => {
-    if (!user) {
-      try {
-        localStorage.setItem(BRAND.wishlistStorageKey, JSON.stringify(wishlist));
-      } catch {
-        // ignore
-      }
-    }
-  }, [wishlist, user]);
+  }, [wishlist]);
 
   const addToCart = async ({
     product,
@@ -307,34 +260,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (user && targetVariantId) {
-        try {
-          const res = await fetch("/api/cart", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              variantId: targetVariantId,
-              quantity,
-            }),
-          });
-
-          if (res.ok) {
-            await refreshCart();
-            addToast(`Added "${effectiveName}" to cart`, "success");
-            if (openDrawer) setIsCartDrawerOpen(true);
-            return;
-          } else {
-            const err = await res.json();
-            addToast(err.error || "Failed to add item to cart", "error");
-            return;
-          }
-        } catch {
-          addToast("Network error adding item to cart", "error");
-          return;
-        }
-      }
-
-      // Guest cart
+      // CLIENT CART STATE: Update local cart
       const existing = cart.find((item) => item.variantId === targetVariantId);
       if (existing) {
         setCart((prev) =>
@@ -364,16 +290,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = async (cartItemId: string) => {
-    if (user) {
-      try {
-        await fetch(`/api/cart?id=${cartItemId}`, { method: "DELETE" });
-        await refreshCart();
-        addToast("Item removed from cart", "info");
-        return;
-      } catch {
-        // ignore
-      }
-    }
     setCart((prev) => prev.filter((item) => item.id !== cartItemId));
     addToast("Item removed from cart", "info");
   };
@@ -384,40 +300,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (user) {
-      try {
-        const res = await fetch("/api/cart", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cartItemId, quantity }),
-        });
-
-        if (res.ok) {
-          await refreshCart();
-          return;
-        } else {
-          const err = await res.json();
-          addToast(err.error || "Stock limit reached", "warning");
-          return;
-        }
-      } catch {
-        // ignore
-      }
-    }
-
     setCart((prev) =>
       prev.map((item) => (item.id === cartItemId ? { ...item, quantity } : item))
     );
   };
 
   const clearCart = async () => {
-    if (user) {
-      try {
-        await fetch("/api/cart?clear=true", { method: "DELETE" });
-      } catch {
-        // ignore
-      }
-    }
     setCart([]);
     setCouponCode("");
     setDiscountAmount(0);
@@ -430,29 +318,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleWishlist = async (productId: string) => {
-    if (user) {
-      try {
-        const res = await fetch("/api/wishlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.added) {
-            setWishlist((prev) => [...prev, productId]);
-            addToast("Added to wishlist ❤️", "success");
-          } else {
-            setWishlist((prev) => prev.filter((id) => id !== productId));
-            addToast("Removed from wishlist", "info");
-          }
-          return;
-        }
-      } catch {
-        // ignore
-      }
-    }
-
     setWishlist((prev) => {
       const exists = prev.includes(productId);
       if (exists) {
@@ -538,8 +403,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
     } catch (error) {
-      console.error("Login error:", error);
-      addToast("Network error during login", "error");
+      addToast("Authentication backend is currently not connected (Frontend-first mode)", "info");
       return false;
     }
   };
@@ -556,22 +420,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       if (res.ok) {
         setUser(resData.user);
-
-        // Merge guest cart
-        if (cart.length > 0) {
-          try {
-            await fetch("/api/cart", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ mergeItems: cart }),
-            });
-          } catch {
-            // ignore
-          }
-        }
-
-        await refreshCart();
-        await refreshWishlist();
         addToast(`Account created successfully! Welcome to ${BRAND.displayName}.`, "success");
         setIsAuthModalOpen(false);
         return { success: true };
@@ -581,8 +429,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: errorMsg };
       }
     } catch {
-      const errorMsg = "Network error during signup";
-      addToast(errorMsg, "error");
+      const errorMsg = "Authentication backend is currently not connected (Frontend-first mode)";
+      addToast(errorMsg, "info");
       return { success: false, error: errorMsg };
     }
   };
@@ -607,8 +455,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isExistingUser: data.isExistingUser,
       };
     } catch {
-      addToast("Network error sending OTP", "error");
-      return { success: false, error: "Network error" };
+      addToast("Authentication backend is currently not connected (Frontend-first mode)", "info");
+      return { success: false, error: "Backend not connected" };
     }
   };
 
@@ -627,8 +475,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       if (!data.isNewUser && data.user) {
         setUser(data.user);
-        await refreshCart();
-        await refreshWishlist();
         addToast(data.message || `Welcome back, ${data.user.name}!`, "success");
         setIsAuthModalOpen(false);
 
@@ -640,8 +486,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       return data;
     } catch {
-      addToast("Network error verifying OTP", "error");
-      return { success: false, error: "Network error" };
+      addToast("Authentication backend is currently not connected (Frontend-first mode)", "info");
+      return { success: false, error: "Backend not connected" };
     }
   };
 
@@ -659,8 +505,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(resData.user);
-      await refreshCart();
-      await refreshWishlist();
       addToast(resData.message || `Account created successfully! Welcome to ${BRAND.displayName}.`, "success");
       setIsAuthModalOpen(false);
 
@@ -671,8 +515,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       return { success: true, user: resData.user };
     } catch {
-      addToast("Network error creating account", "error");
-      return { success: false, error: "Network error" };
+      addToast("Authentication backend is currently not connected (Frontend-first mode)", "info");
+      return { success: false, error: "Backend not connected" };
     }
   };
 
@@ -686,8 +530,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       if (res.ok && data.user) {
         setUser(data.user);
-        await refreshCart();
-        await refreshWishlist();
         addToast(`Welcome back, ${data.user.name}!`, "success");
         setIsAuthModalOpen(false);
 
@@ -703,8 +545,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: errorMsg };
       }
     } catch {
-      const errorMsg = "Network error during login";
-      addToast(errorMsg, "error");
+      const errorMsg = "Authentication backend is currently not connected (Frontend-first mode)";
+      addToast(errorMsg, "info");
       return { success: false, error: errorMsg };
     }
   };

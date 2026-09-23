@@ -37,7 +37,7 @@ export default function AccountOrdersPage() {
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Your Campus Orders</h1>
         <p className="text-xs text-slate-500 mt-1">
-          Track real-time courier runners, gate delivery slots, and invoices from PostgreSQL database.
+          Track campus runner dispatch, gate delivery slots, and order invoices.
         </p>
       </div>
 

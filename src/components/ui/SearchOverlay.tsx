@@ -3,14 +3,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { Search, X, ArrowRight, Box, Cpu, Sparkles, Tag } from "lucide-react";
-import { PRODUCTS, PROJECT_KITS, CATEGORIES } from "@/data/mockData";
+import { getProducts, getProjectKits, getCategories, Product, ProjectKit, Category } from "@/lib/data";
 import Link from "next/link";
 import Image from "next/image";
 
 export function SearchOverlay() {
   const { isSearchOpen, setIsSearchOpen } = useApp();
   const [query, setQuery] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [filteredKits, setFilteredKits] = useState<ProjectKit[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    getCategories().then(setCategories).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,48 +38,38 @@ export function SearchOverlay() {
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       setQuery("");
+      setFilteredProducts([]);
+      setFilteredKits([]);
     }
   }, [isSearchOpen]);
 
-  const [dbProducts, setDbProducts] = useState<any[]>([]);
-
   useEffect(() => {
     if (!query.trim()) {
-      setDbProducts([]);
+      setFilteredProducts([]);
+      setFilteredKits([]);
       return;
     }
     const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/products?q=${encodeURIComponent(query.trim())}&limit=5`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.products) setDbProducts(data.products);
-        }
-      } catch {
-        // fallback
-      }
+      const q = query.trim().toLowerCase();
+      const [prods, kits] = await Promise.all([
+        getProducts({ query: q, limit: 5 }),
+        getProjectKits(),
+      ]);
+      setFilteredProducts(prods);
+      setFilteredKits(
+        kits
+          .filter(
+            (k) =>
+              k.title.toLowerCase().includes(q) ||
+              k.category.toLowerCase().includes(q)
+          )
+          .slice(0, 3)
+      );
     }, 150);
     return () => clearTimeout(timer);
   }, [query]);
 
   if (!isSearchOpen) return null;
-
-  const filteredProducts = dbProducts.length > 0 ? dbProducts : (query.trim()
-    ? PRODUCTS.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query.toLowerCase()) ||
-          p.category.toLowerCase().includes(query.toLowerCase()) ||
-          p.tags.some((t) => t.toLowerCase().includes(query.toLowerCase()))
-      ).slice(0, 5)
-    : []);
-
-  const filteredKits = query.trim()
-    ? PROJECT_KITS.filter(
-        (k) =>
-          k.title.toLowerCase().includes(query.toLowerCase()) ||
-          k.category.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 3)
-    : [];
 
   const popularSearches = ["ESP32", "Arduino Uno", "Ultrasonic Sensor", "0.96 OLED", "SG90 Servo", "Relay Module", "Project Kits"];
 
@@ -130,7 +127,7 @@ export function SearchOverlay() {
                 Browse Popular Categories
               </div>
               <div className="grid grid-cols-2 gap-2 px-2">
-                {CATEGORIES.slice(0, 4).map((cat) => (
+                {categories.slice(0, 4).map((cat) => (
                   <Link
                     key={cat.id}
                     href={`/shop?category=${cat.slug}`}

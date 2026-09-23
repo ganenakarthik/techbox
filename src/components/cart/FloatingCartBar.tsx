@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -29,7 +29,7 @@ export function FloatingCartBar() {
           <div className="truncate">
             <div className="flex items-baseline gap-2">
               <span className="text-sm sm:text-base font-black text-slate-900">
-                â‚¹{subtotal.toFixed(0)}
+                ₹{subtotal.toFixed(0)}
               </span>
               <span className="text-xs text-slate-400 font-medium hidden sm:inline">
                 ({cartCount} {cartCount === 1 ? "item" : "items"})
@@ -45,7 +45,7 @@ export function FloatingCartBar() {
                 <>
                   <Zap className="w-3 h-3 text-amber-400 shrink-0 fill-amber-400" />
                   <span className="text-slate-300">
-                    Add â‚¹{(freeDeliveryThreshold - subtotal).toFixed(0)} more for Free Campus Delivery
+                    Add ₹{(freeDeliveryThreshold - subtotal).toFixed(0)} more for Free Campus Delivery
                   </span>
                 </>
               )}

@@ -21,7 +21,7 @@ async function main() {
       },
     });
 
-    for (const camp of col.campuses) {
+    for (const camp of (col.campuses || [])) {
       const campus = await prisma.campus.upsert({
         where: { id: camp.id },
         update: {},
@@ -200,7 +200,7 @@ async function main() {
         mrp: kit.mrp,
         description: kit.description,
         includes: kit.includes,
-        optionalAddons: kit.optionalAddons,
+        optionalAddons: (kit.optionalAddons || []) as any,
         images: kit.images,
       },
     });

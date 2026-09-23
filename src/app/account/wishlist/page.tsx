@@ -1,25 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
-import { PRODUCTS } from "@/data/mockData";
+import { getProducts, Product } from "@/lib/data";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Heart, ShoppingBag, ArrowRight } from "lucide-react";
 
 export default function WishlistPage() {
   const { wishlist } = useApp();
-  const [allProducts, setAllProducts] = React.useState<any[]>(PRODUCTS);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
-  React.useEffect(() => {
-    fetch("/api/products?limit=100")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.products && Array.isArray(data.products) && data.products.length > 0) {
-          setAllProducts(data.products);
-        }
-      })
-      .catch(() => {});
+  useEffect(() => {
+    getProducts({ limit: 100 }).then(setAllProducts).catch(() => {});
   }, []);
 
   const wishedProducts = allProducts.filter((p) => wishlist.includes(p.id));

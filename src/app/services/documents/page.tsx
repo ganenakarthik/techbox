@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { FileText, Presentation, CheckCircle2, ShieldCheck, ArrowRight, BookOpen, Layers } from "lucide-react";
+import { FileText, Presentation, CheckCircle2, ShieldCheck, ArrowRight, BookOpen, Layers, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function DocumentationPage() {
@@ -13,11 +13,13 @@ export default function DocumentationPage() {
   const [deadline, setDeadline] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmation, setOrderConfirmation] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const docServices = [
     {
       title: "Comprehensive College Project Report",
       subtitle: "Full IEEE format with literature review & test results",
+      docType: "REPORT",
       price: 699,
       icon: BookOpen,
       deliverables: [
@@ -31,6 +33,7 @@ export default function DocumentationPage() {
     {
       title: "Final Viva Presentation Slide Deck (PPT)",
       subtitle: "20 modern, animated slides tailored for external examiners",
+      docType: "PPT",
       price: 499,
       icon: Presentation,
       deliverables: [
@@ -44,6 +47,7 @@ export default function DocumentationPage() {
     {
       title: "Block Diagram & Circuit Schematics Pack",
       subtitle: "High-resolution vector schematics & architecture charts",
+      docType: "CIRCUIT_DIAGRAM",
       price: 349,
       icon: Layers,
       deliverables: [
@@ -56,6 +60,7 @@ export default function DocumentationPage() {
     {
       title: "Examiner Viva-Voce Q&A Defense Pack",
       subtitle: "Top 50 expected technical questions answered",
+      docType: "VIVA_PREP",
       price: 399,
       icon: FileText,
       deliverables: [
@@ -67,6 +72,55 @@ export default function DocumentationPage() {
       ],
     },
   ];
+
+  const handleSubmitDocs = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmissionError(null);
+
+    if (!user) {
+      addToast("Please log in to submit a documentation request", "warning");
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (!projectTitle.trim()) {
+      addToast("Please enter a project title", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/services/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectTitle: projectTitle.trim(),
+          docType: selectedService.docType || "REPORT",
+          formattingStyle,
+          deadline: deadline || null,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg = data.error || "Failed to submit document order. Please try again.";
+        setSubmissionError(errorMsg);
+        addToast(errorMsg, "error");
+        return;
+      }
+
+      setOrderConfirmation(data.orderNumber);
+      addToast(`Documentation request #${data.orderNumber} submitted successfully!`, "success");
+    } catch (err: any) {
+      const errorMsg = err.message || "Network error. Please try again.";
+      setSubmissionError(errorMsg);
+      addToast(errorMsg, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -99,43 +153,49 @@ export default function DocumentationPage() {
               className="p-8 rounded-3xl bg-white border border-slate-200 hover:border-[#ff6a00]/40 transition-all flex flex-col justify-between shadow-xl"
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-[#ff6a00]">
-                    <Icon className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] mb-5">
+                  <Icon className="w-6 h-6" />
+                </div>
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">{service.title}</h3>
+                    <p className="text-xs text-slate-500 mt-1">{service.subtitle}</p>
                   </div>
-                  <div className="text-right">
-                    <span className="text-2xl font-black text-slate-900">₹{service.price}</span>
-                    <span className="text-[10px] text-slate-500 block">Digital delivery in 24h</span>
+                  <div className="text-right shrink-0">
+                    <div className="text-xs text-slate-500">Starting at</div>
+                    <div className="text-xl font-black text-slate-900">₹{service.price}</div>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900">{service.title}</h3>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">{service.subtitle}</p>
-
-                <ul className="space-y-2 mt-6 pt-6 border-t border-slate-200 text-xs text-slate-600">
-                  {service.deliverables.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2">
+                <div className="mt-6 pt-5 border-t border-slate-200 space-y-2">
+                  <div className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
+                    Included Deliverables:
+                  </div>
+                  {service.deliverables.map((d, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-slate-600">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#22c55e] shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
+                      <span>{d}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
-              <div className="pt-8 mt-6 border-t border-slate-200">
+              <div className="mt-8 pt-5 border-t border-slate-200 flex items-center justify-between">
+                <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#22c55e]" />
+                  <span>24-Hour Review Turnaround</span>
+                </div>
                 <button
+                  type="button"
                   onClick={() => {
-                    if (!user) {
-                      addToast("Please sign in or create an account to order documentation services", "warning");
-                      setIsAuthModalOpen(true);
-                      return;
-                    }
                     setSelectedService(service);
+                    setOrderConfirmation(null);
+                    setSubmissionError(null);
                   }}
-                  className="w-full py-3 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#ff6a00]/20 transition-all"
+                  className="py-2.5 px-5 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-[#ff6a00]/20 transition-all cursor-pointer"
                 >
-                  <span>Order {service.title.split(" ")[0]} Package (₹{service.price})</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Configure & Order</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -143,29 +203,30 @@ export default function DocumentationPage() {
         })}
       </div>
 
-      {/* Order Modal */}
+      {/* Modal / Overlay for Configuring Service */}
       {selectedService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#ff6a00] tracking-wider">Configure Order</span>
-                <h3 className="text-base font-bold text-slate-900">{selectedService.title}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedService(null)}
-                className="w-8 h-8 rounded-full bg-slate-50 text-slate-500 hover:text-slate-900 flex items-center justify-center text-sm"
-              >
-                ✕
-              </button>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-slate-200 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div>
+              <span className="text-xs font-mono text-[#ff6a00] uppercase">Selected Service</span>
+              <h3 className="text-lg font-bold text-slate-900 mt-0.5">{selectedService.title}</h3>
             </div>
 
+            {submissionError && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-xs text-red-800">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{submissionError}</span>
+              </div>
+            )}
+
             {orderConfirmation ? (
-              <div className="p-6 rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/30 text-center space-y-3">
-                <CheckCircle2 className="w-10 h-10 text-[#22c55e] mx-auto" />
-                <h4 className="text-sm font-bold text-slate-900">Documentation Order #{orderConfirmation} Queued!</h4>
+              <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-900">
+                  Documentation Order #{orderConfirmation} Queued
+                </h4>
                 <p className="text-xs text-slate-600">
-                  Our academic technical writers and formatting team have received your outline and will begin working on your drafts.
+                  Our academic writing & formatting team has queued your documentation order.
                 </p>
                 <button
                   onClick={() => {
@@ -173,48 +234,13 @@ export default function DocumentationPage() {
                     setOrderConfirmation(null);
                     setProjectTitle("");
                   }}
-                  className="mt-2 py-2 px-6 rounded-xl bg-[#ff6a00] text-black text-xs font-bold"
+                  className="mt-2 py-2 px-6 rounded-xl bg-[#ff6a00] text-black text-xs font-bold cursor-pointer"
                 >
                   Done
                 </button>
               </div>
             ) : (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setIsSubmitting(true);
-                  try {
-                    let docType = "REPORT";
-                    if (selectedService.title.includes("PPT")) docType = "PPT";
-                    else if (selectedService.title.includes("Block Diagram")) docType = "CIRCUIT_DIAGRAM";
-                    else if (selectedService.title.includes("Q&A")) docType = "VIVA_PREP";
-
-                    const res = await fetch("/api/services/documents", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        projectTitle,
-                        docType,
-                        formattingStyle,
-                        deadline: deadline || undefined,
-                      }),
-                    });
-
-                    const data = await res.json();
-                    if (res.ok) {
-                      setOrderConfirmation(data.orderNumber);
-                      addToast(`Order ${data.orderNumber} placed successfully!`, "success");
-                    } else {
-                      addToast(data.error || "Failed to submit documentation order", "error");
-                    }
-                  } catch {
-                    addToast("Network error submitting documentation order", "error");
-                  } finally {
-                    setIsSubmitting(false);
-                  }
-                }}
-                className="space-y-4"
-              >
+              <form onSubmit={handleSubmitDocs} className="space-y-4">
                 <div>
                   <label className="text-xs font-semibold text-slate-600 block mb-1">
                     Your Project Title / Hardware Topic:
@@ -267,14 +293,14 @@ export default function DocumentationPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedService(null)}
-                    className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-500 hover:text-slate-900"
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-500 hover:text-slate-900 cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 py-2.5 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] disabled:opacity-50 text-black font-bold text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] disabled:opacity-50 text-black font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <span>{isSubmitting ? "Submitting..." : "Confirm & Place Order"}</span>
                     <ArrowRight className="w-4 h-4" />

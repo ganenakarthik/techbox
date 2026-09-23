@@ -92,6 +92,40 @@ export async function POST(
       },
     });
 
+    // Create corresponding unified Quote record for Customer Portal
+    const unifiedQuoteNumber = `Q-PRJ-${project.projectCode}-V${nextVersion}`;
+    const validUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    const items = [
+      { description: "Component Bill of Materials (BOM)", unitPrice: Number(componentCost), quantity: 1, totalPrice: Number(componentCost) },
+      { description: "Custom PCB & Hardware Fabrication", unitPrice: Number(manufacturingCost), quantity: 1, totalPrice: Number(manufacturingCost) },
+      { description: "Assembly & Soldering Service", unitPrice: Number(assemblyCost), quantity: 1, totalPrice: Number(assemblyCost) },
+      { description: "Lab Bench Testing & Firmware Validation", unitPrice: Number(testingCost), quantity: 1, totalPrice: Number(testingCost) },
+      { description: "Platform Margin & Engineering Overhead", unitPrice: Number(margin), quantity: 1, totalPrice: Number(margin) },
+    ].filter((i) => i.unitPrice > 0);
+
+    await prisma.quote.create({
+      data: {
+        quoteNumber: unifiedQuoteNumber,
+        userId: project.userId,
+        serviceType: "CUSTOM_PROJECT",
+        title: `Project Build Quote: ${project.title}`,
+        description: `Full custom project hardware, PCB & assembly quote for project #${project.projectCode}`,
+        status: "SENT",
+        subtotal: baseSubtotal,
+        shippingFee: Number(shippingCost),
+        tax: calculatedTax,
+        discount: Number(discount),
+        totalAmount: totalCost,
+        validUntil,
+        projectId: project.id,
+        createdById: user.id,
+        items: {
+          create: items,
+        },
+      },
+    });
+
     await prisma.project.update({
       where: { id: project.id },
       data: {

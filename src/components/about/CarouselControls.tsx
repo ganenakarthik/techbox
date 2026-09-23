@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { ChevronLeft, ChevronRight, Compass } from "lucide-react";
@@ -28,11 +28,11 @@ export function CarouselControls({
         <span className="text-[#ff6a00] font-bold">
           0{activeIndex + 1} / 0{members.length}
         </span>
-        <span className="text-neutral-600">â€¢</span>
+        <span className="text-neutral-600">•</span>
         <span className="text-slate-900 font-semibold uppercase tracking-wider">
           {current.name}
         </span>
-        <span className="text-neutral-600">â€¢</span>
+        <span className="text-neutral-600">•</span>
         <span className="text-slate-500 text-[11px] font-sans">
           {current.tag}
         </span>
@@ -82,7 +82,7 @@ export function CarouselControls({
       {/* Subtle Interaction Guide */}
       <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
         <Compass className="w-3 h-3 text-[#ff6a00]" />
-        <span>Drag to rotate â€¢ Keyboard â† / â†’ â€¢ Click to expand profile</span>
+        <span>Drag to rotate • Keyboard ← / → • Click to expand profile</span>
       </div>
     </div>
   );

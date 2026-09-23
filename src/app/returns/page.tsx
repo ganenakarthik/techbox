@@ -33,8 +33,8 @@ export default function ReturnsPolicyPage() {
             <span className="text-[#ff6a00]">2.</span> Fast Replacement Procedure
           </h2>
           <ol className="list-decimal pl-5 space-y-1.5 text-slate-500">
-            <li>Open a ticket via your <Link href="/account/support" className="text-[#ff6a00] hover:underline">Student Account Support Desk</Link> or message our WhatsApp Helpline (+91 98450 12345).</li>
-            <li>Provide your Order Reference Number (e.g. <code>TB-102941</code>) and a brief photo or 10-second video of your circuit wiring or serial monitor output.</li>
+            <li>Open a ticket via your <Link href="/account/support" className="text-[#ff6a00] hover:underline">Student Account Support Desk</Link> or message our WhatsApp Helpline (+91 70326 35858).</li>
+            <li>Provide your Order Reference Number (e.g. <code>PARTSLY-102941</code>) and a brief photo or 10-second video of your circuit wiring or serial monitor output.</li>
             <li>Once our lab technician verifies the hardware issue, our campus runner will deliver the replacement during the very next delivery run.</li>
           </ol>
         </section>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { Wrench, ShieldCheck, CheckCircle2, ArrowRight, UploadCloud, Cpu, Sparkles } from "lucide-react";
+import { Wrench, ShieldCheck, CheckCircle2, ArrowRight, AlertCircle } from "lucide-react";
 
 export default function PrototypesPage() {
   const { user, setIsAuthModalOpen, addToast } = useApp();
@@ -12,39 +12,58 @@ export default function PrototypesPage() {
   const [timeline, setTimeline] = useState("Normal (5-7 Days)");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedProject, setSubmittedProject] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmissionError(null);
+
     if (!user) {
-      addToast("Please sign in or create an account to submit prototype requests", "warning");
+      addToast("Please log in to submit a prototype consultation request", "warning");
       setIsAuthModalOpen(true);
       return;
     }
 
+    if (!projectTitle.trim()) {
+      addToast("Please enter a project title", "error");
+      return;
+    }
+
+    if (!details.trim()) {
+      addToast("Please describe required deliverables & sensors", "error");
+      return;
+    }
+
     setIsSubmitting(true);
+
     try {
       const res = await fetch("/api/projects/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: projectTitle,
-          description: details,
+          title: projectTitle.trim(),
+          description: details.trim(),
           buildLevel: "WORKING_PROTOTYPE",
-          notes: `Department: ${department} | Urgency: ${timeline}`,
+          notes: `Department: ${department} | Timeline urgency: ${timeline}`,
         }),
       });
 
       const data = await res.json();
-      if (res.ok) {
-        setSubmittedProject(data.project.projectCode);
-        addToast(`Working prototype request ${data.project.projectCode} submitted!`, "success");
-        setProjectTitle("");
-        setDetails("");
-      } else {
-        addToast(data.error || "Failed to submit prototype request", "error");
+
+      if (!res.ok) {
+        const errorMsg = data.error || "Failed to submit prototype consultation. Please try again.";
+        setSubmissionError(errorMsg);
+        addToast(errorMsg, "error");
+        return;
       }
-    } catch {
-      addToast("Network error submitting prototype request", "error");
+
+      const code = data.project?.projectCode || "SUBMITTED";
+      setSubmittedProject(code);
+      addToast(`Prototype project #${code} submitted for engineering consultation!`, "success");
+    } catch (err: any) {
+      const errorMsg = err.message || "Network error. Please try again.";
+      setSubmissionError(errorMsg);
+      addToast(errorMsg, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -105,89 +124,112 @@ export default function PrototypesPage() {
               <p className="text-xs text-slate-500">Receive an itemized hardware + assembly quote today.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3 pt-2">
-              <div>
-                <label className="text-xs font-semibold text-slate-600 block mb-1">
-                  Project Title / Concept:
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={projectTitle}
-                  onChange={(e) => setProjectTitle(e.target.value)}
-                  placeholder="e.g. Smart ECG Patch with BLE Alert"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
-                />
+            {submissionError && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-xs text-red-800">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{submissionError}</span>
               </div>
+            )}
 
-              <div>
-                <label className="text-xs font-semibold text-slate-600 block mb-1">
-                  Engineering Department / Branch:
-                </label>
-                <select
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+            {submittedProject ? (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-900">
+                  Prototype Project #{submittedProject} Submitted
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Our hardware engineering team has queued your requirements for technical review and quotation.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubmittedProject(null);
+                    setProjectTitle("");
+                    setDetails("");
+                  }}
+                  className="mt-2 text-xs text-[#ff6a00] underline font-medium hover:text-[#ff8533] cursor-pointer"
                 >
-                  <option>Electronics & Communication (ECE)</option>
-                  <option>Computer Science & IoT (CSE)</option>
-                  <option>Electrical & Electronics (EEE)</option>
-                  <option>Mechanical & Mechatronics</option>
-                  <option>Biomedical Engineering</option>
-                  <option>Other Engineering Major</option>
-                </select>
+                  Submit another project requirement
+                </button>
               </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-600 block mb-1">
-                  Delivery Urgency:
-                </label>
-                <select
-                  value={timeline}
-                  onChange={(e) => setTimeline(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
-                >
-                  <option>Normal (5-7 Days)</option>
-                  <option>Urgent Viva Review (3-4 Days)</option>
-                  <option>Emergency Flash Build (48 Hours)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-600 block mb-1">
-                  Required Deliverables & Sensors:
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
-                  placeholder="Mention components you want (e.g. ESP32, OLED, MQ-135) or specify if you have a circuit schematic."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
-                />
-              </div>
-
-              {submittedProject && (
-                <div className="p-3.5 rounded-xl bg-[#22c55e]/10 border border-[#22c55e]/30 text-xs text-[#22c55e] flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>Prototype project #{submittedProject} registered! An engineer will review your specs.</span>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-3 pt-2">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 block mb-1">
+                    Project Title / Concept:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={projectTitle}
+                    onChange={(e) => setProjectTitle(e.target.value)}
+                    placeholder="e.g. Smart ECG Patch with BLE Alert"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+                  />
                 </div>
-              )}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] disabled:opacity-50 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#ff6a00]/25 transition-all mt-2"
-              >
-                <span>{isSubmitting ? "Submitting Request..." : "Request Prototype Consultation"}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 block mb-1">
+                    Engineering Department / Branch:
+                  </label>
+                  <select
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+                  >
+                    <option>Electronics & Communication (ECE)</option>
+                    <option>Computer Science & IoT (CSE)</option>
+                    <option>Electrical & Electronics (EEE)</option>
+                    <option>Mechanical & Mechatronics</option>
+                    <option>Biomedical Engineering</option>
+                    <option>Other Engineering Major</option>
+                  </select>
+                </div>
 
-              <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-2">
-                <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0" />
-                <span>NDA & Confidentiality guaranteed for student patent/IP concepts.</span>
-              </div>
-            </form>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 block mb-1">
+                    Delivery Urgency:
+                  </label>
+                  <select
+                    value={timeline}
+                    onChange={(e) => setTimeline(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+                  >
+                    <option>Normal (5-7 Days)</option>
+                    <option>Urgent Viva Review (3-4 Days)</option>
+                    <option>Emergency Flash Build (48 Hours)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 block mb-1">
+                    Required Deliverables & Sensors:
+                  </label>
+                  <textarea
+                    rows={4}
+                    required
+                    value={details}
+                    onChange={(e) => setDetails(e.target.value)}
+                    placeholder="Mention components you want (e.g. ESP32, OLED, MQ-135) or specify if you have a circuit schematic."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] disabled:opacity-50 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#ff6a00]/25 transition-all mt-2 cursor-pointer"
+                >
+                  <span>{isSubmitting ? "Submitting Request..." : "Request Prototype Consultation"}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-2">
+                  <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0" />
+                  <span>NDA & Confidentiality guaranteed for student patent/IP concepts.</span>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>

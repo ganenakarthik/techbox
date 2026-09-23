@@ -18,7 +18,7 @@ export default function FAQPage() {
     },
     {
       q: "How does the 'Build My Project' BOM Analyzer work?",
-      a: "You can upload your project synopsis, schematic PDF, CSV, or BOM bill of materials. Our server extracts the engineering requirements, tokenizes component names and quantities, checks our live PostgreSQL inventory for exact SKUs, computes confidence ratings, and builds an itemized, ready-to-order project kit. If any ambiguous component is detected, our system flags it for your review before checkout.",
+      a: "You can upload your project synopsis, schematic PDF, CSV, or BOM bill of materials. Our server extracts the engineering requirements, tokenizes component names and quantities, checks our live campus inventory for exact SKUs, computes confidence ratings, and builds an itemized, ready-to-order project kit. If any ambiguous component is detected, our system flags it for your review before checkout.",
     },
     {
       q: "Can Partsly fabricate custom PCBs for student projects?",

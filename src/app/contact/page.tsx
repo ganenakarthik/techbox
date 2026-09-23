@@ -62,7 +62,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <div className="font-bold text-slate-900">Direct Helpline & WhatsApp</div>
-                  <div className="text-slate-500 mt-0.5">+91 98450 12345 / +91 94440 67890</div>
+                  <div className="text-slate-500 mt-0.5">+91 70326 35858</div>
                   <div className="text-[10px] text-slate-500">Mon - Sat: 9:00 AM – 9:00 PM IST</div>
                 </div>
               </div>
