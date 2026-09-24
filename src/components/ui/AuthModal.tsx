@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
 import { BRAND } from "@/config/brand";
+import { PartslyLogo } from "@/components/ui/PartslyLogo";
 import {
   X,
   Eye,
@@ -158,15 +159,7 @@ export function AuthModal() {
         {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#ff6a00] flex items-center justify-center font-black text-white text-base shadow-md shadow-[#ff6a00]/20">
-              {BRAND.displayName[0]}
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">{BRAND.displayName}</h3>
-              <p className="text-[11px] text-slate-500">
-                {user ? "Your account" : "Sign in or create account"}
-              </p>
-            </div>
+            <PartslyLogo size="sm" href="" />
           </div>
           <button
             onClick={() => setIsAuthModalOpen(false)}
