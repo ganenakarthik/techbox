@@ -6,12 +6,15 @@ import { useApp } from "@/context/AppContext";
 import {
   Truck, Search, CheckCircle2, ArrowRight, Clock, MapPin, Eye,
   Loader2, RotateCcw, Package, Printer, XCircle, AlertCircle, Phone,
-  Send, ExternalLink, ShieldAlert, CheckSquare, FileText
+  Send, ExternalLink, ShieldAlert, CheckSquare, FileText, FileSpreadsheet,
+  Receipt, Square, Download, Layers, Tag
 } from "lucide-react";
 
 import { generateWhatsAppStatusUrl } from "@/lib/whatsapp";
-
 import { playNewOrderChime } from "@/lib/audioAlert";
+import { exportOrdersToCSV } from "@/lib/csvExport";
+import GSTInvoiceModal from "@/components/admin/GSTInvoiceModal";
+import ThermalLabelModal from "@/components/admin/ThermalLabelModal";
 
 export default function AdminOrdersPage() {
   const { addToast, user } = useApp();
@@ -22,9 +25,15 @@ export default function AdminOrdersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [newOrderAlert, setNewOrderAlert] = useState<string | null>(null);
 
-  // Selected Order for Workspace Modal
+  // Modals state
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [workspaceLoading, setWorkspaceLoading] = useState<boolean>(false);
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<any | null>(null);
+  const [selectedOrderForThermal, setSelectedOrderForThermal] = useState<any | null>(null);
+
+  // Multi-Select Batch Actions State
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [bulkProcessing, setBulkProcessing] = useState<boolean>(false);
 
   // Packing Slip modal
   const [packingSlip, setPackingSlip] = useState<any | null>(null);
@@ -242,6 +251,52 @@ export default function AdminOrdersPage() {
     setCancelReason("");
   };
 
+  // Multi-Select Helper Functions
+  const toggleSelectAll = () => {
+    if (selectedOrderIds.length === orders.length) {
+      setSelectedOrderIds([]);
+    } else {
+      setSelectedOrderIds(orders.map((o) => o.id));
+    }
+  };
+
+  const toggleSelectOrder = (id: string) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (selectedOrderIds.length === 0) return;
+    setBulkProcessing(true);
+    try {
+      let successCount = 0;
+      for (const id of selectedOrderIds) {
+        const res = await fetch(`/api/admin/orders/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        });
+        if (res.ok) successCount++;
+      }
+      addToast(`Updated ${successCount} orders to ${newStatus}!`, "success");
+      setSelectedOrderIds([]);
+      await fetchOrders();
+    } catch {
+      addToast("Failed to run bulk status update", "error");
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkExportCSV = () => {
+    const selectedOrders = orders.filter((o) => selectedOrderIds.includes(o.id));
+    exportOrdersToCSV(
+      selectedOrders.length > 0 ? selectedOrders : orders,
+      `partsly-orders-${selectedOrders.length > 0 ? "selected" : "all"}-${Date.now()}.csv`
+    );
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Header */}
@@ -257,6 +312,13 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleBulkExportCSV}
+            className="py-2 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-emerald-900/20"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Export Orders CSV</span>
+          </button>
           <button
             onClick={() => fetchOrders(false)}
             className="py-2 px-4 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-xs font-semibold text-white flex items-center gap-2 cursor-pointer"
@@ -326,6 +388,14 @@ export default function AdminOrdersPage() {
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-[#222222] bg-[#141414] text-neutral-400">
+                <th className="p-4 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={orders.length > 0 && selectedOrderIds.length === orders.length}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-neutral-700 bg-[#222] text-[#ff6a00] focus:ring-0 cursor-pointer"
+                  />
+                </th>
                 <th className="p-4 font-semibold">Order #</th>
                 <th className="p-4 font-semibold">Student & Delivery Point</th>
                 <th className="p-4 font-semibold">Items & Qty</th>
@@ -337,20 +407,28 @@ export default function AdminOrdersPage() {
             <tbody className="divide-y divide-[#1e1e1e]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-10 text-center text-neutral-400">
+                  <td colSpan={7} className="p-10 text-center text-neutral-400">
                     <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#ff6a00] mb-2" />
                     <span>Loading operations queue...</span>
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-10 text-center text-neutral-500">
+                  <td colSpan={7} className="p-10 text-center text-neutral-500">
                     No orders found in this queue.
                   </td>
                 </tr>
               ) : (
                 orders.map((o) => (
-                  <tr key={o.id} className="hover:bg-[#161616] transition-colors">
+                  <tr key={o.id} className={`hover:bg-[#161616] transition-colors ${selectedOrderIds.includes(o.id) ? "bg-[#ff6a00]/5" : ""}`}>
+                    <td className="p-4 align-top text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedOrderIds.includes(o.id)}
+                        onChange={() => toggleSelectOrder(o.id)}
+                        className="w-4 h-4 rounded border-neutral-700 bg-[#222] text-[#ff6a00] focus:ring-0 cursor-pointer mt-1"
+                      />
+                    </td>
                     <td className="p-4 align-top">
                       <div className="font-mono font-bold text-white text-xs">{o.orderNumber}</div>
                       <div className="text-[10px] text-neutral-500 mt-0.5">
@@ -448,6 +526,22 @@ export default function AdminOrdersPage() {
                           <Printer className="w-3 h-3 text-[#38bdf8]" />
                           <span>Slip</span>
                         </button>
+                        <button
+                          onClick={() => setSelectedOrderForInvoice(o)}
+                          className="px-2.5 py-1 rounded-lg bg-[#1e1e1e] hover:bg-[#2a2a2a] text-amber-400 hover:text-amber-300 text-[11px] font-semibold flex items-center gap-1 border border-[#333]"
+                          title="Print Official GST Tax Invoice"
+                        >
+                          <Receipt className="w-3 h-3" />
+                          <span>GST</span>
+                        </button>
+                        <button
+                          onClick={() => setSelectedOrderForThermal(o)}
+                          className="px-2.5 py-1 rounded-lg bg-[#1e1e1e] hover:bg-[#2a2a2a] text-emerald-400 hover:text-emerald-300 text-[11px] font-semibold flex items-center gap-1 border border-[#333]"
+                          title="Print 4x6 Thermal Courier Label"
+                        >
+                          <Tag className="w-3 h-3" />
+                          <span>Label</span>
+                        </button>
                       </div>
 
                       {/* Quick Action Button based on operational stage */}
@@ -519,6 +613,63 @@ export default function AdminOrdersPage() {
           </table>
         </div>
       </div>
+
+      {/* FLOATING BATCH ACTIONS TOOLBAR (Shopify / Amazon Style) */}
+      {selectedOrderIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#161616] border-2 border-[#ff6a00] rounded-2xl shadow-2xl p-4 flex flex-wrap items-center gap-3 text-xs text-white max-w-4xl w-[92%] animate-bounce-short">
+          <div className="flex items-center gap-2 font-bold px-3 py-1 bg-[#ff6a00] text-black rounded-lg">
+            <CheckSquare className="w-4 h-4" />
+            <span>{selectedOrderIds.length} Selected</span>
+          </div>
+
+          <div className="h-5 w-px bg-neutral-800 hidden sm:block" />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              disabled={bulkProcessing}
+              onClick={() => handleBulkStatusUpdate("CONFIRMED")}
+              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold transition-all text-[11px]"
+            >
+              Set Confirmed
+            </button>
+            <button
+              disabled={bulkProcessing}
+              onClick={() => handleBulkStatusUpdate("PACKED")}
+              className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold transition-all text-[11px]"
+            >
+              Set Packed
+            </button>
+            <button
+              disabled={bulkProcessing}
+              onClick={() => handleBulkStatusUpdate("OUT_FOR_DELIVERY")}
+              className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 font-bold transition-all text-[11px]"
+            >
+              Set Out For Delivery
+            </button>
+            <button
+              disabled={bulkProcessing}
+              onClick={() => handleBulkStatusUpdate("DELIVERED")}
+              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold transition-all text-[11px]"
+            >
+              Set Delivered
+            </button>
+            <button
+              onClick={handleBulkExportCSV}
+              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold text-amber-400 border border-slate-700 flex items-center gap-1 text-[11px]"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setSelectedOrderIds([])}
+            className="ml-auto text-xs text-neutral-400 hover:text-white font-semibold underline px-2"
+          >
+            Deselect All
+          </button>
+        </div>
+      )}
 
       {/* ORDER WORKSPACE MODAL */}
       {selectedOrder && (
@@ -956,6 +1107,21 @@ export default function AdminOrdersPage() {
             </div>
           </form>
         </div>
+      )}
+      {/* GST INVOICE MODAL */}
+      {selectedOrderForInvoice && (
+        <GSTInvoiceModal
+          order={selectedOrderForInvoice}
+          onClose={() => setSelectedOrderForInvoice(null)}
+        />
+      )}
+
+      {/* THERMAL SHIPPING LABEL MODAL */}
+      {selectedOrderForThermal && (
+        <ThermalLabelModal
+          order={selectedOrderForThermal}
+          onClose={() => setSelectedOrderForThermal(null)}
+        />
       )}
     </div>
   );

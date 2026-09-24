@@ -8,6 +8,7 @@ import {
   RotateCcw, Loader2, Edit2, Plus, Minus, Package, UploadCloud,
   FileSpreadsheet, MapPin, AlertCircle
 } from "lucide-react";
+import { exportInventoryToCSV } from "@/lib/csvExport";
 
 export default function AdminInventoryPage() {
   const { addToast, user } = useApp();
@@ -150,6 +151,14 @@ export default function AdminInventoryPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportInventoryToCSV(items)}
+            className="py-2 px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-900/20"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span>Export Inventory CSV</span>
+          </button>
+
           <button
             onClick={() => setShowImportModal(true)}
             className="py-2 px-3.5 rounded-xl bg-[#ff6a00] hover:bg-[#e05d00] text-xs font-bold text-black flex items-center gap-2 shadow-lg shadow-[#ff6a00]/20"
