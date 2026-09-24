@@ -20,6 +20,9 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { validateIndianPhone, validateUTR } from "@/lib/validation";
+import { PartslyLogo } from "@/components/ui/PartslyLogo";
+import { generateUpiQrCodeUrl } from "@/lib/upi";
+import { generateWhatsAppReceiptUrl } from "@/lib/whatsapp";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -67,10 +70,16 @@ export default function CheckoutPage() {
   const [utrNumber, setUtrNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Real order confirmation state — only populated after successful API response
+  // Real order confirmation state
   const [confirmedOrder, setConfirmedOrder] = useState<{
     orderNumber: string;
     total: number;
+    subtotal: number;
+    shipping: number;
+    recipientName: string;
+    recipientPhone: string;
+    campusDetail: string;
+    items: { name: string; quantity: number; price: number; variant?: string }[];
     whatsappUrl?: string;
     paymentStatus: string;
     utrNumber: string | null;
@@ -79,6 +88,11 @@ export default function CheckoutPage() {
   const speedFee = deliverySpeed === "urgent" ? 99 : 0;
   const campusDeliveryFee = subtotal >= 499 ? 0 : 40;
   const grandTotal = Math.max(0, subtotal - discountAmount + campusDeliveryFee + speedFee);
+
+  const dynamicQrUrl = generateUpiQrCodeUrl({
+    amount: grandTotal,
+    transactionNote: `Partsly Order ₹${grandTotal}`,
+  });
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,12 +153,15 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
+      const orderItems = cart.map((item) => ({
+        variantId: item.variantId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
       const payload = {
-        items: cart.map((item) => ({
-          variantId: item.variantId,
-          name: item.name,
-          quantity: item.quantity,
-        })),
+        items: orderItems,
         recipientName: contactName.trim(),
         recipientPhone: phoneValidation.normalized || contactPhone.trim(),
         collegeName: collegeName.trim(),
@@ -168,27 +185,44 @@ export default function CheckoutPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // API returned an error — show it, do NOT clear cart
         const errorMsg = data.error || "Order could not be placed. Please try again.";
         setCheckoutError(errorMsg);
         addToast(errorMsg, "error");
         return;
       }
 
-      // Order successfully created — NOW clear cart and show confirmation
+      const receiptPayload = {
+        orderNumber: data.orderNumber,
+        recipientName: contactName.trim(),
+        recipientPhone: phoneValidation.normalized || contactPhone.trim(),
+        campusDetail: `${collegeName.trim()} (${hostelBlock.trim()})`,
+        items: orderItems,
+        subtotal,
+        shipping: campusDeliveryFee + speedFee,
+        total: data.total || grandTotal,
+        paymentStatus: cleanUtr ? "UTR Submitted — Pending Verification" : "Payment Pending",
+        utrNumber: cleanUtr || undefined,
+      };
+
+      const generatedWaUrl = generateWhatsAppReceiptUrl(receiptPayload);
+
       clearCart();
       setConfirmedOrder({
         orderNumber: data.orderNumber,
-        total: data.total,
-        whatsappUrl: data.whatsappUrl,
+        total: data.total || grandTotal,
+        subtotal,
+        shipping: campusDeliveryFee + speedFee,
+        recipientName: contactName.trim(),
+        recipientPhone: phoneValidation.normalized || contactPhone.trim(),
+        campusDetail: `${collegeName.trim()} (${hostelBlock.trim()})`,
+        items: orderItems,
+        whatsappUrl: generatedWaUrl,
         paymentStatus: cleanUtr ? "PAYMENT_SUBMITTED" : "PAYMENT_PENDING",
         utrNumber: cleanUtr || null,
       });
       addToast(`Order ${data.orderNumber} confirmed!`, "success");
     } catch (err: any) {
-      // Network/server error — show error, do NOT clear cart
-      const errorMsg =
-        "Unable to reach the order server. Please check your connection and try again.";
+      const errorMsg = "Unable to reach the order server. Please check your connection and try again.";
       setCheckoutError(errorMsg);
       addToast(errorMsg, "error");
     } finally {
@@ -199,96 +233,86 @@ export default function CheckoutPage() {
   // ─── Confirmed Order Screen ────────────────────────────────────────────────
   if (confirmedOrder) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <div className="w-20 h-20 rounded-3xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-6 text-emerald-600">
-          <CheckCircle2 className="w-10 h-10" />
+      <div className="max-w-3xl mx-auto px-4 py-10 sm:py-16 text-center">
+        <div className="mb-6 flex justify-center">
+          <PartslyLogo size="lg" />
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold mb-3">
+
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-[#ff6a00]/10 border border-[#ff6a00]/30 flex items-center justify-center mx-auto mb-6 text-[#ff6a00]">
+          <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" />
+        </div>
+
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ff6a00]/10 border border-[#ff6a00]/30 text-[#ff6a00] text-xs font-bold mb-3">
           <Truck className="w-3.5 h-3.5" />
-          <span>Order Confirmed — Campus Dispatch Queued</span>
+          <span>Order Confirmed — Campus Runner Queued</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900">
+
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
           Order #{confirmedOrder.orderNumber}
         </h1>
-        <p className="text-sm text-slate-500 mt-2">
+        <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-md mx-auto">
           {confirmedOrder.utrNumber
-            ? "Your payment reference has been submitted. Partsly will verify your UTR and confirm dispatch."
-            : "Your order is placed. Please complete UPI payment and submit your UTR reference to confirm dispatch."}
+            ? "Your payment reference has been submitted. Partsly operations will verify your UTR and confirm gate dispatch."
+            : "Your order is placed. Scan the instant UPI QR code to complete payment and submit your 12-digit UTR."}
         </p>
 
-        {/* Order Summary */}
-        <div className="mt-6 p-6 rounded-3xl bg-white border border-slate-200 text-left text-xs space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        {/* Order Breakdown Card */}
+        <div className="mt-6 p-6 rounded-3xl bg-white border border-slate-200 text-left text-xs space-y-3 shadow-md">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <span className="text-slate-500">Order Number:</span>
             <span className="text-slate-900 font-mono font-bold">{confirmedOrder.orderNumber}</span>
           </div>
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <span className="text-slate-500">Recipient Name & Mobile:</span>
+            <span className="text-slate-900 font-bold">{confirmedOrder.recipientName} ({confirmedOrder.recipientPhone})</span>
+          </div>
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <span className="text-slate-500">Amount Payable:</span>
-            <span className="text-[#ff6a00] font-black text-base">₹{confirmedOrder.total}</span>
+            <span className="text-[#ff6a00] font-black text-lg">₹{confirmedOrder.total}</span>
           </div>
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-slate-500">Payment Status:</span>
-            <span className={`font-bold ${confirmedOrder.paymentStatus === "PAYMENT_SUBMITTED" ? "text-emerald-600" : "text-amber-600"}`}>
-              {confirmedOrder.paymentStatus === "PAYMENT_SUBMITTED" ? "UTR Submitted — Pending Verification" : "Awaiting Payment"}
-            </span>
-          </div>
-          {confirmedOrder.utrNumber && (
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-slate-500">Submitted UTR:</span>
-              <span className="text-slate-900 font-mono font-bold">{confirmedOrder.utrNumber}</span>
+
+          {/* Itemized list preview */}
+          <div className="pt-2 border-t border-slate-100">
+            <span className="font-bold text-slate-900 block mb-2">Itemized Components ({confirmedOrder.items.length}):</span>
+            <div className="space-y-1.5">
+              {confirmedOrder.items.map((item, idx) => (
+                <div key={idx} className="flex justify-between text-slate-600 font-mono text-[11px]">
+                  <span>• {item.name} (Qty: {item.quantity})</span>
+                  <span className="font-bold text-slate-900">₹{item.price * item.quantity}</span>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
 
-        {/* UPI QR — show if not yet paid */}
-        {!confirmedOrder.utrNumber && (
-          <div className="mt-6 p-5 rounded-3xl bg-[#ff6a00]/5 border border-[#ff6a00]/25 text-left space-y-3">
-            <p className="text-xs font-bold text-slate-900">Complete Your UPI Payment</p>
-            <p className="text-[11px] text-slate-600">
-              Pay ₹{confirmedOrder.total} to <strong>7032635858@ybl</strong> (PINNAM CHARLA CHARLA) using any UPI app, then submit your 12-digit UTR from the payment receipt.
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500">UPI ID:</span>
-              <code className="text-xs text-[#ff6a00] font-mono font-bold">7032635858@ybl</code>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText("7032635858@ybl");
-                  addToast("UPI ID copied", "success");
-                }}
-                className="p-1 rounded hover:bg-slate-100 transition-colors"
-              >
-                <Copy className="w-3.5 h-3.5 text-slate-500" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* WhatsApp Confirmation */}
+        {/* WhatsApp Receipt Button */}
         {confirmedOrder.whatsappUrl && (
-          <a
-            href={confirmedOrder.whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-lg shadow-[#25D366]/20"
-          >
-            <MessageSquare className="w-4 h-4" />
-            <span>Confirm Order on WhatsApp</span>
-            <ExternalLink className="w-3.5 h-3.5 opacity-75" />
-          </a>
+          <div className="mt-6">
+            <a
+              href={confirmedOrder.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-4 px-8 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs shadow-xl shadow-[#25D366]/25 transition-all cursor-pointer"
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span>Send Itemized Receipt to My WhatsApp ({confirmedOrder.recipientPhone})</span>
+              <ExternalLink className="w-4 h-4 opacity-75" />
+            </a>
+          </div>
         )}
 
         {/* Action Buttons */}
         <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
           <Link
-            href={`/account`}
-            className="py-3.5 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
+            href={`/account/orders`}
+            className="py-3.5 px-6 rounded-2xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#ff6a00]/20 transition-all"
           >
             <span>View My Orders</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/shop"
-            className="py-3.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 transition-all"
+            className="py-3.5 px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 transition-all"
           >
             <span>Continue Shopping</span>
           </Link>
@@ -299,36 +323,56 @@ export default function CheckoutPage() {
 
   // ─── Checkout Form ─────────────────────────────────────────────────────────
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Auth gate */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      {/* Header Logo & Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
+        <div>
+          <div className="mb-2">
+            <PartslyLogo size="md" />
+          </div>
+          <p className="text-xs text-slate-500">
+            Express Campus Delivery • Real-time Hardware Dispatch
+          </p>
+        </div>
+      </div>
+
+      {/* Auth Gate Banner */}
       {!user && (
-        <div className="mb-6 max-w-3xl mx-auto p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center gap-3 text-xs">
-          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-          <span className="text-amber-800">
-            You need to <button onClick={() => setIsAuthModalOpen(true)} className="font-bold underline">sign in</button> to place an order.
-          </span>
+        <div className="mb-6 max-w-3xl mx-auto p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3 text-xs shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <span className="text-amber-800 font-medium">
+              Please sign in to complete your campus checkout.
+            </span>
+          </div>
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="py-1.5 px-4 rounded-xl bg-[#ff6a00] text-black font-bold text-xs shadow-xs"
+          >
+            Sign In
+          </button>
         </div>
       )}
 
-      {/* Steps indicator */}
-      <div className="mb-10 max-w-3xl mx-auto">
-        <div className="flex items-center justify-between text-xs font-bold">
+      {/* Mobile-Friendly Navigation Steps */}
+      <div className="mb-8 max-w-3xl mx-auto overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-2 min-w-max text-xs font-bold">
           {[
             { id: 1, name: "01 Contact" },
-            { id: 2, name: "02 Campus Delivery" },
-            { id: 3, name: "03 Speed & Slot" },
-            { id: 4, name: "04 Payment (PhonePe UPI)" },
-            { id: 5, name: "05 Review & Order" },
+            { id: 2, name: "02 Campus" },
+            { id: 3, name: "03 Slot" },
+            { id: 4, name: "04 Instant UPI" },
+            { id: 5, name: "05 Confirm" },
           ].map((s) => (
             <button
               key={s.id}
               onClick={() => setStep(s.id)}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`py-2 px-3.5 rounded-xl border text-xs transition-all ${
                 step === s.id
-                  ? "border-[#ff6a00] text-[#ff6a00]"
+                  ? "bg-[#ff6a00] border-[#ff6a00] text-black shadow-sm font-black"
                   : step > s.id
-                  ? "border-[#22c55e] text-[#22c55e]"
-                  : "border-transparent text-slate-500"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold"
+                  : "bg-white border-slate-200 text-slate-500"
               }`}
             >
               {s.name}
@@ -337,16 +381,16 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left: Step Forms */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left: Step Form Screens (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
           {/* STEP 1: CONTACT */}
           {step === 1 && (
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-md space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">01. Student Contact Information</h2>
-                <p className="text-xs text-slate-500">
-                  Our campus delivery runner will SMS/call you when approaching the pickup gate.
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">01. Student Contact Information</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Our campus runner will send an SMS/call when approaching your designated pickup gate.
                 </p>
               </div>
 
@@ -364,7 +408,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Student College Email:</label>
+                  <label className="text-slate-600 block mb-1 font-semibold">Student Email:</label>
                   <input
                     type="email"
                     value={contactEmail}
@@ -375,19 +419,19 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Mobile Number:</label>
+                  <label className="text-slate-600 block mb-1 font-semibold font-mono">Mobile Number (WhatsApp):</label>
                   <input
                     type="tel"
                     required
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="e.g. +91 90148 08515"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Alternate Phone / Roommate:</label>
+                  <label className="text-slate-600 block mb-1 font-semibold font-mono">Alternate Mobile / Roommate:</label>
                   <input
                     type="tel"
                     value={alternatePhone}
@@ -402,7 +446,7 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="py-3 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-bold text-xs flex items-center gap-2"
+                  className="w-full sm:w-auto py-3 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-[#ff6a00]/20"
                 >
                   <span>Continue to Campus Delivery</span>
                   <ArrowRight className="w-4 h-4" />
@@ -413,11 +457,11 @@ export default function CheckoutPage() {
 
           {/* STEP 2: CAMPUS */}
           {step === 2 && (
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-md space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">02. Designated Campus Delivery Point</h2>
-                <p className="text-xs text-slate-500">
-                  Enter your college, department, and designated pickup desk or hostel block.
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">02. Designated Campus Pickup Location</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Specify your college campus, department lab, or hostel gate.
                 </p>
               </div>
 
@@ -429,7 +473,7 @@ export default function CheckoutPage() {
                     required
                     value={collegeName}
                     onChange={(e) => setCollegeName(e.target.value)}
-                    placeholder="e.g. Indian Institute of Technology / RV College / SRM"
+                    placeholder="e.g. IIT / RVCE / SRM / SRM AP"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
@@ -447,42 +491,42 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="text-slate-600 block mb-1 font-semibold">Department / Branch:</label>
+                    <label className="text-slate-600 block mb-1 font-semibold">Department / Lab:</label>
                     <input
                       type="text"
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
-                      placeholder="e.g. ECE / CSE / Mechanical Lab 2"
+                      placeholder="e.g. ECE / Robotics Lab"
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Campus Pickup Point / Gate: *</label>
+                  <label className="text-slate-600 block mb-1 font-semibold font-mono">Pickup Point / Main Gate: *</label>
                   <input
                     type="text"
                     required
                     value={pickupPoint}
                     onChange={(e) => setPickupPoint(e.target.value)}
-                    placeholder="e.g. Main Gate Reception / Tech Park Entrance Porch"
+                    placeholder="e.g. Gate 2 / Tech Park Entrance Porch"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Hostel Block & Room / Lab Desk:</label>
+                  <label className="text-slate-600 block mb-1 font-semibold font-mono">Hostel Block & Room / Desk:</label>
                   <input
                     type="text"
                     value={hostelBlock}
                     onChange={(e) => setHostelBlock(e.target.value)}
-                    placeholder="e.g. Hostel Block B, Room 204 or ECE Innovation Lab"
+                    placeholder="e.g. Hostel Block B, Room 204"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-between">
+              <div className="pt-4 flex justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
@@ -504,11 +548,11 @@ export default function CheckoutPage() {
 
           {/* STEP 3: SPEED & SLOTS */}
           {step === 3 && (
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-md space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">03. Select Campus Delivery Slot & Speed</h2>
-                <p className="text-xs text-slate-500">
-                  Choose a run that fits around your classes, lab sessions, or upcoming viva deadlines.
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">03. Select Delivery Slot & Speed</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Choose a runner slot that fits your project viva schedule.
                 </p>
               </div>
 
@@ -520,16 +564,16 @@ export default function CheckoutPage() {
                       <div
                         key={slot}
                         onClick={() => setDeliverySlot(slot)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                        className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                           deliverySlot === slot
-                            ? "bg-[#ff6a00]/10 border-[#ff6a00] text-slate-900 font-bold"
+                            ? "bg-[#ff6a00]/10 border-[#ff6a00] text-slate-900 font-bold shadow-xs"
                             : "bg-slate-50 border-slate-200 text-slate-600"
                         }`}
                       >
                         <Clock className="w-4 h-4 text-[#ff6a00] mb-2" />
                         <div>{slot}</div>
                         <div className="text-[10px] text-slate-500 font-normal mt-0.5">
-                          Handover at designated pickup gate
+                          Handover at pickup gate
                         </div>
                       </div>
                     ))}
@@ -541,7 +585,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div
                       onClick={() => setDeliverySpeed("standard")}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                         deliverySpeed === "standard"
                           ? "bg-[#ff6a00]/10 border-[#ff6a00] text-slate-900"
                           : "bg-slate-50 border-slate-200 text-slate-500"
@@ -552,13 +596,13 @@ export default function CheckoutPage() {
                         <span className="text-[#22c55e] font-bold">FREE (₹0)</span>
                       </div>
                       <p className="text-[11px] text-slate-500">
-                        Dispatched in 24-48 hours via regular campus runner batches.
+                        Regular campus runner batch delivery.
                       </p>
                     </div>
 
                     <div
                       onClick={() => setDeliverySpeed("urgent")}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                         deliverySpeed === "urgent"
                           ? "bg-[#ff6a00]/10 border-[#ff6a00] text-slate-900"
                           : "bg-slate-50 border-slate-200 text-slate-500"
@@ -569,14 +613,14 @@ export default function CheckoutPage() {
                         <span className="font-bold text-slate-900">+₹99</span>
                       </div>
                       <p className="text-[11px] text-slate-500">
-                        Immediate packing & dedicated courier runner directly to your lab door.
+                        Immediate packing & direct dedicated courier runner.
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-between">
+              <div className="pt-4 flex justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(2)}
@@ -596,54 +640,49 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* STEP 4: PAYMENT */}
+          {/* STEP 4: INSTANT UPI PAYMENT */}
           {step === 4 && (
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-md space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">04. Select Payment Method</h2>
-                <p className="text-xs text-slate-500">
-                  Scan the official PhonePe UPI QR code with any UPI app and submit your 12-digit UTR reference number.
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">04. Dynamic Instant UPI Payment</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Scan the dynamic UPI QR code with GPay, PhonePe, Paytm, or BHIM and submit your 12-digit UTR.
                 </p>
               </div>
 
-              {/* Official UPI Payment */}
               <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-5">
-                <div className="flex flex-col md:flex-row items-center gap-6">
-                  <div className="relative w-52 h-52 rounded-2xl overflow-hidden bg-white border-2 border-slate-200 shadow-md shrink-0 p-3 flex items-center justify-center">
-                    <Image
-                      src="/images/partsly-upi-qr.jpg"
-                      alt="Partsly PhonePe UPI QR Code"
-                      fill
-                      className="object-contain p-2"
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  {/* Dynamic QR Image */}
+                  <div className="relative w-48 h-48 sm:w-52 sm:h-52 rounded-2xl overflow-hidden bg-white border-2 border-[#ff6a00]/30 shadow-md shrink-0 p-2 flex items-center justify-center">
+                    <img
+                      src={dynamicQrUrl}
+                      alt="Instant Dynamic UPI QR Code"
+                      className="w-full h-full object-contain"
                     />
                   </div>
 
                   <div className="space-y-3 text-left flex-1">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#6739b7]/10 text-[#6739b7] border border-[#6739b7]/25 text-xs font-bold">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ff6a00]/10 text-[#ff6a00] border border-[#ff6a00]/25 text-xs font-bold">
                       <QrCode className="w-3.5 h-3.5" />
-                      <span>PhonePe Official Merchant QR</span>
+                      <span>Instant Dynamic UPI QR</span>
                     </div>
 
-                    <h3 className="text-base font-bold text-slate-900">Scan & Pay Using Any UPI App</h3>
+                    <h3 className="text-base font-bold text-slate-900">Scan & Pay via Any App</h3>
                     <p className="text-xs text-slate-500">
-                      Scan with PhonePe, Google Pay, Paytm, or BHIM. Zero convenience fee.
+                      GPay, PhonePe, Paytm, BHIM supported. Pre-filled with exact amount.
                     </p>
 
-                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-1.5 text-xs shadow-sm">
+                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-1.5 text-xs shadow-xs">
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Account Holder:</span>
+                        <span className="text-slate-500">Account Name:</span>
                         <strong className="text-slate-900">PINNAM CHARLA CHARLA</strong>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">UPI Phone / WhatsApp:</span>
-                        <strong className="text-[#ff6a00] font-mono font-bold">+91 70326 35858</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">UPI ID (VPA):</span>
-                        <span className="text-slate-900 font-mono font-bold">7032635858@ybl</span>
+                        <span className="text-slate-500">UPI VPA:</span>
+                        <code className="text-[#ff6a00] font-mono font-bold">7032635858@ybl</code>
                       </div>
                       <div className="flex justify-between pt-2 border-t border-slate-100">
-                        <span className="text-slate-500 font-medium">Exact Payable Total:</span>
+                        <span className="text-slate-500 font-medium">Exact Payable Amount:</span>
                         <span className="text-base font-black text-[#ff6a00]">₹{grandTotal}</span>
                       </div>
                     </div>
@@ -652,25 +691,23 @@ export default function CheckoutPage() {
 
                 {/* UTR Input */}
                 <div className="pt-4 border-t border-slate-200">
-                  <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                    Enter 12-Digit Bank Reference / UTR Number:
+                  <label className="text-xs font-semibold text-slate-700 block mb-1.5 font-mono">
+                    Enter 12-Digit Bank UTR Reference Number:
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={utrNumber}
-                      onChange={(e) => setUtrNumber(e.target.value)}
-                      placeholder="e.g. 423901824110 (from your UPI payment receipt)"
-                      className="w-full bg-white border border-slate-200 focus:border-[#ff6a00] rounded-xl px-4 py-3 text-xs text-slate-900 font-mono tracking-wider focus:outline-none shadow-sm"
-                    />
-                  </div>
-                  <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-                    Enter the 12-digit UTR from PhonePe, Google Pay, or Paytm receipt. You can also submit your UTR after placing the order from your account page.
+                  <input
+                    type="text"
+                    value={utrNumber}
+                    onChange={(e) => setUtrNumber(e.target.value)}
+                    placeholder="e.g. 423901824110 (from GPay / PhonePe receipt)"
+                    className="w-full bg-white border border-slate-200 focus:border-[#ff6a00] rounded-xl px-4 py-3 text-xs text-slate-900 font-mono tracking-wider focus:outline-none shadow-xs"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1.5">
+                    Enter your 12-digit UTR from payment receipt. You can also submit UTR anytime from your account orders tab.
                   </p>
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-between">
+              <div className="pt-4 flex justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(3)}
@@ -692,11 +729,11 @@ export default function CheckoutPage() {
 
           {/* STEP 5: REVIEW & CONFIRM */}
           {step === 5 && (
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 space-y-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-md space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">05. Final Order Review & Campus Dispatch</h2>
-                <p className="text-xs text-slate-500">
-                  Confirm recipient details, pickup location, and reserve catalog inventory.
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">05. Final Order Review & Campus Dispatch</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Confirm recipient contact, campus hub location, and reserve catalog items.
                 </p>
               </div>
 
@@ -725,7 +762,6 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* Error Banner */}
               {checkoutError && (
                 <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 text-red-500 mt-0.5" />
@@ -736,14 +772,7 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {!user && (
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>You must <button onClick={() => setIsAuthModalOpen(true)} className="font-bold underline">sign in</button> to place an order.</span>
-                </div>
-              )}
-
-              <div className="pt-4 flex justify-between">
+              <div className="pt-4 flex justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(4)}
@@ -755,16 +784,13 @@ export default function CheckoutPage() {
                   type="button"
                   disabled={isProcessing || !user}
                   onClick={handlePlaceOrder}
-                  className="py-3.5 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all disabled:opacity-50"
+                  className="py-3.5 px-8 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isProcessing ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      <span>Reserving Inventory & Creating Order...</span>
-                    </>
+                    <span>Creating Order...</span>
                   ) : (
                     <>
-                      <span>Authorize & Place Campus Order (₹{grandTotal})</span>
+                      <span>Authorize Order (₹{grandTotal})</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -774,67 +800,60 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        {/* Right: Order Summary Sidebar */}
+        {/* Right: Order Summary Sidebar (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xl space-y-6">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-              Project Hardware ({cart.length} items)
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-6">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center justify-between">
+              <span>Order Summary</span>
+              <span className="px-2 py-0.5 rounded bg-[#ff6a00]/15 text-[#ff6a00] text-[10px] font-mono">
+                {cart.length} items
+              </span>
             </h3>
 
-            <div className="max-h-60 overflow-y-auto space-y-3 pr-1">
+            <div className="max-h-60 overflow-y-auto space-y-3 pr-1 divide-y divide-slate-100">
               {cart.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 text-xs">
-                  <div className="relative w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
-                    <Image src={item.image} alt={item.name} fill className="object-cover" />
+                <div key={item.id} className="pt-2 flex items-center gap-3 text-xs">
+                  <div className="relative w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
+                    <Image src={item.image} alt={item.name} fill className="object-contain p-1" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-slate-900 truncate">{item.name}</div>
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] text-slate-500 font-mono">
                       Qty: {item.quantity} × ₹{item.price}
                     </div>
                   </div>
-                  <div className="font-bold text-slate-900">₹{item.price * item.quantity}</div>
+                  <div className="font-mono font-bold text-slate-900">₹{item.price * item.quantity}</div>
                 </div>
               ))}
             </div>
 
-            {cart.length === 0 && (
-              <p className="text-xs text-slate-500 text-center py-4">Your cart is empty.</p>
-            )}
-
-            {/* Price Summary */}
-            <div className="space-y-2 text-xs text-slate-500 pt-4 border-t border-slate-200">
-              <div className="flex justify-between">
-                <span>Items Subtotal</span>
-                <span className="text-slate-900 font-medium">₹{subtotal}</span>
+            <div className="pt-4 border-t border-slate-200 text-xs space-y-2">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal:</span>
+                <span className="font-mono font-semibold">₹{subtotal}</span>
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-[#22c55e]">
-                  <span>Discount ({couponCode})</span>
-                  <span>-₹{discountAmount}</span>
+                  <span>Discount:</span>
+                  <span className="font-mono font-bold">-₹{discountAmount}</span>
                 </div>
               )}
-              <div className="flex justify-between">
-                <span>Campus Runner Dispatch</span>
-                <span className={campusDeliveryFee === 0 ? "text-[#22c55e] font-semibold" : "text-slate-900"}>
+              <div className="flex justify-between text-slate-600">
+                <span>Campus Runner Delivery:</span>
+                <span className="font-mono font-semibold">
                   {campusDeliveryFee === 0 ? "FREE" : `₹${campusDeliveryFee}`}
                 </span>
               </div>
               {speedFee > 0 && (
                 <div className="flex justify-between text-[#ff6a00]">
-                  <span>Urgent Viva Priority</span>
-                  <span>+₹{speedFee}</span>
+                  <span>Emergency Priority Fee:</span>
+                  <span className="font-mono font-bold">+₹{speedFee}</span>
                 </div>
               )}
-              <div className="flex justify-between text-base font-bold text-slate-900 pt-3 border-t border-slate-200">
-                <span>Total Payable</span>
-                <span className="text-[#ff6a00] text-xl">₹{grandTotal}</span>
+              <div className="flex justify-between pt-3 border-t border-slate-200 text-sm font-black text-slate-900">
+                <span>Grand Total:</span>
+                <span className="text-[#ff6a00]">₹{grandTotal}</span>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-2 border-t border-slate-200">
-              <ShieldCheck className="w-4 h-4 text-[#22c55e] shrink-0" />
-              <span>Orders dispatched directly from campus runner hub.</span>
             </div>
           </div>
         </div>
