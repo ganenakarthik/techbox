@@ -152,9 +152,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // SERVER CART STATE: Hook for future backend synchronization
   }, []);
 
-  // Hydrate local cart and wishlist on mount
+  // Hydrate local user, cart, and wishlist on mount + verify 30-day session via /api/auth/me
   useEffect(() => {
     try {
+      const savedUser = localStorage.getItem("partsly_user") || localStorage.getItem("techbox_user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+
       const savedCart = localStorage.getItem(BRAND.cartStorageKey) || localStorage.getItem("techbox_cart");
       if (savedCart) setCart(JSON.parse(savedCart));
 
@@ -163,7 +168,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
+
+    // Verify background session with server cookie (partsly_session 30-day token)
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user) {
+          setUser(data.user);
+          try {
+            localStorage.setItem("partsly_user", JSON.stringify(data.user));
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch(() => {
+        // ignore
+      });
   }, []);
+
+  // Persist user profile to localStorage for instant client recovery across browser reloads
+  useEffect(() => {
+    try {
+      if (user) {
+        localStorage.setItem("partsly_user", JSON.stringify(user));
+      } else {
+        localStorage.removeItem("partsly_user");
+        localStorage.removeItem("techbox_user");
+      }
+    } catch {
+      // ignore
+    }
+  }, [user]);
 
   // CLIENT CART STATE persistence
   useEffect(() => {
