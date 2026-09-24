@@ -18,6 +18,21 @@ export function generateUpiDeepLink(details: UpiPaymentDetails): string {
   return `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${note}&cu=INR`;
 }
 
+export function generateGPayIntentUrl(details: UpiPaymentDetails): string {
+  const deepLink = generateUpiDeepLink(details);
+  return deepLink.replace("upi://pay", "gpay://upi/pay");
+}
+
+export function generatePhonePeIntentUrl(details: UpiPaymentDetails): string {
+  const deepLink = generateUpiDeepLink(details);
+  return deepLink.replace("upi://pay", "phonepe://pay");
+}
+
+export function generatePaytmIntentUrl(details: UpiPaymentDetails): string {
+  const deepLink = generateUpiDeepLink(details);
+  return deepLink.replace("upi://pay", "paytmmp://pay");
+}
+
 /**
  * Returns a high-resolution QR code image URL using QRServer API for dynamic instant scanning
  */

@@ -22,7 +22,13 @@ import {
 import { validateIndianPhone, validateUTR } from "@/lib/validation";
 import { PartslyLogo } from "@/components/ui/PartslyLogo";
 import { PartslyLoader } from "@/components/ui/PartslyLoader";
-import { generateUpiQrCodeUrl } from "@/lib/upi";
+import {
+  generateUpiQrCodeUrl,
+  generateUpiDeepLink,
+  generateGPayIntentUrl,
+  generatePhonePeIntentUrl,
+  generatePaytmIntentUrl,
+} from "@/lib/upi";
 import { generateWhatsAppReceiptUrl } from "@/lib/whatsapp";
 
 export default function CheckoutPage() {
@@ -716,20 +722,79 @@ export default function CheckoutPage() {
                       GPay, PhonePe, Paytm, BHIM supported. Pre-filled with exact amount.
                     </p>
 
-                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-1.5 text-xs shadow-xs">
-                      <div className="flex justify-between">
+                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2 text-xs shadow-xs">
+                      <div className="flex justify-between items-center">
                         <span className="text-slate-500">Account Name:</span>
                         <strong className="text-slate-900">PINNAM CHARLA CHARLA</strong>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-slate-500">UPI VPA:</span>
-                        <code className="text-[#ff6a00] font-mono font-bold">7032635858@ybl</code>
+                        <div className="flex items-center gap-1.5">
+                          <code className="text-[#ff6a00] font-mono font-bold">7032635858@ybl</code>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText("7032635858@ybl");
+                              addToast("Copied UPI VPA (7032635858@ybl) to clipboard!", "info");
+                            }}
+                            className="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors"
+                            title="Copy UPI VPA"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex justify-between pt-2 border-t border-slate-100">
+                      <div className="flex justify-between items-center pt-2 border-t border-slate-100">
                         <span className="text-slate-500 font-medium">Exact Payable Amount:</span>
-                        <span className="text-base font-black text-[#ff6a00]">₹{grandTotal}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base font-black text-[#ff6a00]">₹{grandTotal}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(String(grandTotal));
+                              addToast(`Copied amount (₹${grandTotal}) to clipboard!`, "info");
+                            }}
+                            className="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors"
+                            title="Copy Amount"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* 1-Tap Mobile App Launchers */}
+                <div className="pt-3 border-t border-slate-200/80">
+                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5">
+                    📱 Tap to Launch Installed Payment App (Mobile):
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <a
+                      href={generateGPayIntentUrl({ amount: grandTotal, transactionNote: `Partsly Order ₹${grandTotal}` })}
+                      className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-95 text-center"
+                    >
+                      <span>Google Pay</span>
+                    </a>
+                    <a
+                      href={generatePhonePeIntentUrl({ amount: grandTotal, transactionNote: `Partsly Order ₹${grandTotal}` })}
+                      className="py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-95 text-center"
+                    >
+                      <span>PhonePe</span>
+                    </a>
+                    <a
+                      href={generatePaytmIntentUrl({ amount: grandTotal, transactionNote: `Partsly Order ₹${grandTotal}` })}
+                      className="py-2.5 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-95 text-center"
+                    >
+                      <span>Paytm</span>
+                    </a>
+                    <a
+                      href={generateUpiDeepLink({ amount: grandTotal, transactionNote: `Partsly Order ₹${grandTotal}` })}
+                      className="py-2.5 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#ff6a00] font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-95 text-center"
+                    >
+                      <span>Any BHIM UPI</span>
+                    </a>
                   </div>
                 </div>
 
