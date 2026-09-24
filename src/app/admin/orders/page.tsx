@@ -9,6 +9,8 @@ import {
   Send, ExternalLink, ShieldAlert, CheckSquare, FileText
 } from "lucide-react";
 
+import { generateWhatsAppStatusUrl } from "@/lib/whatsapp";
+
 export default function AdminOrdersPage() {
   const { addToast, user } = useApp();
   const [filter, setFilter] = useState("ALL");
@@ -81,6 +83,7 @@ export default function AdminOrdersPage() {
   ) => {
     setUpdatingId(orderId);
     try {
+      const targetOrder = orders.find((o) => o.id === orderId) || selectedOrder;
       const res = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -91,7 +94,24 @@ export default function AdminOrdersPage() {
       });
 
       if (res.ok) {
+        const updated = await res.json();
         addToast(`Order updated to ${newStatus}!`, "success");
+
+        // Open WhatsApp Customer Alert if phone is present
+        const phone = targetOrder?.recipientPhone || targetOrder?.user?.phone;
+        if (phone && targetOrder) {
+          const waUrl = generateWhatsAppStatusUrl(
+            phone,
+            targetOrder.orderNumber,
+            newStatus,
+            targetOrder.recipientName || "Student",
+            extraData.runnerName || targetOrder.runnerName,
+            extraData.runnerPhone || targetOrder.runnerPhone,
+            extraData.trackingNumber || targetOrder.shipment?.trackingNumber
+          );
+          window.open(waUrl, "_blank");
+        }
+
         await fetchOrders();
         if (selectedOrder && selectedOrder.id === orderId) {
           await openOrderWorkspace(orderId);

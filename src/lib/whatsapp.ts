@@ -84,3 +84,70 @@ export function generateWhatsAppReceiptUrl(order: OrderReceiptPayload, targetPho
 
 export const generateWhatsAppOrderUrl = generateWhatsAppReceiptUrl;
 
+/**
+ * Format Status Dispatch Updates for WhatsApp Customer Alerts
+ */
+export function formatWhatsAppStatusAlert(
+  orderNumber: string,
+  status: string,
+  recipientName: string,
+  runnerName?: string | null,
+  runnerPhone?: string | null,
+  trackingCode?: string | null
+): string {
+  const statusUpper = status.toUpperCase();
+
+  let statusEmoji = "⚡";
+  let statusHeadline = `Order #${orderNumber} Update`;
+
+  if (statusUpper === "CONFIRMED") {
+    statusEmoji = "✅";
+    statusHeadline = `Order #${orderNumber} Payment Verified & Confirmed!`;
+  } else if (statusUpper === "PACKED") {
+    statusEmoji = "📦";
+    statusHeadline = `Order #${orderNumber} Sealed in ESD Anti-Static Parcel!`;
+  } else if (statusUpper === "SHIPPED" || statusUpper === "OUT_FOR_DELIVERY") {
+    statusEmoji = "🏃‍♂️";
+    statusHeadline = `Order #${orderNumber} Out for Live Campus Delivery!`;
+  } else if (statusUpper === "DELIVERED") {
+    statusEmoji = "🎉";
+    statusHeadline = `Order #${orderNumber} Delivered Successfully!`;
+  }
+
+  return `${statusEmoji} *PARTSLY CAMPUS DISPATCH UPDATE*
+──────────────────────
+Hi *${recipientName}*,
+
+${statusHeadline}
+
+*Status:* ${statusUpper.replace(/_/g, " ")}
+${runnerName ? `*Runner:* ${runnerName}${runnerPhone ? ` (${runnerPhone})` : ""}\n` : ""}${trackingCode ? `*Tracking ID:* ${trackingCode}\n` : ""}
+📍 *Track Live:* https://partsly.in/orders/${orderNumber}
+
+_Partsly Campus Express Delivery — 10-30 Minute Hostel & Lab Dropoff_`;
+}
+
+export function generateWhatsAppStatusUrl(
+  customerPhone: string,
+  orderNumber: string,
+  status: string,
+  recipientName: string,
+  runnerName?: string | null,
+  runnerPhone?: string | null,
+  trackingCode?: string | null
+): string {
+  const phone = customerPhone.replace(/[^0-9]/g, "");
+  const formattedPhone = phone.length === 10 ? `91${phone}` : phone;
+  const text = formatWhatsAppStatusAlert(
+    orderNumber,
+    status,
+    recipientName,
+    runnerName,
+    runnerPhone,
+    trackingCode
+  );
+
+  return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
+}
+
+
