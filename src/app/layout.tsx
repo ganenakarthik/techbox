@@ -77,6 +77,9 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/favicon.ico",
   },
+  verification: {
+    google: "google9aa0a1275bbe43ec",
+  },
   openGraph: {
     title: `${BRAND.displayName} — ${BRAND.tagline}`,
     description: "10-30 minute campus delivery for electronic components, sensors, custom PCBs, 3D printing & engineering project kits.",
