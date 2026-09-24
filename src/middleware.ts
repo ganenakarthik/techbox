@@ -4,8 +4,33 @@ import { verifySessionToken, COOKIE_NAME, LEGACY_COOKIE_NAME } from "@/lib/sessi
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const method = request.method.toUpperCase();
 
-  // 1. Protect all /admin routes
+  // 1. CSRF Protection for state-mutating requests to /api/*
+  if (pathname.startsWith("/api/") && ["POST", "PUT", "DELETE", "PATCH"].includes(method)) {
+    const origin = request.headers.get("origin");
+    const host = request.headers.get("host");
+
+    if (origin) {
+      try {
+        const originHost = new URL(origin).host;
+        const allowedHosts = [host, "partsly.in", "www.partsly.in", "techbox.vercel.app"];
+        if (host && !allowedHosts.some((h) => h && originHost.endsWith(h.split(":")[0]))) {
+          return new NextResponse(
+            JSON.stringify({ error: "CSRF check failed. Cross-origin request denied." }),
+            { status: 403, headers: { "Content-Type": "application/json" } }
+          );
+        }
+      } catch {
+        return new NextResponse(
+          JSON.stringify({ error: "Invalid origin header." }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    }
+  }
+
+  // 2. Protect all /admin routes
   if (pathname.startsWith("/admin")) {
     const sessionCookie = request.cookies.get(COOKIE_NAME) || request.cookies.get(LEGACY_COOKIE_NAME);
 
@@ -27,7 +52,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Web Security Hardening: Apply Security Headers to all HTTP responses
+  // 3. Web Security Hardening: Apply Security Headers to all HTTP responses
   const response = NextResponse.next();
 
   // Prevent Clickjacking attacks (Framing Rejection)
@@ -53,6 +78,25 @@ export async function middleware(request: NextRequest) {
     "Strict-Transport-Security",
     "max-age=31536000; includeSubDomains; preload"
   );
+
+  // Prevent caching of sensitive data for API & Admin routes
+  if (pathname.startsWith("/api/") || pathname.startsWith("/admin")) {
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+  }
+
+  // Content-Security-Policy (CSP)
+  const cspHeader = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:",
+    "style-src 'self' 'unsafe-inline' https: http:",
+    "img-src 'self' data: blob: https: http:",
+    "font-src 'self' data: https: http:",
+    "connect-src 'self' https: http: wss: ws:",
+    "frame-ancestors 'none'",
+  ].join("; ");
+  response.headers.set("Content-Security-Policy", cspHeader);
 
   return response;
 }
