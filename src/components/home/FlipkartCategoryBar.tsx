@@ -20,7 +20,7 @@ export function FlipkartCategoryBar() {
   return (
     <div className="w-full bg-white border-b border-slate-200 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-        <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar scroll-smooth">
+        <div className="flex items-center justify-start sm:justify-between gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const targetUrl = cat.isProjects ? "/projects" : cat.isService ? `/${cat.slug}` : `/shop?category=${cat.slug}`;
