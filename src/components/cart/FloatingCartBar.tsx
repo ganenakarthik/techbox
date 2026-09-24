@@ -6,9 +6,9 @@ import { useApp } from "@/context/AppContext";
 import { ShoppingBag, ArrowRight, Zap, CheckCircle2 } from "lucide-react";
 
 export function FloatingCartBar() {
-  const { cart, cartCount, subtotal, setIsCartDrawerOpen, freeDeliveryThreshold } = useApp();
+  const { cart, cartCount, subtotal, setIsCartDrawerOpen, freeDeliveryThreshold, isCartDrawerOpen } = useApp();
 
-  if (!cart || cart.length === 0) {
+  if (isCartDrawerOpen || !cart || cart.length === 0) {
     return null;
   }
 

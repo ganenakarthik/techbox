@@ -31,14 +31,14 @@ export function CartDrawer() {
   return (
     <AnimatePresence>
       {isCartDrawerOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="fixed inset-0 z-[100] overflow-hidden">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsCartDrawerOpen(false)}
-            className="absolute inset-0 bg-black/40 backdrop-blur-xs"
+            className="absolute inset-0 bg-black/50 backdrop-blur-xs"
           />
 
           {/* Drawer content */}
@@ -47,7 +47,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 220 }}
-            className="absolute inset-y-0 right-0 max-w-md w-full bg-white border-l border-slate-200 shadow-2xl flex flex-col z-10 text-slate-900"
+            className="absolute inset-y-0 right-0 max-w-md w-full bg-white border-l border-slate-200 shadow-2xl flex flex-col z-20 text-slate-900"
           >
             {/* Header */}
             <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -59,7 +59,7 @@ export function CartDrawer() {
               </div>
               <button
                 onClick={() => setIsCartDrawerOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200 transition-colors"
+                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-200/60 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -269,21 +269,24 @@ export function CartDrawer() {
                 </div>
 
                 {/* Actions */}
-                <div className="grid grid-cols-2 gap-2.5 pt-1">
-                  <Link
-                    href="/cart"
-                    onClick={() => setIsCartDrawerOpen(false)}
-                    className="py-2.5 px-4 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 text-xs font-bold rounded-xl text-center transition-colors shadow-2xs"
-                  >
-                    View Cart
-                  </Link>
+                <div className="space-y-2 pt-1">
                   <Link
                     href="/checkout"
                     onClick={() => setIsCartDrawerOpen(false)}
-                    className="py-2.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#ff6a00]/20"
+                    className="w-full py-3.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] active:scale-[0.99] text-white text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#ff6a00]/25"
                   >
-                    Checkout <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Proceed to Checkout</span>
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
+                  <div className="text-center">
+                    <Link
+                      href="/cart"
+                      onClick={() => setIsCartDrawerOpen(false)}
+                      className="inline-block py-1 text-xs text-slate-500 hover:text-slate-900 font-semibold underline underline-offset-2 transition-colors"
+                    >
+                      View Full Cart Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}

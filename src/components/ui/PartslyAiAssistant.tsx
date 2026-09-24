@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { BRAND } from "@/config/brand";
+import { useApp } from "@/context/AppContext";
 
 interface Message {
   id: string;
@@ -73,6 +74,7 @@ const QUICK_QUESTIONS = [
 ];
 
 export function PartslyAiAssistant() {
+  const { isCartDrawerOpen } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState("");
   const [orderQuery, setOrderQuery] = useState("");
@@ -85,6 +87,8 @@ export function PartslyAiAssistant() {
       timestamp: "Just now",
     },
   ]);
+
+  if (isCartDrawerOpen) return null;
 
   const handleSendCustom = (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
