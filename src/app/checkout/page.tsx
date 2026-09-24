@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { validateIndianPhone, validateUTR } from "@/lib/validation";
 import { PartslyLogo } from "@/components/ui/PartslyLogo";
+import { PartslyLoader } from "@/components/ui/PartslyLoader";
 import { generateUpiQrCodeUrl } from "@/lib/upi";
 import { generateWhatsAppReceiptUrl } from "@/lib/whatsapp";
 
@@ -39,6 +40,8 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<number>(1);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [paymentCheckLoading, setPaymentCheckLoading] = useState(false);
+  const [paymentCheckStatus, setPaymentCheckStatus] = useState<string>("Submitted — Pending Verification");
 
   // Form State
   const [contactName, setContactName] = useState(user?.name || "");
@@ -285,7 +288,45 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* WhatsApp Receipt Button */}
+        {/* Real-time Payment Verification Card */}
+        <div className="mt-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-left flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div>
+            <div className="font-bold text-amber-900 flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Payment Status: <strong className="text-[#ff6a00]">{paymentCheckStatus}</strong></span>
+            </div>
+            <p className="text-[11px] text-amber-700 mt-0.5">
+              UTR reference is logged. Our automated ledger and campus ops team verify UTRs in real time.
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              setPaymentCheckLoading(true);
+              try {
+                const res = await fetch(`/api/orders/${confirmedOrder.orderNumber}`);
+                const data = await res.json();
+                const currentStatus = data?.paymentStatus || data?.order?.paymentStatus;
+                if (currentStatus === "VERIFIED" || currentStatus === "CONFIRMED") {
+                  setPaymentCheckStatus("VERIFIED — Payment Confirmed!");
+                  addToast("Payment Verified by Partsly Ops!", "success");
+                } else {
+                  setPaymentCheckStatus("UTR Submitted — Pending Ops Verification");
+                  addToast("Payment UTR is logged and pending ops verification", "info");
+                }
+              } catch {
+                setPaymentCheckStatus("UTR Logged — Verification Queued");
+              } finally {
+                setPaymentCheckLoading(false);
+              }
+            }}
+            disabled={paymentCheckLoading}
+            className="px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 font-bold text-xs shrink-0 transition-colors cursor-pointer"
+          >
+            {paymentCheckLoading ? "Verifying..." : "Check Status"}
+          </button>
+        </div>
+
+        {/* WhatsApp Notification Button to Partsly Sourcing (+91 70326 35858) */}
         {confirmedOrder.whatsappUrl && (
           <div className="mt-6">
             <a
@@ -295,7 +336,7 @@ export default function CheckoutPage() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-4 px-8 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs shadow-xl shadow-[#25D366]/25 transition-all cursor-pointer"
             >
               <MessageSquare className="w-5 h-5" />
-              <span>Send Itemized Receipt to My WhatsApp ({confirmedOrder.recipientPhone})</span>
+              <span>Send Order Alert & Receipt to Partsly Ops (+91 70326 35858)</span>
               <ExternalLink className="w-4 h-4 opacity-75" />
             </a>
           </div>
@@ -323,7 +364,10 @@ export default function CheckoutPage() {
 
   // ─── Checkout Form ─────────────────────────────────────────────────────────
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative">
+      {isProcessing && (
+        <PartslyLoader fullScreen text="Creating Order & Registering UTR Ledger..." />
+      )}
       {/* Header Logo & Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
         <div>

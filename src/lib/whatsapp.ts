@@ -72,7 +72,10 @@ _Thank you for ordering with Partsly! Your campus lab runner is preparing your g
  * Generates a direct wa.me link to send the receipt to customer's WhatsApp or Partsly support
  */
 export function generateWhatsAppReceiptUrl(order: OrderReceiptPayload, targetPhone?: string): string {
-  const phone = (targetPhone || order.recipientPhone || process.env.NEXT_PUBLIC_TECHBOX_WHATSAPP || "917032635858").replace(/[^0-9]/g, "");
+  // Always default target to Partsly Official Operations Helpline (+91 70326 35858)
+  const defaultOpsPhone = process.env.NEXT_PUBLIC_TECHBOX_WHATSAPP || "917032635858";
+  const rawPhone = targetPhone || defaultOpsPhone;
+  const phone = rawPhone.replace(/[^0-9]/g, "");
   const formattedPhone = phone.length === 10 ? `91${phone}` : phone;
   const messageText = formatWhatsAppReceiptText(order);
 
