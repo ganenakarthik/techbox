@@ -31,37 +31,99 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: `${BRAND.displayName} — ${BRAND.tagline} | College & Engineering Platform`,
+  metadataBase: new URL(BRAND.appUrl || "https://partsly.in"),
+  title: {
+    default: `${BRAND.displayName} — ${BRAND.tagline}`,
+    template: `%s | ${BRAND.displayName}`,
+  },
   description:
-    `${BRAND.displayName} is the student project infrastructure platform. Buy electronic components, upload project documents, auto-detect BOM requirements, order custom PCBs, 3D enclosures, and working prototypes with rapid campus dropzone delivery.`,
+    "Partsly (partsly.in) is India's leading campus hardware platform. 10-30 minute delivery for Arduino, ESP32, sensors, custom PCBs, 3D printing & engineering project kits directly to college hostels & lab dropzones.",
   keywords: [
     "Partsly",
+    "partsly.in",
     "partsly",
-    "electronics components",
+    "partsly store",
+    "partsly electronics",
+    "partsly campus delivery",
+    "techbox",
+    "electronics components India",
     "engineering college projects",
-    "ESP32",
-    "Arduino",
-    "Sensors",
-    "PCB manufacturing",
-    "3D printing",
-    "campus delivery",
+    "ESP32 Wi-Fi module",
+    "Arduino Uno R3",
+    "Sensors Hyderabad",
+    "PCB manufacturing India",
+    "3D printing STL",
+    "quick commerce hardware",
     "student project kits",
   ],
+  authors: [{ name: "Partsly Infrastructure Team", url: "https://partsly.in" }],
+  creator: "Partsly",
+  publisher: "Partsly",
+  alternates: {
+    canonical: "https://partsly.in",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/favicon.ico",
-    apple: "/icon-192.png",
+    apple: "/favicon.ico",
   },
   openGraph: {
     title: `${BRAND.displayName} — ${BRAND.tagline}`,
-    description: "Components, project kits, prototypes and documentation — delivered directly to your campus dropzone.",
-    url: BRAND.appUrl,
+    description: "10-30 minute campus delivery for electronic components, sensors, custom PCBs, 3D printing & engineering project kits.",
+    url: "https://partsly.in",
     siteName: BRAND.displayName,
+    locale: "en_IN",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${BRAND.displayName} — ${BRAND.tagline}`,
+    description: "Everything for your engineering project. Delivered to your campus hostel in minutes.",
   },
 };
 
 import { MobileStickyCartBar } from "@/components/layout/MobileStickyCartBar";
 import { PartslyAiAssistant } from "@/components/ui/PartslyAiAssistant";
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Partsly",
+  alternateName: ["partsly.in", "Partsly India", "Techbox"],
+  url: "https://partsly.in",
+  logo: "https://partsly.in/favicon.ico",
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+91-7032635858",
+    contactType: "customer service",
+    areaServed: "IN",
+    availableLanguage: ["English", "Telugu", "Hindi"],
+  },
+  sameAs: ["https://instagram.com/partsly.in", "https://partsly.in"],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Partsly",
+  alternateName: "partsly.in",
+  url: "https://partsly.in",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://partsly.in/shop?q={search_term_string}",
+    queryInput: "required name=search_term_string",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -70,6 +132,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <AppProvider>
           <Navbar />
