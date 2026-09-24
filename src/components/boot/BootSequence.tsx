@@ -254,8 +254,8 @@ export function BootSequence() {
                   className="space-y-2"
                 >
                   {/* Wordmark */}
-                  <div className="font-black text-3xl sm:text-4xl tracking-tight text-slate-900 flex items-center justify-center gap-1">
-                    <span className="tracking-tight lowercase">{BRAND.name}</span>
+                  <div className="font-black text-3xl sm:text-4xl tracking-tight text-white flex items-center justify-center gap-1">
+                    <span>parts</span><span className="text-[#ff6a00]">ly</span>
                   </div>
 
                   {/* Doctrine Subtitle */}

@@ -52,6 +52,7 @@ export const metadata: Metadata = {
 };
 
 import { MobileStickyCartBar } from "@/components/layout/MobileStickyCartBar";
+import { PartslyAiAssistant } from "@/components/ui/PartslyAiAssistant";
 
 export default function RootLayout({
   children,
@@ -70,6 +71,7 @@ export default function RootLayout({
           <MobileStickyCartBar />
           <SearchOverlay />
           <AuthModal />
+          <PartslyAiAssistant />
           <ToastContainer />
         </AppProvider>
       </body>
