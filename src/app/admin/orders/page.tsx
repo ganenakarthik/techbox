@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
 import {
@@ -11,6 +11,8 @@ import {
 
 import { generateWhatsAppStatusUrl } from "@/lib/whatsapp";
 
+import { playNewOrderChime } from "@/lib/audioAlert";
+
 export default function AdminOrdersPage() {
   const { addToast, user } = useApp();
   const [filter, setFilter] = useState("ALL");
@@ -18,6 +20,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [newOrderAlert, setNewOrderAlert] = useState<string | null>(null);
 
   // Selected Order for Workspace Modal
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
@@ -37,8 +40,10 @@ export default function AdminOrdersPage() {
   const [cancelOrder, setCancelOrder] = useState<any | null>(null);
   const [cancelReason, setCancelReason] = useState("");
 
-  const fetchOrders = async () => {
-    setLoading(true);
+  const previousOrderCountRef = useRef<number>(0);
+
+  const fetchOrders = async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
     try {
       const params = new URLSearchParams();
       if (filter !== "ALL") params.set("status", filter);
@@ -47,18 +52,42 @@ export default function AdminOrdersPage() {
       const res = await fetch(`/api/admin/orders?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
-        setOrders(data.orders || []);
+        const newOrders = data.orders || [];
+
+        // Check if new orders arrived during live darkstore polling
+        if (
+          previousOrderCountRef.current > 0 &&
+          newOrders.length > previousOrderCountRef.current
+        ) {
+          const latestOrder = newOrders[0];
+          playNewOrderChime();
+          setNewOrderAlert(
+            `🚨 NEW ORDER RECEIVED: #${latestOrder.orderNumber} (₹${latestOrder.total}) — ${latestOrder.recipientName}`
+          );
+          addToast(
+            `New Live Order #${latestOrder.orderNumber} received!`,
+            "success"
+          );
+        }
+
+        previousOrderCountRef.current = newOrders.length;
+        setOrders(newOrders);
       }
     } catch (err) {
       console.error("Failed to fetch admin orders:", err);
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   useEffect(() => {
-    const timer = setTimeout(fetchOrders, 150);
-    return () => clearTimeout(timer);
+    fetchOrders(false);
+    // 10-second Darkstore Live Polling
+    const interval = setInterval(() => {
+      fetchOrders(true);
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [filter, searchQuery, user]);
 
   const openOrderWorkspace = async (orderId: string) => {
@@ -229,14 +258,30 @@ export default function AdminOrdersPage() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={fetchOrders}
-            className="py-2 px-4 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-xs font-semibold text-white flex items-center gap-2"
+            onClick={() => fetchOrders(false)}
+            className="py-2 px-4 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-xs font-semibold text-white flex items-center gap-2 cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5 text-[#ff6a00]" />
             <span>Refresh Queue</span>
           </button>
         </div>
       </div>
+
+      {/* Live Audio & New Order Alert Banner (Blinkit / Zepto Style) */}
+      {newOrderAlert && (
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-[#ff6a00] to-[#ea580c] text-white flex items-center justify-between gap-4 shadow-2xl animate-pulse">
+          <div className="flex items-center gap-3">
+            <span className="text-xl">🔔</span>
+            <span className="text-xs sm:text-sm font-extrabold">{newOrderAlert}</span>
+          </div>
+          <button
+            onClick={() => setNewOrderAlert(null)}
+            className="px-3 py-1 rounded-xl bg-black/30 hover:bg-black/50 text-white text-xs font-bold transition-colors cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Operational Queues Filter Tabs */}
       <div className="flex flex-wrap items-center gap-2 mb-6">
