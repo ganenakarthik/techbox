@@ -11,7 +11,6 @@ import {
   AlertTriangle,
   FileText,
   Wrench,
-  ArrowUpRight,
   ArrowRight,
   ShieldCheck,
   Truck,
@@ -19,10 +18,12 @@ import {
   Clock,
   MapPin,
   Layers,
-  IndianRupee,
-  Loader2,
   Activity,
+  Package,
+  Printer,
+  Sparkles,
 } from "lucide-react";
+import { BRAND } from "@/config/brand";
 
 export default function AdminDashboardPage() {
   const { user } = useApp();
@@ -56,26 +57,26 @@ export default function AdminDashboardPage() {
   // Secondary layer of defense: If user is not admin/staff or API returned 403/401
   if (!loading && (accessDenied || (!user || (user.role !== "ADMIN" && user.role !== "STAFF")))) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 mb-4">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center bg-slate-50">
+        <div className="w-16 h-16 rounded-3xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
           <AlertTriangle className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-black text-white">403 — Unauthorized Access</h1>
-        <p className="mt-2 text-sm text-neutral-400 max-w-md">
-          Administrative privileges are strictly restricted to verified Partsly campus operations leads and staff.
+        <h1 className="text-2xl font-black text-slate-900">403 — Operations Console Locked</h1>
+        <p className="mt-2 text-xs sm:text-sm text-slate-500 max-w-md">
+          Administrative privileges are restricted to verified Partsly campus operations leads and dispatch staff.
         </p>
         <div className="mt-6 flex items-center gap-3">
           <Link
             href="/login?redirect=/admin"
-            className="px-5 py-2.5 rounded-xl bg-[#ff6a00] text-black font-bold text-xs hover:bg-[#ff7b1a] transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white font-bold text-xs shadow-md shadow-[#ff6a00]/20 transition-all"
           >
             Staff Login
           </Link>
           <Link
             href="/shop"
-            className="px-5 py-2.5 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] text-neutral-300 font-semibold text-xs hover:bg-[#222] transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors"
           >
-            Return to Shop
+            Return to Store
           </Link>
         </div>
       </div>
@@ -108,7 +109,7 @@ export default function AdminDashboardPage() {
       case "DELIVERED":
       case "CONFIRMED":
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 font-mono">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
             {status}
           </span>
         );
@@ -116,20 +117,20 @@ export default function AdminDashboardPage() {
       case "PACKED":
       case "OUT_FOR_DELIVERY":
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-orange-500/10 text-orange-400 border border-orange-500/25 font-mono">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-orange-50 text-[#ff6a00] border border-orange-200 font-mono">
             {status}
           </span>
         );
       case "CANCELLED":
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/25 font-mono">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 font-mono">
             CANCELLED
           </span>
         );
       case "PENDING":
       default:
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 font-mono">
             {status}
           </span>
         );
@@ -137,181 +138,196 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#1f1f1f] mb-8">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#ff6a00] text-black uppercase">
-              Staff & Operations Console
-            </span>
-            <span className="text-xs text-neutral-400 font-mono">PostgreSQL Single Source of Truth</span>
+    <div className="bg-slate-50 min-h-screen text-slate-900 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8 bg-white p-6 rounded-3xl border shadow-2xs">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#ff6a00] text-white uppercase tracking-wider">
+                Staff & DarkStore Operations Hub
+              </span>
+              <span className="text-[11px] text-slate-400 font-mono font-bold">10-Min Dispatch Network</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              {BRAND.displayName} Operations Console
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Real-time fulfillment metrics, runner dispatch logs, and campus inventory ledger.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white mt-1">
-            Partsly Operations Hub
-          </h1>
-          <p className="text-xs text-neutral-400 mt-0.5">
-            Real-time fulfillment metrics, automated inventory logs, and dispatch manager.
-          </p>
-        </div>
 
-        {/* Quick Links */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/admin/products"
-            className="py-2 px-3.5 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-xs font-semibold text-white"
-          >
-            Manage Products
-          </Link>
-          <Link
-            href="/admin/inventory"
-            className="py-2 px-3.5 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-[#2e2e2e] text-xs font-semibold text-white"
-          >
-            Inventory Stock
-          </Link>
-          <Link
-            href="/admin/orders"
-            className="py-2 px-3.5 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black text-xs font-bold shadow-md shadow-[#ff6a00]/20"
-          >
-            Manage Orders ({metrics.totalOrders})
-          </Link>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        {kpis.map((kpi, idx) => {
-          const Icon = kpi.icon;
-          return (
-            <div
-              key={idx}
-              className="p-5 rounded-3xl bg-[#111111] border border-[#222222] hover:border-[#ff6a00]/40 transition-all flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between text-neutral-400 mb-2">
-                <span className="text-[11px] font-medium leading-tight">{kpi.title}</span>
-                <Icon className="w-4 h-4 text-[#ff6a00]" />
-              </div>
-              <div>
-                <div className="text-xl font-black text-white">{kpi.value}</div>
-                <div className="mt-1.5">
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${
-                      kpi.badgeType === "warning"
-                        ? "bg-orange-500/10 text-orange-400 border-orange-500/20"
-                        : kpi.badgeType === "action"
-                        ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                        : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                    }`}
-                  >
-                    {kpi.change}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Main Dual Grid: Orders & Audit Log */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-        {/* Recent Orders (7 cols) */}
-        <div className="lg:col-span-7 p-6 rounded-3xl bg-[#111111] border border-[#262626] space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-white">Live Customer Orders</h2>
-              <p className="text-xs text-neutral-400">Directly fetched from PostgreSQL `Order` table</p>
-            </div>
+          {/* Quick Navigation Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/admin/orders"
-              className="text-xs font-bold text-[#ff6a00] hover:underline flex items-center gap-1"
+              className="py-2.5 px-4 rounded-xl bg-[#ff6a00] hover:bg-[#ea580c] text-white text-xs font-extrabold shadow-md shadow-[#ff6a00]/20 transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <span>View All</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <Truck className="w-4 h-4" />
+              <span>Manage Orders ({metrics.totalOrders})</span>
+            </Link>
+            <Link
+              href="/admin/products"
+              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-800 transition-colors"
+            >
+              Manage Catalog
+            </Link>
+            <Link
+              href="/admin/inventory"
+              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-800 transition-colors"
+            >
+              Inventory Ledger
+            </Link>
+            <Link
+              href="/admin/tickets"
+              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-800 transition-colors"
+            >
+              Helpdesk Desk
             </Link>
           </div>
-
-          {loading ? (
-            <div className="py-12 text-center text-neutral-500">
-              <Loader2 className="w-6 h-6 animate-spin text-[#ff6a00] mx-auto mb-2" />
-              <span>Fetching live orders...</span>
-            </div>
-          ) : recentOrders.length === 0 ? (
-            <div className="py-12 text-center text-neutral-500 text-xs">
-              No orders placed yet. As students checkout, orders will populate here instantly.
-            </div>
-          ) : (
-            <div className="space-y-2.5 pt-2">
-              {recentOrders.map((ord: any) => (
-                <div
-                  key={ord.id}
-                  className="p-3.5 rounded-2xl bg-[#161616] border border-[#222222] flex items-center justify-between text-xs hover:border-[#333333] transition-colors"
-                >
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-white">{ord.orderNumber}</span>
-                      {renderStatusBadge(ord.status)}
-                    </div>
-                    <div className="text-neutral-400 text-[11px]">
-                      Student: <strong className="text-neutral-200">{ord.customerName}</strong> • {ord.itemCount} items
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="font-bold text-white">₹{ord.total}</div>
-                    <Link
-                      href={`/orders/${ord.orderNumber}`}
-                      className="text-[10px] text-[#ff6a00] hover:underline"
-                    >
-                      Track Details →
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Live Admin Audit Log (5 cols) */}
-        <div className="lg:col-span-5 p-6 rounded-3xl bg-[#111111] border border-[#262626] space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[#ff6a00]" />
-              <h2 className="text-base font-bold text-white">AdminAuditLog Ledger</h2>
-            </div>
-            <span className="text-[10px] text-neutral-500 font-mono">Immutable</span>
-          </div>
-
-          <p className="text-xs text-neutral-400">
-            Automated operational trail recording inventory updates, status transitions, and quotes.
-          </p>
-
-          {recentAudits.length === 0 ? (
-            <div className="py-12 text-center text-neutral-500 text-xs">
-              Audit log empty. Administrative operations will be tracked here.
-            </div>
-          ) : (
-            <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-              {recentAudits.map((a: any) => (
-                <div
-                  key={a.id}
-                  className="p-3 rounded-xl bg-[#161616] border border-[#222222] text-xs space-y-1"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-[#ff6a00] text-[11px]">
-                      {a.action}
-                    </span>
-                    <span className="text-[10px] text-neutral-500 font-mono">
-                      {new Date(a.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+        {/* KPI Cards Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          {kpis.map((kpi, idx) => {
+            const Icon = kpi.icon;
+            return (
+              <div
+                key={idx}
+                className="p-5 rounded-3xl bg-white border border-slate-200 shadow-2xs hover:border-[#ff6a00] transition-all flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between text-slate-500 mb-2">
+                  <span className="text-[11px] font-bold text-slate-500 leading-tight">{kpi.title}</span>
+                  <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00]">
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-900">{kpi.value}</div>
+                  <div className="mt-2">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                        kpi.badgeType === "warning"
+                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                          : kpi.badgeType === "action"
+                          ? "bg-orange-50 text-[#ff6a00] border-orange-200"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      }`}
+                    >
+                      {kpi.change}
                     </span>
                   </div>
-                  <div className="text-neutral-300 font-medium text-[11px]">{a.target}</div>
-                  {a.details && (
-                    <div className="text-neutral-400 text-[10px] leading-snug">{a.details}</div>
-                  )}
                 </div>
-              ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Dual Grid: Live Orders Pipeline & System Audit Log */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+          {/* Recent Orders Table (7 cols) */}
+          <div className="lg:col-span-7 p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-[#ff6a00]" />
+                  <span>Recent Campus Dispatches</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">Live order queue from engineering dropzones</p>
+              </div>
+              <Link
+                href="/admin/orders"
+                className="text-xs font-bold text-[#ff6a00] hover:underline flex items-center gap-1"
+              >
+                <span>View All Orders</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
-          )}
+
+            {loading ? (
+              <div className="py-12 text-center text-xs text-slate-400">Loading order queue...</div>
+            ) : recentOrders.length === 0 ? (
+              <div className="py-12 text-center text-xs text-slate-400">No active orders found in database.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-100 text-[11px] text-slate-400 uppercase font-mono">
+                      <th className="py-2.5">Order #</th>
+                      <th className="py-2.5">Student / Campus</th>
+                      <th className="py-2.5">Amount</th>
+                      <th className="py-2.5">Status</th>
+                      <th className="py-2.5 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {recentOrders.map((order: any) => (
+                      <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3 font-mono font-bold text-slate-900">
+                          {order.orderNumber}
+                        </td>
+                        <td className="py-3">
+                          <div className="font-bold text-slate-900">{order.recipientName}</div>
+                          <div className="text-[10px] text-slate-400 truncate max-w-[160px]">
+                            {order.collegeName || order.recipientPhone}
+                          </div>
+                        </td>
+                        <td className="py-3 font-black text-slate-900">
+                          ₹{order.total}
+                        </td>
+                        <td className="py-3">
+                          {renderStatusBadge(order.status)}
+                        </td>
+                        <td className="py-3 text-right">
+                          <Link
+                            href="/admin/orders"
+                            className="px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#ff6a00] font-bold text-[11px] border border-orange-200 transition-colors inline-block"
+                          >
+                            Dispatch
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Audit Logs / Activity Stream (5 cols) */}
+          <div className="lg:col-span-5 p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-emerald-600" />
+                  <span>Operations Audit Stream</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">Real-time ledger events & staff actions</p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="py-12 text-center text-xs text-slate-400">Loading audit events...</div>
+            ) : recentAudits.length === 0 ? (
+              <div className="py-12 text-center text-xs text-slate-400">No recent audit logs.</div>
+            ) : (
+              <div className="space-y-3">
+                {recentAudits.map((log: any) => (
+                  <div key={log.id} className="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-bold text-slate-900 font-mono uppercase text-[10px] bg-white px-2 py-0.5 rounded border border-slate-200">
+                        {log.action}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {new Date(log.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-snug">{log.details || log.target}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
