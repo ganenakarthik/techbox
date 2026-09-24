@@ -66,42 +66,35 @@ export function CartDrawer() {
             </div>
 
             {/* Free Delivery Threshold Tracker */}
-            <div className="p-4 bg-orange-50/40 border-b border-slate-200">
+            <div className="p-3.5 bg-orange-50/50 border-b border-slate-200">
               <div className="flex items-center justify-between text-xs mb-2">
-                <div className="flex items-center gap-1.5 text-slate-700 font-semibold">
+                <div className="flex items-center gap-1.5 text-slate-800 font-bold">
                   <Truck className="w-4 h-4 text-[#ff6a00]" />
-                  <span>Campus & Hostel Delivery</span>
+                  <span>Campus Delivery</span>
                 </div>
                 {cart.length === 0 ? (
                   <span className="text-slate-500 text-[11px]">
-                    Free Delivery over <span className="text-slate-900 font-bold">₹499</span>
+                    Free over <span className="text-slate-900 font-bold">₹499</span>
                   </span>
                 ) : remainingForFree > 0 ? (
-                  <span className="text-slate-600 font-medium text-xs">
+                  <span className="text-slate-700 font-medium text-xs">
                     Add <span className="text-[#ff6a00] font-bold">₹{remainingForFree}</span> for FREE
                   </span>
                 ) : (
                   <span className="text-emerald-700 font-bold text-xs flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> FREE Delivery Unlocked
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> FREE Delivery Unlocked!
                   </span>
                 )}
               </div>
 
               {/* Progress Track */}
-              <div className="relative w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="relative w-full h-2 bg-slate-200/80 rounded-full overflow-hidden">
                 {subtotal > 0 && (
                   <div
                     className="h-full bg-gradient-to-r from-[#ff6a00] to-[#ea580c] rounded-full transition-all duration-500 shadow-xs"
                     style={{ width: `${Math.min(Math.max(freeDeliveryProgress, 5), 100)}%` }}
                   />
                 )}
-              </div>
-
-              <div className="flex items-center justify-between text-[10px] text-slate-500 mt-1.5 font-mono">
-                <span>{subtotal > 0 ? `₹${subtotal} in cart` : "Cart empty (₹0)"}</span>
-                <span className={remainingForFree === 0 ? "text-emerald-600 font-bold" : "text-slate-500"}>
-                  {remainingForFree === 0 ? "Unlocked!" : "₹499 Goal"}
-                </span>
               </div>
             </div>
 
