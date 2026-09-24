@@ -59,7 +59,7 @@ export default async function HomePage() {
       <HeroBannerSlider />
 
       {/* 2. AMAZON-STYLE 4-CARD QUAD GRID OVERLAPPING HERO */}
-      <div className="-mt-14 sm:-mt-24 md:-mt-36 relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 w-full">
+      <div className="mt-3 sm:-mt-24 md:-mt-36 relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {/* Quad Card 1: Development Boards */}
           <div className="bg-white p-5 rounded-sm shadow-xs border border-slate-200/80 flex flex-col justify-between">

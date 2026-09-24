@@ -332,81 +332,95 @@ export function Navbar() {
               </button>
             </div>
           </div>
+
+          {/* Mobile Quick Search Input (Blinkit Style) */}
+          <div className="mt-2.5 md:hidden">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="w-full flex items-center justify-between h-10 px-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-400 text-xs shadow-inner cursor-pointer"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <Search className="w-4 h-4 text-[#ff6a00] shrink-0" />
+                <span className="truncate text-slate-500 font-medium">Search Arduino, ESP32, sensors, ICs...</span>
+              </div>
+              <span className="px-2 py-0.5 rounded bg-[#ff6a00] text-white text-[10px] font-bold shrink-0">
+                Search
+              </span>
+            </button>
+          </div>
         </div>
 
-        {/* 3. CATEGORY NAVIGATION STRIP (Robu.in Style) */}
-        <div className="bg-slate-50 border-t border-slate-200 hidden lg:block">
+        {/* 3. CATEGORY NAVIGATION STRIP (Mobile Horizontal Scrollable + Desktop Grid) */}
+        <div className="bg-slate-50 border-t border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between gap-4 py-2 text-xs font-semibold text-slate-700">
-              <div className="flex items-center gap-1 xl:gap-2">
-                {categoryLinks.map((cat) => {
-                  const isActive = pathname === cat.href;
-                  return (
-                    <Link
-                      key={cat.name}
-                      href={cat.href}
-                      className={`px-3 py-1.5 rounded-lg transition-colors ${
-                        isActive
-                          ? "bg-white text-[#ff6a00] font-bold shadow-xs border border-slate-200"
-                          : "text-slate-700 hover:text-[#ff6a00] hover:bg-white"
-                      }`}
-                    >
-                      {cat.name}
-                    </Link>
-                  );
-                })}
-
-                {/* Services Dropdown */}
-                <div className="relative" ref={servicesDropdownRef}>
-                  <button
-                    onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
-                    className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 ${
-                      isServicesActive || isServicesDropdownOpen
+            <div className="flex items-center gap-1.5 py-2 text-xs font-semibold text-slate-700 overflow-x-auto no-scrollbar scroll-smooth">
+              {categoryLinks.map((cat) => {
+                const isActive = pathname === cat.href;
+                return (
+                  <Link
+                    key={cat.name}
+                    href={cat.href}
+                    className={`px-3 py-1.5 rounded-lg whitespace-nowrap shrink-0 transition-colors ${
+                      isActive
                         ? "bg-white text-[#ff6a00] font-bold shadow-xs border border-slate-200"
                         : "text-slate-700 hover:text-[#ff6a00] hover:bg-white"
                     }`}
                   >
-                    <span>Fabrication Hub</span>
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 transition-transform ${
-                        isServicesDropdownOpen ? "rotate-180 text-[#ff6a00]" : "text-slate-500"
-                      }`}
-                    />
-                  </button>
+                    {cat.name}
+                  </Link>
+                );
+              })}
 
-                  {isServicesDropdownOpen && (
-                    <div className="absolute left-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1.5">
-                        Rapid Fabrication Services
-                      </div>
-                      <div className="space-y-1">
-                        {services.map((srv) => {
-                          const Icon = srv.icon;
-                          return (
-                            <Link
-                              key={srv.name}
-                              href={srv.href}
-                              onClick={() => setIsServicesDropdownOpen(false)}
-                              className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors group"
-                            >
-                              <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] shrink-0 group-hover:bg-[#ff6a00] group-hover:text-white transition-colors">
-                                <Icon className="w-4 h-4" />
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-xs font-bold group-hover:text-[#ff6a00] transition-colors">
-                                  {srv.name}
-                                </div>
-                                <div className="text-[11px] text-slate-500 leading-snug mt-0.5">
-                                  {srv.desc}
-                                </div>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
+              {/* Services Dropdown */}
+              <div className="relative shrink-0" ref={servicesDropdownRef}>
+                <button
+                  onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
+                  className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 whitespace-nowrap ${
+                    isServicesActive || isServicesDropdownOpen
+                      ? "bg-white text-[#ff6a00] font-bold shadow-xs border border-slate-200"
+                      : "text-slate-700 hover:text-[#ff6a00] hover:bg-white"
+                  }`}
+                >
+                  <span>Fabrication Hub</span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${
+                      isServicesDropdownOpen ? "rotate-180 text-[#ff6a00]" : "text-slate-500"
+                    }`}
+                  />
+                </button>
+
+                {isServicesDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1.5">
+                      Rapid Fabrication Services
                     </div>
-                  )}
-                </div>
+                    <div className="space-y-1">
+                      {services.map((srv) => {
+                        const Icon = srv.icon;
+                        return (
+                          <Link
+                            key={srv.name}
+                            href={srv.href}
+                            onClick={() => setIsServicesDropdownOpen(false)}
+                            className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors group"
+                          >
+                            <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#ff6a00] shrink-0 group-hover:bg-[#ff6a00] group-hover:text-white transition-colors">
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-bold group-hover:text-[#ff6a00] transition-colors">
+                                {srv.name}
+                              </div>
+                              <div className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                                {srv.desc}
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

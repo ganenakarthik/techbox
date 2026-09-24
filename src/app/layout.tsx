@@ -51,6 +51,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { MobileStickyCartBar } from "@/components/layout/MobileStickyCartBar";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -65,6 +67,7 @@ export default function RootLayout({
           <Footer />
           <CartDrawer />
           <FloatingCartBar />
+          <MobileStickyCartBar />
           <SearchOverlay />
           <AuthModal />
           <ToastContainer />
