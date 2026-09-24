@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { PaymentGateway, OrderStatus, PaymentStatus } from "@prisma/client";
 import { generateWhatsAppOrderUrl } from "@/lib/whatsapp";
+import { generateTeamMemberWhatsAppUrl, dispatchOrderWebhookNotification } from "@/lib/orderNotification";
 
 export async function POST(req: Request) {
   try {
@@ -289,6 +290,27 @@ export async function POST(req: Request) {
       utrNumber: result.order.utrNumber || null,
     });
 
+    // Trigger direct team member notification webhook & WhatsApp URL
+    const opsPayload = {
+      orderNumber: result.orderNumber,
+      recipientName: result.order.recipientName,
+      recipientPhone: result.order.recipientPhone,
+      campusDetail: result.order.campusDetail,
+      pickupPoint,
+      hostelBlock,
+      items: (result.order.items || []).map((it: any) => ({
+        productName: it.productName,
+        quantity: it.quantity,
+        price: Number(it.unitPrice),
+      })),
+      total: result.grandTotal,
+      paymentStatus: result.initialPaymentStatus,
+      utrNumber: result.order.utrNumber || null,
+    };
+
+    const teamWhatsAppUrl = generateTeamMemberWhatsAppUrl(opsPayload);
+    dispatchOrderWebhookNotification(opsPayload).catch(() => {});
+
     return NextResponse.json({
       success: true,
       order: result.order,
@@ -297,6 +319,7 @@ export async function POST(req: Request) {
       total: result.grandTotal,
       gateway: result.gateway,
       whatsappUrl,
+      teamWhatsAppUrl,
     });
   } catch (error: any) {
     console.error("Checkout error:", error);
