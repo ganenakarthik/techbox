@@ -73,7 +73,19 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <div className="font-bold text-slate-900">Official Correspondence</div>
-                  <div className="text-slate-500 mt-0.5">support@partsly.in | founders@partsly.in</div>
+                  <div className="text-slate-500 mt-0.5">orders@partsly.in | support@partsly.in</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#ff6a00]/10 border border-[#ff6a00]/30 flex items-center justify-center shrink-0 text-[#ff6a00]">
+                  <MessageSquare className="w-4 h-4 text-[#ff6a00]" />
+                </div>
+                <div>
+                  <div className="font-bold text-slate-900">Instagram Official</div>
+                  <a href="https://instagram.com/partsly.in" target="_blank" rel="noopener noreferrer" className="text-[#ff6a00] font-bold hover:underline mt-0.5 block">
+                    @partsly.in (instagram.com/partsly.in)
+                  </a>
                 </div>
               </div>
 

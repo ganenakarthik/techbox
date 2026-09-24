@@ -18,6 +18,8 @@ export const BRAND = {
   supportPhone: "+91 70326 35858",
   whatsappNumber: process.env.NEXT_PUBLIC_TECHBOX_WHATSAPP || "917032635858",
   whatsappDisplay: "+91 70326 35858",
+  instagram: "https://instagram.com/partsly.in",
+  instagramHandle: "@partsly.in",
 
   // Logos & Visual Assets (Official Black & Orange on Transparent/White)
   logo: "/logo.png",
