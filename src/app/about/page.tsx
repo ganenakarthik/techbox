@@ -55,13 +55,6 @@ const capabilities = [
   },
 ];
 
-const stats = [
-  { label: "Lab Components Stocked", value: "2,000+" },
-  { label: "Projects & Kits Dispatched", value: "5,000+" },
-  { label: "Campus Dropzones Active", value: "35+" },
-  { label: "Lab Verification Accuracy", value: "99.9%" },
-];
-
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-[#ff6a00] selection:text-white">
@@ -80,15 +73,6 @@ export default function AboutPage() {
           <p className="mt-6 text-sm sm:text-base text-slate-600 max-w-3xl mx-auto leading-relaxed">
             {BRAND.displayName} is the centralized project infrastructure platform powering engineering, polytechnic, and STEM institutions across India — providing lab-tested microcontrollers, genuine sensors, custom PCB manufacturing, 3D enclosures, and rapid campus dropzone delivery.
           </p>
-
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            {stats.map((s) => (
-              <div key={s.label} className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs text-center">
-                <div className="text-2xl sm:text-3xl font-black text-[#ff6a00]">{s.value}</div>
-                <div className="text-[11px] text-slate-500 mt-1 font-semibold">{s.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
