@@ -6,15 +6,9 @@ import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required to analyze project BOM requirements." },
-        { status: 401 }
-      );
-    }
-
     const clientIp = getClientIp(req);
-    const rateCheck = checkRateLimit(`bom_analyze:${user.id || clientIp}`, 15, 10 * 60);
+
+    const rateCheck = checkRateLimit(`bom_analyze:${user?.id || clientIp}`, 20, 10 * 60);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         {

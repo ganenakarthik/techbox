@@ -307,6 +307,51 @@ export function ProjectDropzone() {
             </span>
             <span className="text-slate-400 text-[11px]">• Max 15MB</span>
           </div>
+
+          {/* Quick Presets for Demo */}
+          <div className="mt-8 pt-6 border-t border-slate-200/80 text-left">
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+              ⚡ Test with Sample Capstone BOM Presets:
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const sampleText = `Arduino Uno R3 Dev Board, 1\nHC-SR04 Ultrasonic Distance Sensor, 1\nL298N Dual H-Bridge Motor Driver Module, 1\nSG90 Micro Servo Motor 9g, 1\nMale to Female Jumper Wires 40 Pin, 1`;
+                  const mockFile = new File([sampleText], "arduino_rover_bom.txt", { type: "text/plain" });
+                  processUploadedFile(mockFile);
+                }}
+                className="py-1.5 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#ff6a00] font-bold text-xs transition-all active:scale-95"
+              >
+                🤖 Arduino Rover BOM
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const sampleText = `ESP32 DevKit V1 NodeMCU WiFi + BLE Board, 1\nDHT11 Temperature and Humidity Sensor Module, 1\n0.96 inch I2C OLED Display Module 128x64, 1\nBreadboard 830 Points, 1\nMale to Male Jumper Wires 40 Pin, 1`;
+                  const mockFile = new File([sampleText], "esp32_iot_weather_bom.txt", { type: "text/plain" });
+                  processUploadedFile(mockFile);
+                }}
+                className="py-1.5 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#ff6a00] font-bold text-xs transition-all active:scale-95"
+              >
+                📶 ESP32 IoT Weather Station BOM
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const sampleText = `ESP32 DevKit V1 NodeMCU WiFi + BLE Board, 1\nCapacitive Soil Moisture Sensor Module, 1\n5V Relay Module 1-Channel, 1\nMini Submersible Water Pump 3V-6V, 1`;
+                  const mockFile = new File([sampleText], "smart_agri_bom.txt", { type: "text/plain" });
+                  processUploadedFile(mockFile);
+                }}
+                className="py-1.5 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#ff6a00] font-bold text-xs transition-all active:scale-95"
+              >
+                🌱 Smart Agri Sensor BOM
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
