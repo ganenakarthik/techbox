@@ -169,6 +169,28 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 
     if (!user) return null;
 
+    // Super Admin Auto-Promotion for platform owner
+    const SUPER_ADMIN_EMAILS = ["ganenakartiks7@gmail.com"];
+    if (user.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase().trim()) && user.role !== Role.ADMIN) {
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { role: Role.ADMIN },
+        include: { college: true },
+      });
+      return {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role: updatedUser.role,
+        phone: updatedUser.phone,
+        phoneVerified: updatedUser.phoneVerified,
+        emailVerified: updatedUser.emailVerified,
+        hasPassword: Boolean(updatedUser.passwordHash),
+        collegeId: updatedUser.collegeId,
+        collegeName: updatedUser.college?.name || null,
+      };
+    }
+
     return {
       id: user.id,
       email: user.email,

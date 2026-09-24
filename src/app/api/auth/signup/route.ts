@@ -51,6 +51,9 @@ export async function POST(req: Request) {
 
     const passwordHash = await hashPassword(password);
 
+    const isSuperAdminEmail = cleanEmail === "ganenakartiks7@gmail.com";
+    const userRole = isSuperAdminEmail ? "ADMIN" : "CUSTOMER";
+
     // Create user and initial cart & wishlist in transaction
     const user = await prisma.user.create({
       data: {
@@ -59,7 +62,7 @@ export async function POST(req: Request) {
         passwordHash,
         phone: normalizedPhone,
         collegeId: collegeId || null,
-        role: "CUSTOMER",
+        role: userRole,
         cart: {
           create: {},
         },

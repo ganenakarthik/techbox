@@ -78,6 +78,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // Auto-promote Super Admin email if not already ADMIN
+    if (user.email && user.email.toLowerCase().trim() === "ganenakartiks7@gmail.com" && user.role !== "ADMIN") {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { role: "ADMIN" },
+        include: { college: true },
+      });
+    }
+
     // 2. Authentication Succeeded -> Reset rate limits
     resetRateLimit(`login:ip:${clientIp}`);
     resetRateLimit(`login:id:${cleanInput}`);
