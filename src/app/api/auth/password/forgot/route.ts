@@ -13,30 +13,30 @@ export async function POST(req: Request) {
 
     const cleanEmail = String(email).trim().toLowerCase();
 
-    // Always return success to prevent email enumeration
-    const user = await prisma.user.findUnique({
-      where: { email: cleanEmail },
-    });
+    const { validateAndNormalizeIndianPhone } = await import("@/lib/phone");
+    const { OtpService } = await import("@/lib/otp");
 
-    if (user) {
-      // Generate a reset token (expires in 1 hour)
-      const token = randomBytes(32).toString("hex");
-      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    // Re-use verified OTP dispatch pipeline
+    const phoneCheck = validateAndNormalizeIndianPhone(cleanEmail);
+    let targetPhone = cleanEmail;
 
-      // Store token in DB (use passwordHash temporarily as a reset token marker)
-      // We use a separate field pattern — store as JSON in a simple way
-      // For now, log the reset URL (in production, send via email)
-      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${token}&email=${encodeURIComponent(cleanEmail)}`;
-      
-      console.log(`[PASSWORD RESET] User: ${cleanEmail} | Reset URL: ${resetUrl}`);
-      
-      // In production with Resend/SES configured, send email here
-      // For now we log it — the frontend shows "check your email"
+    if (!phoneCheck.isValid) {
+      const user = await prisma.user.findUnique({
+        where: { email: cleanEmail },
+      });
+      if (user && user.phone) {
+        targetPhone = user.phone;
+      }
     }
+
+    // Trigger secure OTP dispatch with rate limiting and HMAC hashing
+    const otpResult = await OtpService.sendOtp(targetPhone, "RESET_PASSWORD");
 
     return NextResponse.json({
       success: true,
-      message: "If an account exists with this email, a reset link has been sent.",
+      message: otpResult.success
+        ? `Password reset code sent to your registered mobile number (${targetPhone.slice(-4).padStart(targetPhone.length, "*")}).`
+        : "If an account exists, a reset code has been dispatched.",
     });
   } catch (error: any) {
     console.error("Forgot password error:", error);
