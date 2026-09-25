@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, ShieldCheck, Truck } from "lucide-react";
+import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, ShieldCheck, Truck, Share2, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -263,14 +263,47 @@ export function CartDrawer() {
 
                 {/* Actions */}
                 <div className="space-y-2 pt-1">
-                  <Link
-                    href="/checkout"
-                    onClick={() => setIsCartDrawerOpen(false)}
-                    className="w-full py-3.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] active:scale-[0.99] text-white text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#ff6a00]/25"
-                  >
-                    <span>Proceed to Checkout</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <Link
+                      href="/checkout"
+                      onClick={() => setIsCartDrawerOpen(false)}
+                      className="sm:col-span-8 py-3.5 px-4 bg-[#ff6a00] hover:bg-[#ea580c] active:scale-[0.99] text-white text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#ff6a00]/25 cursor-pointer"
+                    >
+                      <span>Proceed to Checkout</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch("/api/cart/share", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              items: cart,
+                              title: "Project Components BOM",
+                              creatorName: "Team Lead",
+                              teamSize: 4,
+                            }),
+                          });
+                          if (res.ok) {
+                            const data = await res.json();
+                            const shareUrl = data.shareUrl;
+                            const text = `🛠️ *Engineering Capstone Project BOM*%0A%0A*Components (${cart.length} items):*%0A${cart.map((it) => `• ${it.name} (x${it.quantity})`).join("%0A")}%0A%0A💰 *Total:* ₹${finalTotal}%0A🛒 *View & Import BOM to Cart:*%0A${shareUrl}`;
+                            window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+                          }
+                        } catch {
+                          console.error("Cart share failed");
+                        }
+                      }}
+                      className="sm:col-span-4 py-3.5 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
+                      title="Share this BOM with your capstone project team on WhatsApp"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      <span>Share BOM</span>
+                    </button>
+                  </div>
+
                   <div className="text-center">
                     <Link
                       href="/cart"

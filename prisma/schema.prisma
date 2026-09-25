@@ -815,10 +815,21 @@ model StoredFile {
   entityType   String?
   entityId     String?
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-
   @@index([userId, category])
   @@index([entityType, entityId])
 }
+
+model SharedCart {
+  id          String   @id @default(uuid())
+  shareCode   String   @unique
+  title       String?  @default("Capstone Project BOM")
+  creatorName String?  @default("Team Lead")
+  itemsJson   String   // JSON stringified items
+  teamSize    Int      @default(4)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([shareCode])
+}
+
 

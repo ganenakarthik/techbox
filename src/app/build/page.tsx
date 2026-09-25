@@ -19,6 +19,7 @@ import {
   DollarSign,
   AlertCircle,
   Clock,
+  Share2,
 } from "lucide-react";
 
 export default function BuildMyProjectPage() {
@@ -300,13 +301,52 @@ export default function BuildMyProjectPage() {
               <span>Full testing & code walkthrough guarantee included</span>
             </div>
 
-            <button
-              onClick={handleConfirmQuote}
-              className="w-full sm:w-auto py-3 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all"
-            >
-              <span>Accept Quote & Order for Campus</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+              <button
+                onClick={async () => {
+                  try {
+                    const sampleItems = [
+                      { name: projectTitle, price: activeLevel.price, quantity: 1, brand: "Partsly Project Kit", sku: "KIT-CAPSTONE" },
+                      ...(pcbAddon > 0 ? [{ name: "Custom 2-Layer PCB Manufacturing", price: pcbAddon, quantity: 1, brand: "Partsly PCB", sku: "PCB-2L" }] : []),
+                      ...(printAddon > 0 ? [{ name: "3D-Printed Sensor Chassis", price: printAddon, quantity: 1, brand: "Partsly 3D", sku: "3D-CHASSIS" }] : []),
+                    ];
+
+                    const res = await fetch("/api/cart/share", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        items: sampleItems,
+                        title: projectTitle,
+                        creatorName: "Project Lead",
+                        teamSize: 4,
+                      }),
+                    });
+
+                    if (res.ok) {
+                      const data = await res.json();
+                      const shareUrl = data.shareUrl;
+                      const text = `🛠️ *${projectTitle}*%0A%0A*Build Tier:* ${activeLevel.title}%0A💰 *Total Quote:* ₹${totalCalculated}%0A%0A🛒 *View & Import BOM to Cart:*%0A${shareUrl}`;
+                      window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+                    }
+                  } catch {
+                    addToast("Failed to share BOM", "error");
+                  }
+                }}
+                className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                title="Share this project BOM with your team members on WhatsApp"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Share BOM with Team</span>
+              </button>
+
+              <button
+                onClick={handleConfirmQuote}
+                className="py-3 px-6 rounded-xl bg-[#ff6a00] hover:bg-[#ff7a1a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl shadow-[#ff6a00]/25 transition-all cursor-pointer"
+              >
+                <span>Accept Quote & Order</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

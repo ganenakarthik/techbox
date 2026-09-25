@@ -65,7 +65,7 @@ export async function GET() {
       }),
       prisma.storedFile.findMany({
         where: { userId: user.id },
-        orderBy: { createdAt: "desc" },
+        orderBy: { id: "desc" },
         take: 10,
       }),
     ]);
