@@ -28,7 +28,7 @@ import {
   RotateCw,
   Sparkles,
 } from "lucide-react";
-import { Real3DComponentViewerModal } from "@/components/products/Real3DComponentViewerModal";
+import { FlipkartStyle360ViewerModal } from "@/components/products/FlipkartStyle360ViewerModal";
 
 export default function ProductDetailPage({
   params,
@@ -543,9 +543,9 @@ export default function ProductDetailPage({
           </div>
         )}
 
-        {/* Real 3D WebGL Hardware & Pinout Spatial Inspector Modal */}
+        {/* Flipkart-Style 360 Studio Spin Viewer Modal */}
         {show360Modal && (
-          <Real3DComponentViewerModal
+          <FlipkartStyle360ViewerModal
             productName={product.name}
             productImage={product.images[activeImageIndex] || product.images[0]}
             price={activeVariant.price}
