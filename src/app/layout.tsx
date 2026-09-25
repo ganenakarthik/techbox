@@ -73,9 +73,15 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  manifest: "/site.webmanifest",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo-icon.png", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/logo-icon.png",
+    apple: "/apple-touch-icon.png",
   },
   verification: {
     google: "google9aa0a1275bbe43ec",
@@ -87,11 +93,20 @@ export const metadata: Metadata = {
     siteName: BRAND.displayName,
     locale: "en_IN",
     type: "website",
+    images: [
+      {
+        url: "https://partsly.in/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Partsly — Campus Hardware Platform",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${BRAND.displayName} — ${BRAND.tagline}`,
     description: "Everything for your engineering project. Delivered to your campus hostel in minutes.",
+    images: ["https://partsly.in/og-image.png"],
   },
 };
 
@@ -104,7 +119,7 @@ const organizationJsonLd = {
   name: "Partsly",
   alternateName: ["partsly.in", "Partsly India", "Techbox"],
   url: "https://partsly.in",
-  logo: "https://partsly.in/favicon.ico",
+  logo: "https://partsly.in/logo-icon.png",
   contactPoint: {
     "@type": "ContactPoint",
     telephone: "+91-7032635858",
@@ -136,6 +151,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/logo-icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
