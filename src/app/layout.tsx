@@ -32,6 +32,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.appUrl || "https://partsly.in"),
+  applicationName: "Partsly",
   title: {
     default: `${BRAND.displayName} — ${BRAND.tagline}`,
     template: `%s | ${BRAND.displayName}`,

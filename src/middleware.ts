@@ -6,6 +6,15 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method.toUpperCase();
 
+  // 0. Canonical Domain Enforcement: 301 Redirect www.partsly.in -> partsly.in (Prevents Duplicate Indexing)
+  const hostHeader = request.headers.get("host") || "";
+  if (hostHeader.toLowerCase().startsWith("www.partsly.in")) {
+    const canonicalUrl = request.nextUrl.clone();
+    canonicalUrl.host = "partsly.in";
+    canonicalUrl.protocol = "https:";
+    return NextResponse.redirect(canonicalUrl, 301);
+  }
+
   // 1. CSRF Protection for state-mutating requests to /api/*
   if (pathname.startsWith("/api/") && ["POST", "PUT", "DELETE", "PATCH"].includes(method)) {
     const origin = request.headers.get("origin");
