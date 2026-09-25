@@ -5,9 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/lib/data";
 import { useApp } from "@/context/AppContext";
-import { Heart, ShoppingBag, Star, Eye, Check, Plus, Minus, Zap, RotateCw } from "lucide-react";
+import { Heart, ShoppingBag, Star, Eye, Check, Plus, Minus, Zap } from "lucide-react";
 import { QuickViewModal } from "./QuickViewModal";
-import { FlipkartStyle360ViewerModal } from "./FlipkartStyle360ViewerModal";
 
 interface ProductCardProps {
   product: Product;
@@ -16,7 +15,6 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart, updateCartQuantity, removeFromCart, cart, toggleWishlist, isInWishlist } = useApp();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
-  const [is360Open, setIs360Open] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const defaultVariant = product.variants[0];
@@ -90,23 +88,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation();
                 setIsQuickViewOpen(true);
               }}
-              className="flex-1 py-2 px-2 bg-white/95 hover:bg-white text-slate-800 text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 shadow-md border border-slate-200 transition-all cursor-pointer"
+              className="w-full py-2 px-2 bg-white/95 hover:bg-white text-slate-800 text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 shadow-md border border-slate-200 transition-all cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5 text-slate-500" />
               <span>Quick View</span>
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIs360Open(true);
-              }}
-              className="py-2 px-2.5 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 shadow-md transition-all cursor-pointer"
-              title="Open 360 Studio View"
-            >
-              <RotateCw className="w-3.5 h-3.5 text-[#ff6a00]" />
-              <span>360°</span>
             </button>
           </div>
         </Link>
@@ -214,17 +199,6 @@ export function ProductCard({ product }: ProductCardProps) {
           product={product}
           isOpen={isQuickViewOpen}
           onClose={() => setIsQuickViewOpen(false)}
-        />
-      )}
-
-      {is360Open && (
-        <FlipkartStyle360ViewerModal
-          productName={product.name}
-          productImage={product.images[0]}
-          price={defaultVariant.price}
-          variantId={defaultVariant.id}
-          category={product.category}
-          onClose={() => setIs360Open(false)}
         />
       )}
     </>

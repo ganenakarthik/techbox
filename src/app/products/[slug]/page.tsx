@@ -25,10 +25,7 @@ import {
   ShoppingBag,
   ArrowRight,
   Zap,
-  RotateCw,
-  Sparkles,
 } from "lucide-react";
-import { FlipkartStyle360ViewerModal } from "@/components/products/FlipkartStyle360ViewerModal";
 
 export default function ProductDetailPage({
   params,
@@ -55,7 +52,6 @@ export default function ProductDetailPage({
   const [activeTab, setActiveTab] = useState<"specs" | "pinout" | "documents" | "reviews">("specs");
   const [deliveryQuery, setDeliveryQuery] = useState(selectedCollege?.code || "");
   const [deliveryStatus, setDeliveryStatus] = useState("");
-  const [show360Modal, setShow360Modal] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -156,14 +152,6 @@ export default function ProductDetailPage({
                   {activeVariant.discount}% DISCOUNT
                 </div>
               )}
-
-              <button
-                onClick={() => setShow360Modal(true)}
-                className="absolute bottom-4 right-4 px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-900 text-white font-extrabold text-xs shadow-lg backdrop-blur-xs border border-slate-700 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <RotateCw className="w-4 h-4 text-[#ff6a00]" />
-                <span>360° Hardware & Pinout Inspector</span>
-              </button>
             </div>
 
             {/* Thumbnails */}
@@ -541,18 +529,6 @@ export default function ProductDetailPage({
               ))}
             </div>
           </div>
-        )}
-
-        {/* Flipkart-Style 360 Studio Spin Viewer Modal */}
-        {show360Modal && (
-          <FlipkartStyle360ViewerModal
-            productName={product.name}
-            productImage={product.images[activeImageIndex] || product.images[0]}
-            price={activeVariant.price}
-            variantId={activeVariant.id}
-            category={product.category}
-            onClose={() => setShow360Modal(false)}
-          />
         )}
       </div>
     </div>
