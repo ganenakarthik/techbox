@@ -28,7 +28,7 @@ import {
   RotateCw,
   Sparkles,
 } from "lucide-react";
-import { Component360ViewerModal } from "@/components/products/Component360ViewerModal";
+import { Real3DComponentViewerModal } from "@/components/products/Real3DComponentViewerModal";
 
 export default function ProductDetailPage({
   params,
@@ -543,9 +543,9 @@ export default function ProductDetailPage({
           </div>
         )}
 
-        {/* 360 Hardware & Pinout Inspector Modal */}
+        {/* Real 3D WebGL Hardware & Pinout Spatial Inspector Modal */}
         {show360Modal && (
-          <Component360ViewerModal
+          <Real3DComponentViewerModal
             productName={product.name}
             productImage={product.images[activeImageIndex] || product.images[0]}
             price={activeVariant.price}
