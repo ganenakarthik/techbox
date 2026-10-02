@@ -1,13 +1,13 @@
 export const MAINTENANCE_CONFIG = {
   enabled: true,
-  title: "Scheduled System Optimization",
+  title: "Scheduled Infrastructure Optimization",
   headline: "We Will Be Right Back Soon!",
   description:
-    "Partsly hardware infrastructure is undergoing high-speed database optimization and component catalog indexing to bring you faster project quotes and lower component costs.",
-  estimatedReturn: "Under 30 Minutes",
+    "Partsly hardware platform is undergoing a major system optimization, component catalog re-indexing, and low-cost BOM engine upgrade. Storefront operations will resume shortly.",
+  estimatedReturn: "6 Days",
   whatsappNumber: "917032635858",
   whatsappDisplay: "+91 70326 35858",
-  whatsappUrl: "https://wa.me/917032635858?text=Hi%20Partsly%20Team%2C%20I%20have%20an%20urgent%20hardware%20query",
+  whatsappUrl: "https://wa.me/917032635858?text=Hi%20Partsly%20Ops%2C%20I%20have%20an%20urgent%20hardware%20query%20during%20maintenance",
   instagram: "@partsly.in",
   instagramUrl: "https://instagram.com/partsly.in",
   adminBypassPath: "/admin",
