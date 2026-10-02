@@ -5,6 +5,8 @@ export const MAINTENANCE_CONFIG = {
   description:
     "Partsly hardware platform is undergoing a major system optimization, component catalog re-indexing, and low-cost BOM engine upgrade. Storefront operations will resume shortly.",
   estimatedReturn: "6 Days",
+  // Target End Timestamp for real-time persistent countdown across refreshes
+  targetEndTimeMs: new Date("2026-10-08T18:00:00+05:30").getTime(),
   whatsappNumber: "917032635858",
   whatsappDisplay: "+91 70326 35858",
   whatsappUrl: "https://wa.me/917032635858?text=Hi%20Partsly%20Ops%2C%20I%20have%20an%20urgent%20hardware%20query%20during%20maintenance",

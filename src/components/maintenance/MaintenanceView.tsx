@@ -24,13 +24,24 @@ export function MaintenanceView() {
   const [adminError, setAdminError] = useState(false);
   const [progress, setProgress] = useState(88);
 
-  // 6 Days in seconds = 6 * 24 * 60 * 60 = 518400 seconds
-  const [timeLeft, setTimeLeft] = useState(518400);
+  // Helper to compute remaining seconds until target end date
+  const calculateRemainingSeconds = () => {
+    const targetMs = MAINTENANCE_CONFIG.targetEndTimeMs;
+    const nowMs = Date.now();
+    const diffSeconds = Math.floor((targetMs - nowMs) / 1000);
+    return diffSeconds > 0 ? diffSeconds : 0;
+  };
+
+  const [timeLeft, setTimeLeft] = useState<number>(calculateRemainingSeconds());
 
   useEffect(() => {
+    // Recalculate immediately on mount
+    setTimeLeft(calculateRemainingSeconds());
+
     const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setTimeLeft(calculateRemainingSeconds());
     }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
@@ -95,31 +106,31 @@ export function MaintenanceView() {
           </p>
         </div>
 
-        {/* 6-Day Live Running Countdown Timer Card */}
+        {/* Real-Time Persistent Countdown Timer Card */}
         <div className="max-w-xl mx-auto p-6 sm:p-8 rounded-3xl bg-white/90 border border-zinc-200/90 shadow-2xl shadow-orange-500/10 backdrop-blur-xl space-y-6">
           <div className="flex justify-between items-center text-xs font-mono border-b border-zinc-100 pb-3">
             <span className="text-zinc-900 flex items-center gap-2 font-bold">
               <Clock className="w-4 h-4 text-[#ff6a00]" />
               <span>Services Will Return In</span>
             </span>
-            <span className="text-[#ff6a00] font-black text-xs uppercase tracking-wider">Live Countdown</span>
+            <span className="text-[#ff6a00] font-black text-xs uppercase tracking-wider">Real-Time Persistent Timer</span>
           </div>
 
           {/* 4-Block Clock Timer (Days : Hours : Minutes : Seconds) */}
           <div className="grid grid-cols-4 gap-2 sm:gap-4 font-mono">
-            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center">
+            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center shadow-sm">
               <span className="text-2xl sm:text-4xl font-black text-[#ff6a00]">{days}</span>
               <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest pt-1">Days</span>
             </div>
-            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center">
+            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center shadow-sm">
               <span className="text-2xl sm:text-4xl font-black text-zinc-900">{hours}</span>
               <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest pt-1">Hours</span>
             </div>
-            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center">
+            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center shadow-sm">
               <span className="text-2xl sm:text-4xl font-black text-zinc-900">{minutes}</span>
               <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest pt-1">Mins</span>
             </div>
-            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center">
+            <div className="p-3 sm:p-4 rounded-2xl bg-orange-50/50 border border-orange-200/60 flex flex-col items-center shadow-sm">
               <span className="text-2xl sm:text-4xl font-black text-[#ff6a00] animate-pulse">{seconds}</span>
               <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest pt-1">Secs</span>
             </div>
