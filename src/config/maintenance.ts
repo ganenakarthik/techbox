@@ -1,5 +1,5 @@
 export const MAINTENANCE_CONFIG = {
-  enabled: true,
+  enabled: false,
   title: "Scheduled Infrastructure Optimization",
   headline: "We Will Be Right Back Soon!",
   description:
@@ -9,7 +9,7 @@ export const MAINTENANCE_CONFIG = {
   targetEndTimeMs: new Date("2026-10-08T18:00:00+05:30").getTime(),
   whatsappNumber: "917032635858",
   whatsappDisplay: "+91 70326 35858",
-  whatsappUrl: "https://wa.me/917032635858?text=Hi%20Partsly%20Ops%2C%20I%20have%20an%20urgent%20hardware%20query%20during%20maintenance",
+  whatsappUrl: "https://wa.me/917032635858?text=Hi%20Partsly%20Ops%2C%20I%20have%20an%20urgent%20hardware%20query",
   instagram: "@partsly.in",
   instagramUrl: "https://instagram.com/partsly.in",
   adminBypassPath: "/admin",
