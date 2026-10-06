@@ -22,12 +22,11 @@ export function PartslyLogo({
         />
       </div>
 
-      {/* partsly.in Brand Wordmark */}
+      {/* partsly Brand Wordmark */}
       <div className="flex items-baseline">
         <span className={`text-2xl sm:text-3xl font-black tracking-tighter ${textColor}`}>
           partsly
         </span>
-        <span className="text-[#ff6a00] font-black text-2xl sm:text-3xl">.in</span>
       </div>
     </div>
   );
