@@ -20,10 +20,14 @@ import {
   Plus,
   Minus,
   X,
-  Filter,
+  MapPin,
+  User,
+  Heart,
   Star,
+  ArrowUp,
+  Tag,
+  Clock,
   Check,
-  Lock,
 } from "lucide-react";
 import { MAINTENANCE_CONFIG } from "@/config/maintenance";
 import { MaintenanceView } from "@/components/maintenance/MaintenanceView";
@@ -31,7 +35,7 @@ import { PartslyLogo } from "@/components/ui/Logo";
 import { COMPONENTS_CATALOG, ComponentItem } from "@/data/componentsCatalog";
 
 const CATEGORIES = [
-  "All",
+  "All Categories",
   "Microcontrollers",
   "Sensors",
   "Motors & Actuators",
@@ -46,7 +50,7 @@ export default function Page() {
   }
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
   const [cartItems, setCartItems] = useState<{ [key: string]: number }>({
     "esp32-devkit-v1": 2,
     "arduino-uno-r3": 1,
@@ -66,7 +70,7 @@ export default function Page() {
   const filteredProducts = useMemo(() => {
     return COMPONENTS_CATALOG.filter((item) => {
       const matchesCategory =
-        selectedCategory === "All" || item.category === selectedCategory;
+        selectedCategory === "All Categories" || item.category === selectedCategory;
       const matchesSearch =
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.specs.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -80,6 +84,13 @@ export default function Page() {
     const p = COMPONENTS_CATALOG.find((item) => item.id === id);
     return sum + (p ? p.price * qty : 0);
   }, 0);
+
+  const totalOriginalPrice = Object.entries(cartItems).reduce((sum, [id, qty]) => {
+    const p = COMPONENTS_CATALOG.find((item) => item.id === id);
+    return sum + (p ? p.originalPrice * qty : 0);
+  }, 0);
+
+  const totalSavings = totalOriginalPrice - totalCartPrice;
 
   const addToCart = (id: string, name: string) => {
     setCartItems((prev) => ({
@@ -122,202 +133,366 @@ export default function Page() {
     }, 1200);
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="min-h-screen bg-[#ffffff] text-zinc-900 font-sans selection:bg-[#ff6a00] selection:text-white flex flex-col justify-between">
-      {/* Top Announcement Bar */}
-      <div className="bg-[#09090b] text-white text-xs py-2 px-4 border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-zinc-300 font-mono">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Express Gate Dispatch: <strong>10–30 Min Direct Runner Delivery</strong></span>
+    <div className="min-h-screen bg-[#f1f3f6] text-zinc-900 font-sans selection:bg-[#ff6a00] selection:text-white flex flex-col justify-between">
+      {/* 1. Amazon/Flipkart Top Bar */}
+      <div className="bg-[#131921] text-white text-xs py-1.5 px-4 border-b border-zinc-800 font-mono">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4 text-zinc-300">
+            <div className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-[#ff6a00]" />
+              <span>Deliver to <strong>Campus Lab / Gate</strong></span>
+            </div>
+            <span className="hidden md:inline text-zinc-600">|</span>
+            <span className="hidden md:inline text-emerald-400 font-bold">10-30 Min Express Gate Dispatch</span>
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <span className="text-[#ff6a00] font-bold">⚡ Up to 45% Off on 100+ Hardware Parts</span>
+
+          <div className="flex items-center gap-4">
             <a
               href={MAINTENANCE_CONFIG.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-zinc-300 hover:text-white font-mono flex items-center gap-1.5 transition-colors"
+              className="text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors"
             >
               <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Helpdesk: {MAINTENANCE_CONFIG.whatsappDisplay}</span>
+              <span>WhatsApp Helpdesk ({MAINTENANCE_CONFIG.whatsappDisplay})</span>
+            </a>
+            <a href="/admin" className="text-zinc-400 hover:text-white font-bold transition-colors">
+              Ops Console →
             </a>
           </div>
         </div>
       </div>
 
-      {/* Main Header Navigation */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-zinc-200/90 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      {/* 2. Amazon/Flipkart Main Header */}
+      <header className="sticky top-0 z-40 bg-[#131921] text-white border-b border-zinc-800 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
           {/* Logo */}
-          <PartslyLogo isLight={true} />
+          <PartslyLogo isLight={false} />
 
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-xl relative">
+          {/* Amazon-style Large Integrated Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-2xl relative items-center">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="h-10 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold px-3 rounded-l-md border-r border-zinc-300 focus:outline-none cursor-pointer"
+            >
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 100+ electronic parts, Arduino, ESP32, sensors, ICs..."
-              className="w-full bg-zinc-50 border border-zinc-300 rounded-full pl-11 pr-24 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00] focus:bg-white transition-all shadow-inner"
+              placeholder="Search 100+ electronic components, Arduino, ESP32, sensors, ICs..."
+              className="w-full h-10 bg-white text-zinc-900 px-4 text-xs focus:outline-none"
             />
-            <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2" />
-            <button className="absolute right-1.5 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-[#ff6a00] hover:bg-orange-600 text-white rounded-full text-xs font-bold transition-colors">
-              Search
+
+            <button className="h-10 px-5 bg-[#ff6a00] hover:bg-orange-600 text-white rounded-r-md font-bold transition-colors flex items-center justify-center">
+              <Search className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Right Action Controls */}
-          <div className="flex items-center gap-3">
-            {/* Cart Button */}
+          {/* Account & Cart Controls */}
+          <div className="flex items-center gap-5">
+            <div className="hidden sm:flex flex-col text-xs cursor-pointer">
+              <span className="text-[10px] text-zinc-400">Hello, Engineer</span>
+              <span className="font-bold flex items-center gap-1">
+                Account & Orders <ChevronDown className="w-3 h-3 text-zinc-400" />
+              </span>
+            </div>
+
+            {/* Cart Button with Flipkart Badge */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-lg shadow-orange-500/20 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
             >
-              <ShoppingCart className="w-4 h-4" />
+              <div className="relative">
+                <ShoppingCart className="w-5 h-5" />
+                {totalCartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-white text-[#ff6a00] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
+                    {totalCartCount}
+                  </span>
+                )}
+              </div>
               <span className="hidden sm:inline">Cart</span>
-              <span className="bg-white text-[#ff6a00] px-2 py-0.5 rounded-full font-black text-xs">
-                {totalCartCount}
+              <span className="font-black text-xs border-l border-orange-400 pl-2 ml-1">
+                ₹{totalCartPrice}
               </span>
             </button>
-
-            {/* Ops Console */}
-            <a
-              href="/admin"
-              className="px-3.5 py-2 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-700 text-xs font-mono font-bold transition-colors"
-            >
-              Ops Console →
-            </a>
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        <div className="md:hidden px-4 pb-3">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 100+ electronic parts, Arduino..."
-              className="w-full bg-zinc-50 border border-zinc-300 rounded-full pl-10 pr-4 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
-            />
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        {/* Amazon Sub-Header Category Navigation Strip */}
+        <div className="bg-[#232f3e] text-white text-xs px-4 border-t border-zinc-700 overflow-x-auto scrollbar-none">
+          <div className="max-w-7xl mx-auto flex items-center gap-6 py-2 whitespace-nowrap font-medium">
+            <button
+              onClick={() => setSelectedCategory("All Categories")}
+              className={`flex items-center gap-1 font-bold ${
+                selectedCategory === "All Categories" ? "text-[#ff6a00]" : "hover:text-[#ff6a00]"
+              }`}
+            >
+              ☰ All Categories
+            </button>
+
+            {CATEGORIES.filter((c) => c !== "All Categories").map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`transition-colors ${
+                  selectedCategory === cat
+                    ? "text-[#ff6a00] font-bold underline underline-offset-4"
+                    : "text-zinc-300 hover:text-white"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+
+            <span className="text-zinc-600">|</span>
+            <a href="#deals" className="text-amber-400 font-bold hover:underline">
+              ⚡ Today's Deals
+            </a>
+            <a href="#services" className="text-emerald-400 font-bold hover:underline">
+              🛠️ PCB & 3D Print Services
+            </a>
           </div>
         </div>
       </header>
 
       {/* Toast Notification */}
       {addedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#09090b] text-white px-5 py-3 rounded-2xl shadow-2xl border border-[#ff6a00] text-xs font-bold flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#09090b] text-white px-5 py-3 rounded-xl shadow-2xl border border-[#ff6a00] text-xs font-bold flex items-center gap-2 animate-bounce">
           <CheckCircle2 className="w-4 h-4 text-[#ff6a00]" />
           <span>{addedToast}</span>
         </div>
       )}
 
-      {/* Main Container */}
-      <main className="flex-1 space-y-12 py-8">
-        {/* Hero Banner Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="relative rounded-3xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-[#ff6a00]/25 p-8 sm:p-14 text-white overflow-hidden shadow-2xl border border-zinc-800">
-            {/* Ambient Background Glow */}
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#ff6a00]/30 rounded-full blur-3xl pointer-events-none" />
+      {/* Main E-Commerce Content */}
+      <main className="flex-1 space-y-6 py-4">
+        {/* Flipkart-style Quick Category Icon Row */}
+        <section className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg p-4 border border-zinc-200 shadow-sm grid grid-cols-3 sm:grid-cols-6 gap-4 text-center text-xs">
+            <button
+              onClick={() => setSelectedCategory("Microcontrollers")}
+              className="p-3 rounded-lg hover:bg-orange-50 transition-all flex flex-col items-center gap-2 group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-full bg-orange-100 text-[#ff6a00] flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                <Cpu className="w-6 h-6" />
+              </div>
+              <span className="font-bold text-zinc-800 group-hover:text-[#ff6a00]">Microcontrollers</span>
+            </button>
 
-            <div className="relative z-10 max-w-2xl space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ff6a00]/20 border border-[#ff6a00]/40 text-[#ff6a00] text-xs font-mono font-bold">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>100+ HARDWARE PARTS CATALOG</span>
+            <button
+              onClick={() => setSelectedCategory("Sensors")}
+              className="p-3 rounded-lg hover:bg-orange-50 transition-all flex flex-col items-center gap-2 group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                <Zap className="w-6 h-6" />
+              </div>
+              <span className="font-bold text-zinc-800 group-hover:text-blue-600">Sensors & Modules</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory("Motors & Actuators")}
+              className="p-3 rounded-lg hover:bg-orange-50 transition-all flex flex-col items-center gap-2 group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                <Layers className="w-6 h-6" />
+              </div>
+              <span className="font-bold text-zinc-800 group-hover:text-emerald-600">Motors & Robotics</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory("Power & Batteries")}
+              className="p-3 rounded-lg hover:bg-orange-50 transition-all flex flex-col items-center gap-2 group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                <DollarSign className="w-6 h-6" />
+              </div>
+              <span className="font-bold text-zinc-800 group-hover:text-amber-600">Power & Batteries</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory("PCB & Custom Services")}
+              className="p-3 rounded-lg hover:bg-orange-50 transition-all flex flex-col items-center gap-2 group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                <Wrench className="w-6 h-6" />
+              </div>
+              <span className="font-bold text-zinc-800 group-hover:text-purple-600">PCB & 3D Print</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory("Passives & ICs")}
+              className="p-3 rounded-lg hover:bg-orange-50 transition-all flex flex-col items-center gap-2 group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-full bg-zinc-100 text-zinc-700 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <span className="font-bold text-zinc-800 group-hover:text-zinc-900">Passives & Tools</span>
+            </button>
+          </div>
+        </section>
+
+        {/* Amazon/Flipkart Hero Banner & Promo Slider */}
+        <section className="max-w-7xl mx-auto px-4">
+          <div className="rounded-lg bg-gradient-to-r from-[#131921] via-zinc-900 to-[#ff6a00]/30 p-8 sm:p-12 text-white border border-zinc-800 relative overflow-hidden shadow-lg">
+            <div className="relative z-10 max-w-xl space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#ff6a00] text-white text-xs font-black uppercase tracking-wider">
+                ⚡ EXPRESS CAMPUS DISPATCH
               </div>
 
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
-                ENGINEER THE <span className="text-[#ff6a00]">FUTURE</span>
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                100+ Hardware Parts <br />
+                <span className="text-[#ff6a00]">Delivered to Your Gate in 10-30 Mins</span>
               </h1>
 
-              <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-normal">
-                High-quality microcontrollers, sensors, actuators, power modules, custom PCB fabrication, and 3D printing. Built for engineering projects with rapid campus gate delivery.
+              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                Genuine lab-tested microcontrollers, sensors, custom PCB fabrication, and 3D print enclosures. Built for engineering students and creators.
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex items-center gap-3 pt-2">
                 <a
                   href="#catalog"
-                  className="px-6 py-3.5 rounded-full bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-orange-500/25 transition-all inline-flex items-center gap-2"
+                  className="px-6 py-3 rounded-md bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-md transition-all"
                 >
-                  <span>Explore 100+ Components</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Shop All 100+ Parts →
                 </a>
-
                 <a
                   href={MAINTENANCE_CONFIG.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 font-bold text-xs sm:text-sm transition-all inline-flex items-center gap-2"
+                  className="px-6 py-3 rounded-md bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2"
                 >
-                  <MessageSquare className="w-4 h-4 text-emerald-400" />
-                  <span>Custom Project Quote</span>
+                  <MessageSquare className="w-4 h-4 text-emerald-600" />
+                  <span>WhatsApp Quote</span>
                 </a>
               </div>
+            </div>
+          </div>
+        </section>
 
-              {/* Guarantees Badges */}
-              <div className="pt-6 border-t border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-zinc-400 font-mono">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#ff6a00]" />
-                  <span>100% Genuine Lab-Tested</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-emerald-400" />
-                  <span>Same-Day Gate Dispatch</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-amber-400" />
-                  <span>Zero-DOA Replacement</span>
+        {/* Amazon 4-Tile Deal Grid Block */}
+        <section id="deals" className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Tile 1: Bestselling Microcontrollers */}
+            <div className="bg-white p-5 rounded-lg border border-zinc-200 shadow-sm space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <h3 className="font-black text-base text-zinc-950">Top Microcontrollers</h3>
+                <p className="text-xs text-zinc-500">ESP32, Arduino, Raspberry Pi Pico W</p>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[0].image} alt="ESP32" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">ESP32 DevKit</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹389</span>
+                  </div>
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[1].image} alt="Arduino Uno" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">Arduino UNO</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹449</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Services We Provide Grid */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-xs font-mono font-bold tracking-widest text-[#ff6a00] uppercase">
-                ENGINEERING SERVICES
-              </h2>
-              <p className="text-2xl font-black text-zinc-950">What We Build & Deliver</p>
+              <button
+                onClick={() => setSelectedCategory("Microcontrollers")}
+                className="text-xs text-[#ff6a00] font-bold hover:underline text-left pt-2"
+              >
+                See all Microcontrollers →
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {MAINTENANCE_CONFIG.services.map((service, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 rounded-2xl bg-gradient-to-b from-white to-orange-50/20 border border-zinc-200 hover:border-[#ff6a00]/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all space-y-3 group cursor-pointer shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-[#ff6a00]/10 text-[#ff6a00] flex items-center justify-center font-bold border border-[#ff6a00]/20">
-                      {idx === 0 && <DollarSign className="w-5 h-5" />}
-                      {idx === 1 && <Layers className="w-5 h-5" />}
-                      {idx === 2 && <Search className="w-5 h-5" />}
-                      {idx === 3 && <Cpu className="w-5 h-5" />}
-                    </div>
-                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-[#ff6a00]/10 text-[#ff6a00] border border-[#ff6a00]/25">
-                      {service.badge}
-                    </span>
+            {/* Tile 2: Robotics Sensors */}
+            <div className="bg-white p-5 rounded-lg border border-zinc-200 shadow-sm space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <h3 className="font-black text-base text-zinc-950">Robotics & IoT Sensors</h3>
+                <p className="text-xs text-zinc-500">MPU6050, Ultrasonic, DHT11</p>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[20].image} alt="MPU6050" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">MPU6050</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹149</span>
                   </div>
-
-                  <h3 className="font-bold text-zinc-950 text-base group-hover:text-[#ff6a00] transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-xs text-zinc-600 leading-relaxed font-normal">
-                    {service.desc}
-                  </p>
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[21].image} alt="HC-SR04" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">HC-SR04</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹79</span>
+                  </div>
                 </div>
-              ))}
+              </div>
+              <button
+                onClick={() => setSelectedCategory("Sensors")}
+                className="text-xs text-[#ff6a00] font-bold hover:underline text-left pt-2"
+              >
+                See all Sensors →
+              </button>
+            </div>
+
+            {/* Tile 3: Motors & Actuators */}
+            <div className="bg-white p-5 rounded-lg border border-zinc-200 shadow-sm space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <h3 className="font-black text-base text-zinc-950">Motors & Drivers</h3>
+                <p className="text-xs text-zinc-500">SG90 Servos, L298N, Steppers</p>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[40].image} alt="SG90" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">SG90 Servo</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹119</span>
+                  </div>
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[42].image} alt="L298N" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">L298N Driver</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹189</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedCategory("Motors & Actuators")}
+                className="text-xs text-[#ff6a00] font-bold hover:underline text-left pt-2"
+              >
+                See all Motors →
+              </button>
+            </div>
+
+            {/* Tile 4: Custom PCB & 3D Print */}
+            <div className="bg-white p-5 rounded-lg border border-zinc-200 shadow-sm space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <h3 className="font-black text-base text-zinc-950">PCB & 3D Printing</h3>
+                <p className="text-xs text-zinc-500">Custom FR-4 PCBs & CAD Cases</p>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[80].image} alt="PCB Fab" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">PCB Fab</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹499</span>
+                  </div>
+                  <div className="bg-zinc-50 p-2 rounded border border-zinc-100 text-center">
+                    <img src={COMPONENTS_CATALOG[81].image} alt="3D Case" className="h-20 w-full object-cover rounded mb-1" />
+                    <span className="text-[11px] font-bold block truncate">3D Enclosure</span>
+                    <span className="text-xs text-[#ff6a00] font-black">₹399</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedCategory("PCB & Custom Services")}
+                className="text-xs text-[#ff6a00] font-bold hover:underline text-left pt-2"
+              >
+                See Custom Services →
+              </button>
             </div>
           </div>
         </section>
 
-        {/* 100+ Component Catalog Section with Product Images */}
-        <section id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="space-y-6">
+        {/* 100-Component E-Commerce Storefront Grid (Flipkart / Amazon Style) */}
+        <section id="catalog" className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg p-6 border border-zinc-200 shadow-sm space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-4">
               <div>
                 <h2 className="text-xs font-mono font-bold tracking-widest text-[#ff6a00] uppercase">
@@ -326,16 +501,16 @@ export default function Page() {
                 <p className="text-2xl font-black text-zinc-950">100+ Hardware Parts & Components</p>
               </div>
 
-              {/* Category Filter Tabs */}
+              {/* Category Filter Pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                       selectedCategory === cat
-                        ? "bg-[#ff6a00] text-white shadow-md shadow-orange-500/20"
-                        : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900"
+                        ? "bg-[#ff6a00] text-white shadow-sm"
+                        : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
                     }`}
                   >
                     {cat}
@@ -344,75 +519,92 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Products Grid with High-Res Image Previews */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Product Cards Grid (Flipkart Style) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {filteredProducts.map((product) => {
                 const qtyInCart = cartItems[product.id] || 0;
+                const discountPercent = Math.round(
+                  ((product.originalPrice - product.price) / product.originalPrice) * 100
+                );
+
                 return (
                   <div
                     key={product.id}
-                    className="p-4 rounded-2xl bg-white border border-zinc-200 hover:border-[#ff6a00] hover:shadow-xl transition-all space-y-3 flex flex-col justify-between group overflow-hidden"
+                    className="p-4 rounded-lg bg-white border border-zinc-200 hover:border-[#ff6a00] hover:shadow-lg transition-all flex flex-col justify-between group space-y-3"
                   >
                     <div className="space-y-3">
-                      {/* Product Image Preview */}
-                      <div className="relative h-44 w-full bg-zinc-50 rounded-xl overflow-hidden border border-zinc-100 flex items-center justify-center p-2">
+                      {/* Product Image */}
+                      <div className="relative h-48 w-full bg-zinc-50 rounded-md overflow-hidden flex items-center justify-center p-2 border border-zinc-100">
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover rounded group-hover:scale-105 transition-transform duration-300"
                         />
+                        {discountPercent > 0 && (
+                          <span className="absolute top-2 left-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#ff6a00] text-white shadow">
+                            {discountPercent}% OFF
+                          </span>
+                        )}
                         {product.badge && (
-                          <span className="absolute top-2 right-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-orange-500 text-white shadow-md">
+                          <span className="absolute top-2 right-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-900 text-white">
                             {product.badge}
                           </span>
                         )}
-                        <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-black/70 text-white backdrop-blur-sm">
-                          ★ {product.rating}
-                        </span>
                       </div>
 
+                      {/* Product Info */}
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
+                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">
                           {product.category}
                         </span>
                         <h3 className="font-bold text-zinc-950 text-sm leading-snug group-hover:text-[#ff6a00] transition-colors line-clamp-2">
                           {product.name}
                         </h3>
-                        <p className="text-[11px] text-zinc-500 font-mono line-clamp-2 leading-relaxed pt-0.5">
+
+                        {/* Rating Star Badge (Flipkart Style) */}
+                        <div className="flex items-center gap-2 pt-1">
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-bold flex items-center gap-0.5">
+                            {product.rating} <Star className="w-2.5 h-2.5 fill-current" />
+                          </span>
+                          <span className="text-[11px] text-zinc-400 font-mono">In Stock ({product.inStockCount})</span>
+                        </div>
+
+                        <p className="text-[11px] text-zinc-500 font-mono line-clamp-2 leading-relaxed pt-1">
                           {product.specs}
                         </p>
                       </div>
                     </div>
 
+                    {/* Pricing & Add to Cart (Amazon Style) */}
                     <div className="space-y-3 pt-3 border-t border-zinc-100">
                       <div className="flex items-baseline justify-between">
                         <div className="flex items-baseline gap-2">
                           <span className="text-xl font-black text-zinc-950">₹{product.price}</span>
                           <span className="text-xs text-zinc-400 line-through">₹{product.originalPrice}</span>
                         </div>
-                        <span className="text-[10px] font-mono text-emerald-600 font-bold">{product.stock}</span>
+                        <span className="text-[10px] font-mono text-emerald-600 font-bold">Free Gate Dispatch</span>
                       </div>
 
                       {qtyInCart === 0 ? (
                         <button
                           onClick={() => addToCart(product.id, product.name)}
-                          className="w-full py-2.5 rounded-xl bg-zinc-950 hover:bg-[#ff6a00] text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                          className="w-full py-2 rounded-md bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>Add to Cart</span>
                         </button>
                       ) : (
-                        <div className="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-2 py-1.5 text-xs font-bold text-[#ff6a00]">
+                        <div className="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-md px-2 py-1.5 text-xs font-bold text-[#ff6a00]">
                           <button
                             onClick={() => updateQuantity(product.id, -1)}
-                            className="p-1 hover:bg-orange-100 rounded-lg text-[#ff6a00] cursor-pointer"
+                            className="p-1 hover:bg-orange-100 rounded text-[#ff6a00] cursor-pointer"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
                           <span>{qtyInCart} in Cart</span>
                           <button
                             onClick={() => updateQuantity(product.id, 1)}
-                            className="p-1 hover:bg-orange-100 rounded-lg text-[#ff6a00] cursor-pointer"
+                            className="p-1 hover:bg-orange-100 rounded text-[#ff6a00] cursor-pointer"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -423,47 +615,46 @@ export default function Page() {
                 );
               })}
             </div>
-
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-16 space-y-3 bg-zinc-50 rounded-3xl border border-zinc-200">
-                <Search className="w-10 h-10 text-zinc-400 mx-auto" />
-                <p className="text-sm font-bold text-zinc-700">No components found for "{searchQuery}"</p>
-                <p className="text-xs text-zinc-500">Need rare ICs or custom parts? Use our custom WhatsApp sourcing desk.</p>
-                <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategory("All");
-                  }}
-                  className="px-4 py-2 bg-[#ff6a00] text-white rounded-full text-xs font-bold"
-                >
-                  Reset Catalog Filters
-                </button>
-              </div>
-            )}
           </div>
         </section>
 
-        {/* Direct WhatsApp Support Banner */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="p-8 rounded-3xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-            <div className="space-y-2 text-center sm:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-200/60 text-emerald-900 text-xs font-mono font-bold">
-                <MessageSquare className="w-3.5 h-3.5 text-emerald-700" />
-                <span>DIRECT WHATSAPP DESK</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-zinc-950">Need Custom Parts or Urgent Project Assistance?</h3>
-              <p className="text-xs sm:text-sm text-zinc-700">Chat directly with our hardware engineering runners on WhatsApp.</p>
+        {/* Services Section */}
+        <section id="services" className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg p-6 border border-zinc-200 shadow-sm space-y-4">
+            <div>
+              <h2 className="text-xs font-mono font-bold tracking-widest text-[#ff6a00] uppercase">
+                PARTSLY ENGINEERING SERVICES
+              </h2>
+              <p className="text-2xl font-black text-zinc-950">What We Build & Deliver</p>
             </div>
 
-            <a
-              href={MAINTENANCE_CONFIG.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-2 whitespace-nowrap"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>Chat on WhatsApp ({MAINTENANCE_CONFIG.whatsappDisplay})</span>
-            </a>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {MAINTENANCE_CONFIG.services.map((service, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-lg bg-zinc-50 border border-zinc-200 hover:border-[#ff6a00] transition-all space-y-2.5 group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-9 h-9 rounded-md bg-[#ff6a00] text-white flex items-center justify-center font-bold">
+                      {idx === 0 && <DollarSign className="w-5 h-5" />}
+                      {idx === 1 && <Layers className="w-5 h-5" />}
+                      {idx === 2 && <Search className="w-5 h-5" />}
+                      {idx === 3 && <Cpu className="w-5 h-5" />}
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded bg-orange-100 text-[#ff6a00]">
+                      {service.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="font-bold text-zinc-950 text-sm group-hover:text-[#ff6a00] transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-xs text-zinc-600 leading-relaxed font-normal">
+                    {service.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>
@@ -476,7 +667,7 @@ export default function Page() {
               <div className="flex items-center justify-between border-b border-zinc-200 pb-4">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="w-5 h-5 text-[#ff6a00]" />
-                  <h2 className="text-lg font-black text-zinc-950">Your Project Cart</h2>
+                  <h2 className="text-lg font-black text-zinc-950">Your Cart ({totalCartCount} Items)</h2>
                 </div>
                 <button
                   onClick={() => setIsCartOpen(false)}
@@ -487,21 +678,22 @@ export default function Page() {
               </div>
 
               {/* Cart List */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {Object.entries(cartItems).map(([id, qty]) => {
                   const item = COMPONENTS_CATALOG.find((c) => c.id === id);
                   if (!item || qty <= 0) return null;
                   return (
                     <div
                       key={id}
-                      className="p-4 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between gap-3"
+                      className="p-3 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-between gap-3"
                     >
-                      <div className="space-y-1 flex-1">
+                      <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded border border-zinc-200" />
+                      <div className="space-y-0.5 flex-1">
                         <div className="font-bold text-xs text-zinc-950 line-clamp-1">{item.name}</div>
                         <div className="text-xs text-[#ff6a00] font-black">₹{item.price * qty}</div>
                       </div>
 
-                      <div className="flex items-center gap-2 bg-white border border-zinc-300 rounded-lg px-2 py-1 text-xs font-bold">
+                      <div className="flex items-center gap-2 bg-white border border-zinc-300 rounded px-2 py-1 text-xs font-bold">
                         <button
                           onClick={() => updateQuantity(id, -1)}
                           className="text-zinc-600 hover:text-[#ff6a00] cursor-pointer"
@@ -531,13 +723,20 @@ export default function Page() {
 
             {totalCartCount > 0 && (
               <div className="pt-6 border-t border-zinc-200 space-y-4">
+                {totalSavings > 0 && (
+                  <div className="p-3 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-emerald-600" />
+                    <span>You save ₹{totalSavings} on this order!</span>
+                  </div>
+                )}
+
                 <div className="space-y-1 text-xs font-mono">
                   <div className="flex justify-between text-zinc-600">
                     <span>Subtotal ({totalCartCount} items):</span>
                     <span>₹{totalCartPrice}</span>
                   </div>
                   <div className="flex justify-between text-emerald-600 font-bold">
-                    <span>Gate Delivery:</span>
+                    <span>10-30 Min Gate Delivery:</span>
                     <span>FREE</span>
                   </div>
                   <div className="flex justify-between text-base text-zinc-950 font-black pt-2 border-t border-zinc-200">
@@ -551,7 +750,7 @@ export default function Page() {
                     setIsCartOpen(false);
                     setIsCheckoutOpen(true);
                   }}
-                  className="w-full py-3.5 rounded-2xl bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-xl shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 rounded-md bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Proceed to Gate Dispatch</span>
                   <ArrowRight className="w-4 h-4" />
@@ -565,7 +764,7 @@ export default function Page() {
       {/* Checkout Drawer Modal */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-white rounded-lg shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-zinc-200 pb-4">
               <h2 className="text-lg font-black text-zinc-950">Gate Pickup & Contact Info</h2>
               <button
@@ -586,7 +785,7 @@ export default function Page() {
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="Enter your name..."
-                    className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
+                    className="w-full bg-zinc-50 border border-zinc-300 rounded-md px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
 
@@ -598,7 +797,7 @@ export default function Page() {
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
+                    className="w-full bg-zinc-50 border border-zinc-300 rounded-md px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
 
@@ -609,18 +808,18 @@ export default function Page() {
                     value={deliveryNote}
                     onChange={(e) => setDeliveryNote(e.target.value)}
                     placeholder="Gate number, lab room, or specific request..."
-                    className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
+                    className="w-full bg-zinc-50 border border-zinc-300 rounded-md px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
                   />
                 </div>
 
-                <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 text-xs text-zinc-700 space-y-1 font-mono">
+                <div className="p-4 rounded-md bg-orange-50 border border-orange-200 text-xs text-zinc-700 space-y-1 font-mono">
                   <div className="font-bold text-[#ff6a00]">Order Summary (₹{totalCartPrice}):</div>
                   <div>{totalCartCount} items queued for 10-30 min express dispatch.</div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-2xl bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-xl shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 rounded-md bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Confirm & Dispatch on WhatsApp</span>
@@ -628,7 +827,7 @@ export default function Page() {
               </form>
             ) : (
               <div className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-lg animate-pulse">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-md animate-pulse">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-black text-zinc-950">Order Dispatch Initiated!</h3>
@@ -639,28 +838,65 @@ export default function Page() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="bg-[#09090b] text-white pt-12 pb-8 border-t border-zinc-800 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-zinc-800">
-            <PartslyLogo isLight={false} />
+      {/* Amazon-style Multi-Column Footer */}
+      <footer className="bg-[#131921] text-white pt-6 pb-8 border-t border-zinc-800 mt-12">
+        {/* Back to Top */}
+        <button
+          onClick={scrollToTop}
+          className="w-full bg-[#232f3e] hover:bg-zinc-700 py-3 text-center text-xs font-mono font-bold text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer mb-8"
+        >
+          <ArrowUp className="w-4 h-4 text-[#ff6a00]" />
+          <span>Back to Top</span>
+        </button>
 
-            <div className="flex items-center gap-4 text-xs font-mono">
-              <a href={MAINTENANCE_CONFIG.whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors">
-                WhatsApp Helpdesk
-              </a>
-              <a href={MAINTENANCE_CONFIG.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors">
-                Instagram
-              </a>
-              <a href="/admin" className="text-zinc-400 hover:text-white transition-colors">
-                Staff Operations Console
-              </a>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-8 border-b border-zinc-800 text-xs font-mono">
+            {/* Col 1 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-sm">Get to Know Us</h4>
+              <ul className="space-y-2 text-zinc-400">
+                <li><a href="#catalog" className="hover:underline">About Partsly</a></li>
+                <li><a href="#services" className="hover:underline">Engineering Services</a></li>
+                <li><a href="#catalog" className="hover:underline">BOM Sourcing</a></li>
+                <li><a href="/admin" className="hover:underline">Ops Team Console</a></li>
+              </ul>
+            </div>
+
+            {/* Col 2 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-sm">Connect with Us</h4>
+              <ul className="space-y-2 text-zinc-400">
+                <li><a href={MAINTENANCE_CONFIG.whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:underline text-emerald-400">WhatsApp Helpdesk</a></li>
+                <li><a href={MAINTENANCE_CONFIG.instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:underline text-pink-400">Instagram Updates</a></li>
+                <li><a href={MAINTENANCE_CONFIG.whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Direct Campus Runner Desk</a></li>
+              </ul>
+            </div>
+
+            {/* Col 3 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-sm">Custom Engineering Services</h4>
+              <ul className="space-y-2 text-zinc-400">
+                <li><a href="#services" className="hover:underline">2-Layer & 4-Layer PCB Fabrication</a></li>
+                <li><a href="#services" className="hover:underline">3D Printed ABS Enclosures</a></li>
+                <li><a href="#services" className="hover:underline">BOM Cost Reduction</a></li>
+                <li><a href="#services" className="hover:underline">Technical SEO Indexing</a></li>
+              </ul>
+            </div>
+
+            {/* Col 4 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-sm">Let Us Help You</h4>
+              <ul className="space-y-2 text-zinc-400">
+                <li><a href="#catalog" className="hover:underline">Track Gate Order</a></li>
+                <li><a href="#catalog" className="hover:underline">Zero-DOA Replacement Policy</a></li>
+                <li><a href={MAINTENANCE_CONFIG.whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Help & WhatsApp Support</a></li>
+              </ul>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
-            <div>© 2026 Partsly Inc. All rights reserved. • Express Hardware Dispatch</div>
-            <div>High-Speed Hardware Engineering & Sourcing Platform</div>
+            <PartslyLogo isLight={false} />
+            <div>© 2026 Partsly Inc. All rights reserved. • Express Hardware Platform</div>
           </div>
         </div>
       </footer>
