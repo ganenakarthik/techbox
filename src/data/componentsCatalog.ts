@@ -83,7 +83,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "80MHz MCU, 4MB Flash, Integrated 802.11 b/g/n",
     rating: 4.6,
     inStockCount: 55,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "stm32f103c8t6",
@@ -96,7 +96,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "72MHz Clock, 64KB Flash, 20KB SRAM",
     rating: 4.7,
     inStockCount: 40,
-    image: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "arduino-mega-2560",
@@ -109,7 +109,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "256KB Flash, 8KB SRAM, 16 Analog Inputs",
     rating: 4.8,
     inStockCount: 25,
-    image: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "esp32-cam-mb",
@@ -122,7 +122,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "OV2640 2MP Camera, MicroSD Slot, Flash LED",
     rating: 4.6,
     inStockCount: 35,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "attiny85-usb",
@@ -135,7 +135,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "8KB Flash, Direct USB Interface, 6 I/O Pins",
     rating: 4.5,
     inStockCount: 90,
-    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "esp32-s3-devkit",
@@ -148,7 +148,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "240MHz Vector Accelerator, 8MB PSRAM, USB OTG",
     rating: 4.9,
     inStockCount: 20,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "arduino-promini-5v",
@@ -161,7 +161,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Compact 16MHz MCU, 3.3V/5V compatible",
     rating: 4.6,
     inStockCount: 70,
-    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "seeeduino-xiao-rp2040",
@@ -174,7 +174,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Dual Cortex M0+, Type-C, 11 Digital/Analog Pins",
     rating: 4.8,
     inStockCount: 15,
-    image: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "teensy-40",
@@ -187,7 +187,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "NXP i.MXRT1062, 1024K RAM, Floating Point Unit",
     rating: 5.0,
     inStockCount: 10,
-    image: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "msp430-launchpad",
@@ -200,7 +200,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "16-Bit RISC Architecture, On-Board Emulation",
     rating: 4.5,
     inStockCount: 12,
-    image: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "esp-01s-module",
@@ -213,7 +213,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "PCB Antenna, 1MB SPI Flash, 3.3V UART Interface",
     rating: 4.4,
     inStockCount: 100,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "nucleo-f401re",
@@ -226,7 +226,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "84MHz ARM Cortex-M4, Arduino Uno R3 Header",
     rating: 4.8,
     inStockCount: 8,
-    image: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "arduino-nano-every",
@@ -252,7 +252,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "48MHz SAMD21, 256KB Flash, Native USB",
     rating: 4.7,
     inStockCount: 18,
-    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "particle-boron-lte",
@@ -265,7 +265,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "nRF52840 + u-blox SARA-R410M LTE Modem",
     rating: 4.9,
     inStockCount: 5,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "esp32-c3-supermini",
@@ -278,7 +278,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "160MHz 32-bit RISC-V Single-core CPU, 400KB SRAM",
     rating: 4.8,
     inStockCount: 65,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=600&q=80",
   },
 
   // 21-40: Sensors & Modules
@@ -306,7 +306,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "2cm to 400cm Detection Range, 5V Operation",
     rating: 4.7,
     inStockCount: 150,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "dht11-temp-sensor",
@@ -319,7 +319,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "20-90% RH, 0-50°C Temp Range, 1-Wire Digital",
     rating: 4.6,
     inStockCount: 110,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "dht22-am2302",
@@ -332,7 +332,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "0-100% RH, -40 to 80°C Temp Range, ±0.5°C Acc",
     rating: 4.9,
     inStockCount: 45,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "pir-motion-hc-sr501",
@@ -345,7 +345,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "3m-7m Adjustable Range, 5s-300s Delay Time",
     rating: 4.7,
     inStockCount: 85,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "mq2-gas-sensor",
@@ -358,7 +358,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Detects LPG, Smoke, Alcohol, Propane, Hydrogen",
     rating: 4.6,
     inStockCount: 65,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "mq135-air-quality",
@@ -384,7 +384,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Capacitive Detection, Analog Voltage Output",
     rating: 4.8,
     inStockCount: 95,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "ir-flame-sensor",
@@ -397,7 +397,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "760nm - 1100nm Wavelength Detection Range",
     rating: 4.5,
     inStockCount: 140,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "ir-line-follower",
@@ -436,7 +436,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "HD44780 Controller, PCF8574 I2C Serial Adapter",
     rating: 4.8,
     inStockCount: 80,
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "rc522-rfid-kit",
@@ -449,7 +449,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "MFRC522 Chip, 13.56MHz Frequency, SPI Interface",
     rating: 4.8,
     inStockCount: 60,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "ds18b20-waterproof",
@@ -462,7 +462,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "1-Wire Digital Probe, -55°C to +125°C Stainless Steel",
     rating: 4.9,
     inStockCount: 50,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "max6675-thermocouple",
@@ -488,7 +488,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "300 to 1100 hPa Pressure, I2C/SPI Interface",
     rating: 4.8,
     inStockCount: 40,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "heart-rate-max30102",
@@ -501,7 +501,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Integrated Photodetector + IR/Red LEDs, I2C Bus",
     rating: 4.6,
     inStockCount: 25,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "load-cell-hx711",
@@ -527,7 +527,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Electret Mic, LM393 Comparator, Adjustable Sensitivity",
     rating: 4.4,
     inStockCount: 90,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "rain-water-sensor",
@@ -540,7 +540,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Nickel Plated Sensing Board, Digital/Analog Output",
     rating: 4.5,
     inStockCount: 85,
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=600&q=80",
   },
 
   // 41-60: Motors, Actuators & Drivers
@@ -581,7 +581,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "5V-35V Motor Voltage, 2A Peak Current per Bridge",
     rating: 4.7,
     inStockCount: 110,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "nema17-stepper",
@@ -594,7 +594,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "1.8° Step Angle, 4-Lead 1m Cable, D-Shaft",
     rating: 4.9,
     inStockCount: 30,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "a4988-stepper-driver",
@@ -607,7 +607,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Microstepping up to 1/16, Adjustable Current Limit",
     rating: 4.7,
     inStockCount: 150,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "bo-motor-dual-shaft",
@@ -646,7 +646,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "10A 250VAC / 30VDC Trigger, High/Low Level Select",
     rating: 4.8,
     inStockCount: 180,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "relay-module-5v-4ch",
@@ -659,7 +659,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Independent Opto-Isolators, LED Status Indicators",
     rating: 4.8,
     inStockCount: 65,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "solenoid-valve-12v",
@@ -672,7 +672,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Normally Closed (NC), Water/Fluid Flow Control",
     rating: 4.7,
     inStockCount: 25,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "submersible-water-pump-5v",
@@ -685,7 +685,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "120L/Hour Flow Rate, Low Noise Submersible",
     rating: 4.6,
     inStockCount: 140,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "tb6600-stepper-driver",
@@ -698,7 +698,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "4A Peak Current, 32 Microstep Settings, Metal Case",
     rating: 4.9,
     inStockCount: 20,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "l9110s-motor-driver",
@@ -711,7 +711,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "2.5V-12V Motor Voltage, 800mA Continuous Current",
     rating: 4.5,
     inStockCount: 120,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "coreless-micro-motor",
@@ -750,7 +750,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "10mm Open Frame Stroke, 5N Holding Force",
     rating: 4.7,
     inStockCount: 18,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "esc-30a-yellow",
@@ -789,7 +789,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "3 Modes: Manual, Neutral, Automatic Wiper Test",
     rating: 4.7,
     inStockCount: 45,
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "motor-encoder-disc",
@@ -830,7 +830,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "3.7V Nominal, Flat Top Cell for Robotics/IoT",
     rating: 4.8,
     inStockCount: 130,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1609592424074-1249b51f0881?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "lm2596-buck-converter",
@@ -843,7 +843,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Input 4.5V-40V, Output 1.25V-35V Adjustable, 3A Peak",
     rating: 4.8,
     inStockCount: 160,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "mt3608-boost-converter",
@@ -856,7 +856,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Input 2V-24V, Output 5V-28V Adjustable, 2A Max",
     rating: 4.7,
     inStockCount: 140,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "bms-3s-12v-20a",
@@ -882,7 +882,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Series Connection 7.4V, Hard ABS Plastic",
     rating: 4.7,
     inStockCount: 190,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1609592424074-1249b51f0881?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "l7805-voltage-regulator",
@@ -895,7 +895,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "5V Fixed Output, Thermal Overload Protection",
     rating: 4.6,
     inStockCount: 210,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "ams1117-33-module",
@@ -908,7 +908,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Input 4.5V-7V, Output 3.3V 800mA with Power LED",
     rating: 4.8,
     inStockCount: 180,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "9v-battery-connector-snap",
@@ -921,7 +921,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Heavy Duty Plastic Snap, 2.1mm Center Positive Plug",
     rating: 4.7,
     inStockCount: 300,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1609592424074-1249b51f0881?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "solar-panel-5v-1w",
@@ -960,7 +960,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Fits MB102 Breadboard, 6.5-12V Input DC / USB",
     rating: 4.8,
     inStockCount: 95,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "xl6009-boost-stepup",
@@ -973,7 +973,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Input 3V-32V, Output 5V-35V 4A Max",
     rating: 4.7,
     inStockCount: 60,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "bms-1s-37v-6a",
@@ -999,7 +999,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Screw Terminal Block, 5.5mm Outer / 2.1mm Inner",
     rating: 4.8,
     inStockCount: 250,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "wireless-charging-module-5v",
@@ -1012,7 +1012,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Inductive Qi Charging Coil, 5V 1A Output",
     rating: 4.7,
     inStockCount: 18,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "stepdown-usb-buck-5v",
@@ -1025,7 +1025,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Input 9V-36V, Output 5V 3A Dual USB Charging Ports",
     rating: 4.8,
     inStockCount: 70,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "cr2032-battery-holder",
@@ -1038,7 +1038,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Enclosed ABS Case with Slider Switch",
     rating: 4.5,
     inStockCount: 160,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1609592424074-1249b51f0881?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "barrel-jack-to-usb-cable",
@@ -1051,7 +1051,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "5V USB Male to 5.5mm Barrel Power Connector",
     rating: 4.7,
     inStockCount: 120,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "voltage-divider-sensor-module",
@@ -1064,7 +1064,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "5:1 Voltage Divider Ratio, Reads up to 25V DC",
     rating: 4.6,
     inStockCount: 140,
-    image: "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
 
   // 81-100: Passives, ICs, Hardware & Custom Services
@@ -1131,7 +1131,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "1/4W 1% Tolerance Metal Film Resistors",
     rating: 4.9,
     inStockCount: 90,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "capacitor-kit-120pcs",
@@ -1144,7 +1144,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "12 Values, 16V to 50V Voltage Ratings",
     rating: 4.8,
     inStockCount: 65,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "ne555-timer-ic",
@@ -1222,7 +1222,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "High Brightness 2.0V-3.2V Operation",
     rating: 4.8,
     inStockCount: 210,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "logic-level-converter-4ch",
@@ -1261,7 +1261,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "2:1 Shrink Ratio, Flame Retardant Polyolefin",
     rating: 4.8,
     inStockCount: 140,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "brass-standoff-kit-120pcs",
@@ -1274,7 +1274,7 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     specs: "Male-Female Threaded Brass Spacers for PCB Mounting",
     rating: 4.9,
     inStockCount: 60,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "soldering-iron-kit-60w",
