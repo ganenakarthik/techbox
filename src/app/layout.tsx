@@ -2,8 +2,8 @@ import React from "react";
 import "./globals.css";
 
 export const metadata = {
-  title: "Partsly - Scheduled Maintenance",
-  description: "Partsly hardware platform undergoing database and operations optimization.",
+  title: "Partsly - High-Speed Hardware Engineering & Component Sourcing Platform",
+  description: "Order microcontrollers, sensors, turn-key project kits, custom PCB fabrication, and 3D print enclosures with 10-30 min express campus delivery.",
 };
 
 export default function RootLayout({
