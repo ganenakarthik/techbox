@@ -148,7 +148,7 @@ export default function Page() {
 
       {/* Main Header Navigation */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-zinc-200/90 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
           {/* Logo */}
           <PartslyLogo isLight={true} />
 
@@ -315,7 +315,7 @@ export default function Page() {
           </div>
         </section>
 
-        {/* 100+ Component Catalog Section */}
+        {/* 100+ Component Catalog Section with Product Images */}
         <section id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-4">
@@ -344,34 +344,44 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {/* Products Grid with High-Res Image Previews */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => {
                 const qtyInCart = cartItems[product.id] || 0;
                 return (
                   <div
                     key={product.id}
-                    className="p-5 rounded-2xl bg-white border border-zinc-200 hover:border-[#ff6a00] hover:shadow-xl transition-all space-y-3 flex flex-col justify-between group"
+                    className="p-4 rounded-2xl bg-white border border-zinc-200 hover:border-[#ff6a00] hover:shadow-xl transition-all space-y-3 flex flex-col justify-between group overflow-hidden"
                   >
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
-                          {product.category}
-                        </span>
+                    <div className="space-y-3">
+                      {/* Product Image Preview */}
+                      <div className="relative h-44 w-full bg-zinc-50 rounded-xl overflow-hidden border border-zinc-100 flex items-center justify-center p-2">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                        />
                         {product.badge && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-orange-100 text-[#ff6a00]">
+                          <span className="absolute top-2 right-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-orange-500 text-white shadow-md">
                             {product.badge}
                           </span>
                         )}
+                        <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-black/70 text-white backdrop-blur-sm">
+                          ★ {product.rating}
+                        </span>
                       </div>
 
-                      <h3 className="font-bold text-zinc-950 text-sm leading-snug group-hover:text-[#ff6a00] transition-colors line-clamp-2">
-                        {product.name}
-                      </h3>
-
-                      <p className="text-[11px] text-zinc-500 font-mono line-clamp-2 leading-relaxed">
-                        {product.specs}
-                      </p>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
+                          {product.category}
+                        </span>
+                        <h3 className="font-bold text-zinc-950 text-sm leading-snug group-hover:text-[#ff6a00] transition-colors line-clamp-2">
+                          {product.name}
+                        </h3>
+                        <p className="text-[11px] text-zinc-500 font-mono line-clamp-2 leading-relaxed pt-0.5">
+                          {product.specs}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="space-y-3 pt-3 border-t border-zinc-100">
@@ -386,13 +396,13 @@ export default function Page() {
                       {qtyInCart === 0 ? (
                         <button
                           onClick={() => addToCart(product.id, product.name)}
-                          className="w-full py-2 rounded-xl bg-zinc-950 hover:bg-[#ff6a00] text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                          className="w-full py-2.5 rounded-xl bg-zinc-950 hover:bg-[#ff6a00] text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>Add to Cart</span>
                         </button>
                       ) : (
-                        <div className="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-2 py-1 text-xs font-bold text-[#ff6a00]">
+                        <div className="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-2 py-1.5 text-xs font-bold text-[#ff6a00]">
                           <button
                             onClick={() => updateQuantity(product.id, -1)}
                             className="p-1 hover:bg-orange-100 rounded-lg text-[#ff6a00] cursor-pointer"
