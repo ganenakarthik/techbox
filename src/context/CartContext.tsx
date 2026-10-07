@@ -12,25 +12,20 @@ export interface CartItem {
   image: string;
 }
 
-export interface WishlistItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-}
-
 interface CartContextType {
   cart: CartItem[];
-  wishlist: WishlistItem[];
+  wishlist: string[];
   pincode: string;
   setPincode: (pin: string) => void;
   couponCode: string;
+  promoCode: string;
   discountPercentage: number;
   applyCoupon: (code: string) => boolean;
-  addToCart: (item: { id: string; name: string; price: number; originalPrice?: number; specs: string; image: string }) => void;
+  applyPromoCode: (code: string) => boolean;
+  addToCart: (item: { id: string; name: string; price: number; originalPrice?: number; specs: string; image: string; quantity?: number }) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
-  toggleWishlist: (item: WishlistItem) => void;
+  toggleWishlist: (id: string) => void;
   isWishlisted: (id: string) => boolean;
   clearCart: () => void;
   isCartOpen: boolean;
@@ -66,7 +61,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   ]);
 
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [wishlist, setWishlist] = useState<string[]>([]);
   const [pincode, setPincode] = useState("560001");
   const [couponCode, setCouponCode] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
@@ -86,13 +81,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   };
 
-  const addToCart = (item: { id: string; name: string; price: number; originalPrice?: number; specs: string; image: string }) => {
+  const addToCart = (item: { id: string; name: string; price: number; originalPrice?: number; specs: string; image: string; quantity?: number }) => {
+    const qtyToAdd = item.quantity || 1;
     setCart((prev) => {
       const existing = prev.find((c) => c.id === item.id);
       if (existing) {
-        return prev.map((c) => (c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c));
+        return prev.map((c) => (c.id === item.id ? { ...c, quantity: c.quantity + qtyToAdd } : c));
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, quantity: qtyToAdd }];
     });
     setIsCartOpen(true);
   };
@@ -109,17 +105,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
-  const toggleWishlist = (item: WishlistItem) => {
-    setWishlist((prev) => {
-      const exists = prev.some((w) => w.id === item.id);
-      if (exists) {
-        return prev.filter((w) => w.id !== item.id);
-      }
-      return [...prev, item];
-    });
+  const toggleWishlist = (id: string) => {
+    setWishlist((prev) =>
+      prev.includes(id) ? prev.filter((w) => w !== id) : [...prev, id]
+    );
   };
 
-  const isWishlisted = (id: string) => wishlist.some((w) => w.id === id);
+  const isWishlisted = (id: string) => wishlist.includes(id);
 
   const clearCart = () => {
     setCart([]);
@@ -140,8 +132,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         pincode,
         setPincode,
         couponCode,
+        promoCode: couponCode,
         discountPercentage,
         applyCoupon,
+        applyPromoCode: applyCoupon,
         addToCart,
         removeFromCart,
         updateQuantity,

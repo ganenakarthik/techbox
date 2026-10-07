@@ -1,3 +1,9 @@
+export interface VolumeTier {
+  minQty: number;
+  maxQty: number | null;
+  pricePerUnit: number;
+}
+
 export interface ComponentItem {
   id: string;
   name: string;
@@ -14,6 +20,7 @@ export interface ComponentItem {
   reviewCount: number;
   image: string;
   datasheetUrl?: string;
+  volumeTiers?: VolumeTier[];
   techSpecs: Record<string, string>;
   whatsIncluded: string[];
   compatibleWith: string[];
@@ -37,6 +44,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     reviewCount: 412,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
     datasheetUrl: "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32d_esp32-wroom-32u_datasheet_en.pdf",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 249 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 225 },
+      { minQty: 50, maxQty: null, pricePerUnit: 199 },
+    ],
     techSpecs: {
       coreProcessor: "Xtensa 32-bit LX6 Dual-Core @ 240 MHz",
       flashMemory: "4 MB SPI Flash",
@@ -66,6 +78,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     reviewCount: 320,
     image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
     datasheetUrl: "https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 499 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 469 },
+      { minQty: 50, maxQty: null, pricePerUnit: 429 },
+    ],
     techSpecs: {
       mcu: "RP2040 Dual-core ARM Cortex M0+ @ 133MHz",
       memory: "264KB SRAM, 2MB onboard QSPI Flash",
@@ -91,6 +108,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.7,
     reviewCount: 189,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 189 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 169 },
+      { minQty: 50, maxQty: null, pricePerUnit: 149 },
+    ],
     techSpecs: {
       core: "ARM Cortex-M3 32-Bit",
       clockSpeed: "72 MHz",
@@ -115,6 +137,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.6,
     reviewCount: 204,
     image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 149 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 135 },
+      { minQty: 50, maxQty: null, pricePerUnit: 119 },
+    ],
     techSpecs: {
       driverChip: "L298N Dual H-Bridge",
       motorVoltage: "5V - 35V DC",
@@ -139,6 +166,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.8,
     reviewCount: 315,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 129 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 115 },
+      { minQty: 50, maxQty: null, pricePerUnit: 99 },
+    ],
     techSpecs: {
       gyroRange: "±250 500 1000 2000 °/s",
       accelRange: "±2 ±4 ±8 ±16 g",
@@ -163,6 +195,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.5,
     reviewCount: 520,
     image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 99 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 89 },
+      { minQty: 50, maxQty: null, pricePerUnit: 75 },
+    ],
     techSpecs: {
       motorType: "Micro Analog Servo",
       torque: "1.8 kg/cm (4.8V)",
@@ -188,6 +225,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.6,
     reviewCount: 310,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 79 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 69 },
+      { minQty: 50, maxQty: null, pricePerUnit: 59 },
+    ],
     techSpecs: {
       sensorType: "Capacitive Humidity & NTC Temperature",
       range: "0 to 50°C / 20 to 90% RH",
@@ -213,6 +255,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.9,
     reviewCount: 154,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 499 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 449 },
+      { minQty: 50, maxQty: null, pricePerUnit: 399 },
+    ],
     techSpecs: {
       dimensions: "Up to 100mm x 100mm",
       layers: "2-Layer Double Sided",
@@ -237,6 +284,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.8,
     reviewCount: 98,
     image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 649 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 599 },
+      { minQty: 50, maxQty: null, pricePerUnit: 549 },
+    ],
     techSpecs: {
       motorType: "Bipolar 2-Phase Stepper",
       torque: "45 Ncm (63.7 oz-in)",
@@ -262,6 +314,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.7,
     reviewCount: 276,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 549 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 499 },
+      { minQty: 50, maxQty: null, pricePerUnit: 449 },
+    ],
     techSpecs: {
       mcu: "ESP32-S",
       camera: "OV2640 2-Megapixel Sensor",
@@ -288,6 +345,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.8,
     reviewCount: 88,
     image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 1199 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 1099 },
+      { minQty: 50, maxQty: null, pricePerUnit: 999 },
+    ],
     techSpecs: {
       diameter: "1.75 mm ± 0.02 mm",
       printTemp: "230°C - 250°C",
@@ -313,6 +375,11 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
     rating: 4.9,
     reviewCount: 64,
     image: "https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=600&q=80",
+    volumeTiers: [
+      { minQty: 1, maxQty: 9, pricePerUnit: 2199 },
+      { minQty: 10, maxQty: 49, pricePerUnit: 2049 },
+      { minQty: 50, maxQty: null, pricePerUnit: 1899 },
+    ],
     techSpecs: {
       capacity: "42 Wh (3505 mAh)",
       outputVoltage: "11.4 V",
@@ -326,6 +393,14 @@ export const COMPONENTS_CATALOG: ComponentItem[] = [
 
 export function getProductById(id: string): ComponentItem | undefined {
   return COMPONENTS_CATALOG.find((item) => item.id === id);
+}
+
+export function calculateTierPrice(product: ComponentItem, quantity: number): number {
+  if (!product.volumeTiers || product.volumeTiers.length === 0) return product.price;
+  const tier = product.volumeTiers.find(
+    (t) => quantity >= t.minQty && (t.maxQty === null || quantity <= t.maxQty)
+  );
+  return tier ? tier.pricePerUnit : product.price;
 }
 
 export function filterProducts(
