@@ -6,15 +6,15 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const rawName = body.name || "";
-    const rawEmail = body.email || "";
+    const rawIdentifier = body.identifier || body.email || "";
     const rawPassword = body.password || "";
 
     const name = sanitizeInput(rawName.trim());
-    const email = sanitizeInput(rawEmail.trim().toLowerCase());
+    const email = sanitizeInput(rawIdentifier.trim().toLowerCase());
 
     if (!name || !email || !rawPassword) {
       return NextResponse.json(
-        { success: false, message: "Name, email, and password are required fields." },
+        { success: false, message: "Name, Email or Mobile Number, and Password are required fields." },
         { status: 400 }
       );
     }
@@ -29,14 +29,13 @@ export async function POST(req: Request) {
     // Check if user already exists
     const existingUser = await getUserByEmailFromDB(email);
     if (existingUser) {
-      recordSecurityEvent("AUTH_LOGIN_FAILED", email, "Signup attempt with existing email", "MEDIUM");
       return NextResponse.json(
-        { success: false, message: "An account with this email address already exists. Please log in." },
+        { success: false, message: "An account with this Email or Mobile Number already exists. Please sign in." },
         { status: 409 }
       );
     }
 
-    // STRICT RBAC RULE: Only ganenakartiks7@gmail.com becomes Admin. Everyone else is Customer.
+    // Dynamic Admin Check: Only ganenakartiks7@gmail.com becomes Admin
     const role: "admin" | "customer" = isSoleAdminEmail(email) ? "admin" : "customer";
 
     const passwordHash = await hashPassword(rawPassword);
@@ -48,22 +47,18 @@ export async function POST(req: Request) {
       passwordHash,
     });
 
-    // Record Security Audit Event
     recordSecurityEvent(
       "AUTH_SIGNUP",
       email,
-      `User signed up with role [${role}] ${role === "admin" ? "(Sole Administrator)" : "(Customer)"}`,
+      `User signed up with role [${role}]`,
       role === "admin" ? "HIGH" : "LOW"
     );
 
-    // Create session token
     const token = `token_${Buffer.from(`${newUser.id}:${newUser.email}:${Date.now()}`).toString("base64")}`;
 
     return NextResponse.json({
       success: true,
-      message: role === "admin"
-        ? "Welcome, Sole Administrator! Admin privileges active."
-        : "Account created successfully! Welcome to Partsly.",
+      message: "Account created successfully!",
       user: {
         id: newUser.id,
         name: newUser.name,

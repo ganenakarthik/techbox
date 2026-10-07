@@ -5,24 +5,25 @@ import { verifyPassword, sanitizeInput, recordSecurityEvent, isSoleAdminEmail } 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const rawEmail = body.email || "";
+    const rawIdentifier = body.identifier || body.email || "";
     const rawPassword = body.password || "";
 
-    const email = sanitizeInput(rawEmail.trim().toLowerCase());
+    const identifier = sanitizeInput(rawIdentifier.trim().toLowerCase());
 
-    if (!email || !rawPassword) {
+    if (!identifier || !rawPassword) {
       return NextResponse.json(
-        { success: false, message: "Email and password are required." },
+        { success: false, message: "Email or Mobile Phone Number and password are required." },
         { status: 400 }
       );
     }
 
-    const user = await getUserByEmailFromDB(email);
+    // Try finding user by email or phone identifier
+    const user = await getUserByEmailFromDB(identifier);
 
     if (!user) {
-      recordSecurityEvent("AUTH_LOGIN_FAILED", email, "Non-existent user login attempt", "MEDIUM");
+      recordSecurityEvent("AUTH_LOGIN_FAILED", identifier, "User account not found", "MEDIUM");
       return NextResponse.json(
-        { success: false, message: "No account found with this email. Please sign up." },
+        { success: false, message: "No account found with this Email or Mobile Number. Please create an account." },
         { status: 401 }
       );
     }
@@ -30,14 +31,14 @@ export async function POST(req: Request) {
     const isValidPassword = await verifyPassword(rawPassword, user.passwordHash);
 
     if (!isValidPassword) {
-      recordSecurityEvent("AUTH_LOGIN_FAILED", email, "Invalid password attempt", "HIGH");
+      recordSecurityEvent("AUTH_LOGIN_FAILED", user.email, "Invalid password attempt", "HIGH");
       return NextResponse.json(
         { success: false, message: "Incorrect password. Please try again." },
         { status: 401 }
       );
     }
 
-    // Ensure role is enforced strictly dynamically as well
+    // Dynamic Admin check for ganenakartiks7@gmail.com
     const verifiedRole: "admin" | "customer" = isSoleAdminEmail(user.email) ? "admin" : "customer";
 
     recordSecurityEvent(
@@ -52,8 +53,8 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: verifiedRole === "admin"
-        ? "Welcome back, Sole Admin! Control panel unlocked."
-        : "Successfully logged in!",
+        ? "Signed in as Administrator"
+        : "Successfully signed in",
       user: {
         id: user.id,
         name: user.name,

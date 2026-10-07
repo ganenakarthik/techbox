@@ -2,14 +2,21 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { SOLE_ADMIN_EMAIL } from "@/lib/security";
+
+function Mark() {
+  return (
+    <span className="brand-mark shrink-0" aria-hidden="true">
+      <img src="/logo.png" alt="Partsly" className="h-6 w-6 object-contain rounded-md inline-block" />
+    </span>
+  );
+}
 
 export function AuthModal() {
   const { isAuthModalOpen, closeAuthModal, authModalMode, login, signup } = useAuth();
 
   const [mode, setMode] = useState<"login" | "signup">(authModalMode);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,8 +24,6 @@ export function AuthModal() {
   const [successMsg, setSuccessMsg] = useState("");
 
   if (!isAuthModalOpen) return null;
-
-  const isEmailSoleAdmin = email.trim().toLowerCase() === SOLE_ADMIN_EMAIL.toLowerCase();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,14 +33,14 @@ export function AuthModal() {
 
     try {
       if (mode === "login") {
-        const res = await login(email, password);
+        const res = await login(identifier, password);
         if (!res.success) {
           setErrorMsg(res.message);
         } else {
           setSuccessMsg(res.message);
         }
       } else {
-        const res = await signup(name, email, password);
+        const res = await signup(name, identifier, password);
         if (!res.success) {
           setErrorMsg(res.message);
         } else {
@@ -43,86 +48,35 @@ export function AuthModal() {
         }
       }
     } catch {
-      setErrorMsg("An unexpected error occurred.");
+      setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleQuickFillAdmin = () => {
-    setEmail(SOLE_ADMIN_EMAIL);
-    setPassword("admin123");
-    setName("Ganen Karthik");
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fadeIn">
-      <div className="relative w-full max-w-md rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6 shadow-2xl space-y-6">
-        {/* Close Button */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-fadeIn">
+      <div className="relative w-full max-w-sm rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-8 shadow-2xl space-y-6">
+        {/* Close Modal Button */}
         <button
           onClick={closeAuthModal}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold"
+          className="absolute top-5 right-5 text-gray-400 hover:text-[var(--text)] text-base font-bold"
         >
           ✕
         </button>
 
-        {/* Brand Header */}
+        {/* Brand Header Lockup */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-xl bg-[var(--surface-2)] px-3 py-1 border border-[var(--line)]">
-            <span className="text-lg">🛡️</span>
-            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">Partsly Web Security & RBAC</span>
+          <div className="flex items-center justify-center gap-2">
+            <Mark />
+            <span className="text-xl font-extrabold tracking-tight text-[var(--text)]">PARTSLY</span>
           </div>
           <h2 className="text-2xl font-extrabold text-[var(--text)]">
-            {mode === "login" ? "Account Sign In" : "Create New Account"}
+            {mode === "login" ? "Sign in" : "Create account"}
           </h2>
-          <p className="text-xs text-[var(--muted)]">
-            Access components, PCB quotes, order history and role-based permissions.
-          </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="grid grid-cols-2 rounded-xl border border-[var(--line)] bg-[var(--surface-2)] p-1 text-xs font-bold">
-          <button
-            onClick={() => {
-              setMode("login");
-              setErrorMsg("");
-            }}
-            className={`py-2 rounded-lg transition-all ${
-              mode === "login" ? "bg-[var(--accent)] text-white shadow" : "text-[var(--muted)] hover:text-[var(--text)]"
-            }`}
-          >
-            🔑 Sign In
-          </button>
-          <button
-            onClick={() => {
-              setMode("signup");
-              setErrorMsg("");
-            }}
-            className={`py-2 rounded-lg transition-all ${
-              mode === "signup" ? "bg-[var(--accent)] text-white shadow" : "text-[var(--muted)] hover:text-[var(--text)]"
-            }`}
-          >
-            ✨ Sign Up
-          </button>
-        </div>
-
-        {/* Live Admin Access Indicator */}
-        {email && (
-          <div
-            className={`rounded-xl p-3 text-xs flex items-center justify-between border ${
-              isEmailSoleAdmin
-                ? "bg-amber-500/10 border-amber-500/30 text-amber-500 font-bold"
-                : "bg-blue-500/10 border-blue-500/30 text-blue-400"
-            }`}
-          >
-            <span>Role Allocation Preview:</span>
-            <span className="font-mono uppercase font-extrabold">
-              {isEmailSoleAdmin ? "👑 Sole Admin Privilege Granted" : "👤 Standard Customer Account"}
-            </span>
-          </div>
-        )}
-
-        {/* Feedback Alerts */}
+        {/* Feedback Messages */}
         {errorMsg && (
           <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-xs text-red-400 font-medium">
             ⚠️ {errorMsg}
@@ -135,63 +89,82 @@ export function AuthModal() {
           </div>
         )}
 
-        {/* Form Inputs */}
+        {/* Amazon / Flipkart Style Commercial Auth Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           {mode === "signup" && (
             <div>
-              <label className="block mb-1 font-bold text-[var(--text)]">Full Name</label>
+              <label className="block mb-1.5 font-bold text-[var(--text)]">Your name</label>
               <input
                 type="text"
                 required
-                placeholder="e.g. Ganen Karthik"
+                placeholder="First and last name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-2.5 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+                className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-3 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
               />
             </div>
           )}
 
           <div>
-            <label className="block mb-1 font-bold text-[var(--text)]">Email Address</label>
+            <label className="block mb-1.5 font-bold text-[var(--text)]">Email or mobile phone number</label>
             <input
-              type="email"
+              type="text"
               required
-              placeholder="e.g. ganenakartiks7@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-2.5 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none font-mono"
+              placeholder="e.g. 9014808515 or name@domain.com"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-3 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-bold text-[var(--text)]">Password</label>
+            <div className="flex justify-between items-center mb-1.5 font-bold">
+              <label className="text-[var(--text)]">Password</label>
+              {mode === "login" && (
+                <button type="button" className="text-[11px] text-[var(--accent)] hover:underline">
+                  Forgot password?
+                </button>
+              )}
+            </div>
             <input
               type="password"
               required
-              placeholder="••••••••"
+              placeholder="At least 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-2.5 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none font-mono"
+              className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-3 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none font-mono"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-[var(--accent)] py-3 text-xs font-bold text-white shadow-lg transition-transform hover:opacity-95 disabled:opacity-50"
+            className="w-full rounded-xl bg-[var(--accent)] py-3.5 text-xs font-bold text-white shadow-md hover:opacity-95 transition-transform active:scale-98 disabled:opacity-50"
           >
-            {isSubmitting ? "Authenticating & Hashing..." : mode === "login" ? "Sign In →" : "Create Account →"}
+            {isSubmitting ? "Signing in..." : mode === "login" ? "Sign in" : "Create your Partsly account"}
           </button>
         </form>
 
-        {/* Quick Demo Fill for Sole Admin */}
-        <div className="border-t border-[var(--line)] pt-3 text-center">
+        {/* Commercial Disclaimer */}
+        <p className="text-[11px] text-[var(--muted)] text-center leading-relaxed">
+          By continuing, you agree to Partsly&apos;s <span className="underline cursor-pointer">Conditions of Use</span> and <span className="underline cursor-pointer">Privacy Notice</span>.
+        </p>
+
+        {/* Mode Switcher Footer */}
+        <div className="border-t border-[var(--line)] pt-4 text-center space-y-3">
+          <div className="text-[11px] text-[var(--muted)] font-bold">
+            {mode === "login" ? "New to Partsly?" : "Already have an account?"}
+          </div>
           <button
             type="button"
-            onClick={handleQuickFillAdmin}
-            className="text-[11px] font-bold text-amber-500 hover:underline"
+            onClick={() => {
+              setMode(mode === "login" ? "signup" : "login");
+              setErrorMsg("");
+              setSuccessMsg("");
+            }}
+            className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] py-2.5 text-xs font-bold text-[var(--text)] hover:border-[var(--accent)] transition-all"
           >
-            ⚡ Auto-Fill Sole Admin Credentials ({SOLE_ADMIN_EMAIL})
+            {mode === "login" ? "Create your Partsly account" : "Sign in to existing account"}
           </button>
         </div>
       </div>
