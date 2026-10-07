@@ -165,7 +165,7 @@ const products = [
 function Mark() {
   return (
     <span className="brand-mark" aria-hidden="true">
-      <span />
+      <img src="/logo.png" alt="Partsly" className="h-full w-full object-cover rounded-md" />
     </span>
   );
 }
