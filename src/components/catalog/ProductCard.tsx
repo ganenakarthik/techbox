@@ -28,7 +28,7 @@ export function ProductCard({
   if (product.techSpecs.interface) specPills.push(product.techSpecs.interface);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 p-4 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-[#ff6a00]/40 transition-all duration-200 group">
+    <div className="liquid-card p-4 flex flex-col justify-between group">
       <div>
         {/* Header: Manufacturer & Wishlist */}
         <div className="flex items-center justify-between gap-2 mb-2">
@@ -57,7 +57,7 @@ export function ProductCard({
         {/* Product Image Container */}
         <div
           onClick={() => onSelect(product)}
-          className="w-full h-36 mb-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-3 cursor-pointer overflow-hidden group-hover:scale-[1.02] transition-transform duration-200"
+          className="w-full h-36 mb-3 rounded-xl bg-white/70 border border-white/90 flex items-center justify-center p-3 cursor-pointer overflow-hidden group-hover:scale-[1.02] transition-transform duration-200 shadow-2xs"
         >
           <img
             src={product.image}
@@ -76,12 +76,12 @@ export function ProductCard({
           </div>
         </div>
 
-        {/* Spec Badges */}
+        {/* Glass Spec Badges */}
         <div className="flex flex-wrap gap-1.5 my-3">
           {specPills.slice(0, 3).map((pill, idx) => (
             <span
               key={idx}
-              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/80"
+              className="glass-badge px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-700"
             >
               {pill}
             </span>
@@ -90,7 +90,7 @@ export function ProductCard({
       </div>
 
       {/* Footer: Price, Stock, Quantity & Add Button */}
-      <div className="pt-2.5 border-t border-slate-100 space-y-3">
+      <div className="pt-2.5 border-t border-slate-200/60 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <div className="text-base font-black text-slate-900 tracking-tight">
@@ -111,7 +111,7 @@ export function ProductCard({
 
         <div className="flex items-center gap-2">
           {/* Quantity Controls */}
-          <div className="flex items-center rounded-lg bg-slate-100 border border-slate-200 p-0.5">
+          <div className="flex items-center rounded-lg bg-white/70 border border-slate-200 p-0.5">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               className="w-5 h-5 rounded text-slate-600 hover:bg-white text-xs font-bold"
@@ -129,7 +129,7 @@ export function ProductCard({
 
           <button
             onClick={() => onAddToCart(product, quantity)}
-            className="flex-1 bg-[#ff6a00] hover:bg-[#e05d00] text-white py-2 text-xs font-extrabold rounded-xl flex items-center justify-center gap-1 shadow-xs transition-colors"
+            className="flex-1 liquid-button-primary py-2 text-xs font-extrabold flex items-center justify-center gap-1 shadow-xs"
           >
             <span>Add to Cart</span>
           </button>
