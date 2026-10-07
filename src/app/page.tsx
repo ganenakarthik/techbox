@@ -252,9 +252,6 @@ export default function Page() {
               <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
               <span>WhatsApp Helpdesk ({MAINTENANCE_CONFIG.whatsappDisplay})</span>
             </a>
-            <a href="/admin" className="text-zinc-400 hover:text-white font-bold transition-colors">
-              Ops Console →
-            </a>
           </div>
         </div>
       </div>
@@ -1353,7 +1350,6 @@ export default function Page() {
                 <li><a href="#catalog" className="hover:underline">About Partsly</a></li>
                 <li><a href="#services" className="hover:underline">Engineering Services</a></li>
                 <li><a href="#catalog" className="hover:underline">BOM Sourcing</a></li>
-                <li><a href="/admin" className="hover:underline">Ops Team Console</a></li>
               </ul>
             </div>
 
