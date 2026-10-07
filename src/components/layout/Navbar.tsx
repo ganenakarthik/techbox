@@ -10,7 +10,7 @@ import { SearchModal } from "@/components/SearchModal";
 function Mark() {
   return (
     <span className="brand-mark" aria-hidden="true">
-      <span />
+      <img src="/logo.png" alt="Partsly" className="h-full w-full object-contain rounded-md" />
     </span>
   );
 }
@@ -35,7 +35,7 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header className="topbar">
-        <Link href="/" className="logo">
+        <Link href="/" className="logo shrink-0">
           <Mark />
           <span className="logo-copy">
             <strong>Partsly</strong>
@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
         {/* Global Search Palette trigger button */}
         <div
           onClick={() => setIsSearchOpen(true)}
-          className="cursor-pointer hidden md:flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--muted)] hover:border-[var(--text)] hover:text-[var(--text)] transition-all"
+          className="cursor-pointer hidden xl:flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--muted)] hover:border-[var(--text)] hover:text-[var(--text)] transition-all shrink-0"
         >
           <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="8" />
@@ -60,14 +60,14 @@ export const Navbar: React.FC = () => {
 
         <div className="header-actions">
           {/* Multi-page Nav Links */}
-          <div className="hidden lg:flex items-center gap-4 text-xs font-bold uppercase tracking-wider">
+          <div className="hidden lg:flex items-center gap-5 text-xs font-bold uppercase tracking-wider whitespace-nowrap">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`transition-colors ${
+                  className={`transition-colors whitespace-nowrap ${
                     isActive ? "text-[var(--accent)] font-extrabold underline underline-offset-4" : "text-[var(--text)] hover:text-[var(--accent)]"
                   }`}
                 >
@@ -79,7 +79,7 @@ export const Navbar: React.FC = () => {
 
           {/* Theme Switcher Toggle */}
           <button
-            className="theme-toggle"
+            className="theme-toggle shrink-0"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
             title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
@@ -100,7 +100,7 @@ export const Navbar: React.FC = () => {
           {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="relative inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--text)]"
+            className="relative shrink-0 inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--text)]"
           >
             🛒 Cart
             {totalItems > 0 && (
@@ -112,15 +112,15 @@ export const Navbar: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Sub-Navigation Bar */}
-      <div className="flex lg:hidden overflow-x-auto gap-2 border-b border-[var(--line)] pb-2 mb-4 px-4 text-xs font-bold uppercase tracking-wider">
+      {/* Mobile / Tablet Sub-Navigation Bar */}
+      <div className="flex lg:hidden overflow-x-auto gap-2 border-b border-[var(--line)] pb-2 mb-4 px-4 text-xs font-bold uppercase tracking-wider scrollbar-none">
         {navLinks.map((link) => {
           const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`shrink-0 rounded-lg px-3 py-1.5 transition-colors ${
+              className={`shrink-0 rounded-lg px-3 py-1.5 whitespace-nowrap transition-colors ${
                 isActive ? "bg-[var(--accent)] text-white font-bold" : "bg-[var(--surface-2)] text-[var(--text)]"
               }`}
             >
