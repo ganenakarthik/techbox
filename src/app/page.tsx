@@ -179,19 +179,31 @@ export default function Page() {
                   </div>
                 </div>
 
-                {/* Right Visual Floating Component */}
-                <div className="lg:col-span-5 hidden lg:block">
-                  <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/90 shadow-xl flex flex-col items-center text-center space-y-4">
-                    <div className="h-52 w-full bg-slate-50 rounded-2xl flex items-center justify-center p-4 border border-slate-100">
-                      <img
-                        src={COMPONENTS_CATALOG[0].image}
-                        alt="ESP32"
-                        className="h-full object-contain"
-                      />
+                {/* Right Visual Fluid Organic Liquid Glass Container */}
+                <div className="lg:col-span-5 hidden lg:flex items-center justify-center p-4">
+                  <div className="liquid-glass-blob p-8 w-full max-w-sm aspect-square flex flex-col justify-between shadow-2xl relative group">
+                    <div className="liquid-glare" />
+
+                    <div className="space-y-3 relative z-10">
+                      <h3 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+                        Liquid Glass
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                        Fluid, organic surfaces that bend light and color, reacting to the world behind them.
+                      </p>
                     </div>
-                    <div className="space-y-1">
-                      <div className="font-extrabold text-sm text-slate-950">{COMPONENTS_CATALOG[0].name}</div>
-                      <div className="text-xs font-mono text-[#ff6a00] font-black">₹389 • In Stock</div>
+
+                    <div className="flex items-center justify-between relative z-10 pt-4">
+                      <button
+                        onClick={() => setCurrentView("search")}
+                        className="w-12 h-12 rounded-full bg-white/90 hover:bg-white text-slate-900 border border-white flex items-center justify-center shadow-md hover:scale-110 transition-transform cursor-pointer"
+                      >
+                        <ArrowRight className="w-5 h-5 text-slate-800" />
+                      </button>
+
+                      <span className="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-widest">
+                        LIQUID GLASS
+                      </span>
                     </div>
                   </div>
                 </div>

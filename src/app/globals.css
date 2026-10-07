@@ -4,47 +4,94 @@
 
 @layer base {
   body {
-    @apply bg-[#f4f6f9] text-slate-900 font-sans antialiased selection:bg-[#ff6a00] selection:text-white relative min-h-screen overflow-x-hidden;
+    @apply bg-[#f6f8fc] text-slate-900 font-sans antialiased selection:bg-[#ff6a00] selection:text-white relative min-h-screen overflow-x-hidden;
     background-image: 
-      radial-gradient(circle at 10% 20%, rgba(255, 106, 0, 0.12) 0%, transparent 40%),
-      radial-gradient(circle at 90% 10%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
-      radial-gradient(circle at 50% 60%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 90%, rgba(255, 106, 0, 0.12) 0%, transparent 45%);
+      radial-gradient(circle at 15% 15%, rgba(255, 106, 0, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 45%),
+      radial-gradient(circle at 50% 60%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.1) 0%, transparent 45%);
     background-attachment: fixed;
   }
 }
 
-/* Hyper-Realistic iOS Liquid Glass Styling System */
+/* Organic Fluid Iridescent Liquid Glass System */
 @layer components {
+  /* Organic Fluid Morphing Liquid Glass Blob (Matching User Reference Image) */
+  .liquid-glass-blob {
+    position: relative;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(238, 242, 255, 0.75) 25%,
+      rgba(253, 242, 248, 0.75) 60%,
+      rgba(255, 237, 213, 0.85) 100%
+    );
+    backdrop-filter: blur(28px) saturate(220%);
+    -webkit-backdrop-filter: blur(28px) saturate(220%);
+    border-radius: 48% 52% 68% 32% / 42% 48% 52% 58%;
+    box-shadow: 
+      0 25px 60px -12px rgba(59, 130, 246, 0.18),
+      0 12px 35px -8px rgba(255, 106, 0, 0.18),
+      0 0 0 1.5px rgba(255, 255, 255, 0.9),
+      inset 0 3px 6px 0 rgba(255, 255, 255, 1),
+      inset 0 -3px 8px 0 rgba(168, 85, 247, 0.08);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: liquid-morph 12s ease-in-out infinite alternate;
+  }
+
+  /* Iridescent Rainbow Specular Rim Highlight */
+  .liquid-glass-blob::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 106, 0, 0.6) 20%,
+      rgba(168, 85, 247, 0.6) 40%,
+      rgba(59, 130, 246, 0.6) 60%,
+      rgba(236, 72, 153, 0.6) 80%,
+      rgba(255, 255, 255, 0.95) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  /* Specular Glare Arc Highlight */
+  .liquid-glare {
+    position: absolute;
+    top: 6%;
+    right: 8%;
+    width: 35%;
+    height: 25%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    transform: rotate(-25deg);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
   /* Liquid Glass Main Panel & Product Cards */
   .liquid-glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.55) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.65) 100%);
     backdrop-filter: blur(20px) saturate(200%);
     -webkit-backdrop-filter: blur(20px) saturate(200%);
     border: 1.5px solid rgba(255, 255, 255, 0.95);
     box-shadow: 
-      0 12px 35px -8px rgba(0, 0, 0, 0.06),
-      0 4px 12px 0 rgba(255, 106, 0, 0.03),
-      inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
-      inset 0 -1px 2px 0 rgba(0, 0, 0, 0.03);
-    position: relative;
-  }
-
-  .liquid-glass::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
-    border-radius: inherit;
-    pointer-events: none;
+      0 12px 35px -8px rgba(59, 130, 246, 0.08),
+      0 4px 12px 0 rgba(255, 106, 0, 0.05),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 2px 0 rgba(168, 85, 247, 0.04);
   }
 
   /* Liquid Glass Header Navigation Bar */
   .liquid-glass-header {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.72) 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.78) 100%);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
     border-bottom: 1.5px solid rgba(255, 255, 255, 0.9);
@@ -56,7 +103,7 @@
 
   /* Liquid Glass Search Input Pill */
   .liquid-glass-search {
-    background: linear-gradient(135deg, rgba(241, 245, 249, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%);
+    background: linear-gradient(135deg, rgba(241, 245, 249, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     border: 1.5px solid rgba(255, 255, 255, 0.95);
@@ -67,7 +114,7 @@
 
   /* Liquid Glass Interactive Category Pills & Controls */
   .liquid-glass-pill {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.7) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 250, 252, 0.75) 100%);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1.5px solid rgba(255, 255, 255, 0.95);
@@ -78,14 +125,30 @@
 
   /* Liquid Glass Modals & Drawers */
   .liquid-glass-modal {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.85) 100%);
-    backdrop-filter: blur(30px) saturate(210%);
-    -webkit-backdrop-filter: blur(30px) saturate(210%);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.88) 100%);
+    backdrop-filter: blur(32px) saturate(220%);
+    -webkit-backdrop-filter: blur(32px) saturate(220%);
     border: 1.5px solid rgba(255, 255, 255, 1);
     box-shadow: 
       0 30px 70px -15px rgba(0, 0, 0, 0.15),
       0 0 0 1px rgba(255, 255, 255, 0.8),
       inset 0 1.5px 2px 0 rgba(255, 255, 255, 1);
+  }
+}
+
+/* Organic Morphing Animation */
+@keyframes liquid-morph {
+  0% {
+    border-radius: 48% 52% 68% 32% / 42% 48% 52% 58%;
+  }
+  33% {
+    border-radius: 58% 42% 38% 62% / 52% 58% 42% 48%;
+  }
+  66% {
+    border-radius: 38% 62% 58% 42% / 48% 42% 58% 52%;
+  }
+  100% {
+    border-radius: 52% 48% 42% 58% / 58% 52% 48% 42%;
   }
 }
 
