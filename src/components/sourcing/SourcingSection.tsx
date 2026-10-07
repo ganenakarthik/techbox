@@ -28,7 +28,7 @@ export function SourcingSection() {
   };
 
   return (
-    <section id="sourcing" className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xs space-y-6 font-sans">
+    <section id="sourcing" className="liquid-glass rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xs space-y-6 font-sans">
       <div className="space-y-1">
         <h2 className="text-2xl font-black text-slate-950">Can't find what you need?</h2>
         <p className="text-xs text-slate-500 font-medium">

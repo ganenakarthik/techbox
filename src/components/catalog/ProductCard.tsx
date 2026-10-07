@@ -30,7 +30,7 @@ export function ProductCard({
     if (onQuickView) onQuickView(product);
   };
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 hover:border-[#ff6a00]/70 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 flex flex-col justify-between p-4 group relative">
+    <div className="liquid-glass rounded-2xl border border-slate-200/90 hover:border-[#ff6a00]/70 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 flex flex-col justify-between p-4 group relative">
       {/* Top Image Box & Wishlist Heart */}
       <div className="space-y-3">
         <div

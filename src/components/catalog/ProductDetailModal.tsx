@@ -26,7 +26,7 @@ export function ProductDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto relative border border-slate-200 font-sans animate-in fade-in zoom-in-95 duration-200">
+      <div className="w-full max-w-5xl liquid-glass-modal rounded-3xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto relative border border-white/80 font-sans animate-in fade-in zoom-in-95 duration-200">
         {/* Close Button */}
         <button
           onClick={onClose}

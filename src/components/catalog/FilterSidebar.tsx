@@ -165,7 +165,7 @@ export function FilterSidebar({
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block bg-white/90 backdrop-blur-md p-5 rounded-2xl border border-zinc-200/90 shadow-sm sticky top-24">
+      <aside className="liquid-glass p-5 rounded-2xl border border-slate-200/90 shadow-sm sticky top-24">
         {content}
       </aside>
 

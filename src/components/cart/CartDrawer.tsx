@@ -37,7 +37,7 @@ export function CartDrawer({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex justify-end animate-in fade-in duration-200 font-sans">
-      <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col justify-between p-6 overflow-y-auto">
+      <div className="w-full max-w-xl liquid-glass-modal h-full shadow-2xl flex flex-col justify-between p-6 overflow-y-auto border-l border-white/80">
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">

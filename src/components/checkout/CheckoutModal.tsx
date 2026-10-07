@@ -55,7 +55,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, catalog }: CheckoutM
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto font-sans">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto relative border border-slate-200">
+      <div className="w-full max-w-4xl liquid-glass-modal rounded-3xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto relative border border-white/80">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <h2 className="text-xl font-black text-slate-950">Checkout</h2>

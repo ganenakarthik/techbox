@@ -26,7 +26,7 @@ export function Header({
   onOpenCart,
 }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+    <header className="sticky top-0 z-40 liquid-glass-header transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div onClick={() => onNavigate("home")}>
@@ -76,7 +76,7 @@ export function Header({
         <div className="flex-1 max-w-md mx-2 relative hidden lg:block">
           <div
             onClick={onOpenSearch}
-            className="w-full bg-slate-100/90 hover:bg-slate-100 border border-slate-200/90 rounded-full py-2 px-4 flex items-center justify-between gap-2 text-xs text-slate-500 cursor-pointer transition-all"
+            className="w-full liquid-glass-search rounded-full py-2 px-4 flex items-center justify-between gap-2 text-xs text-slate-600 cursor-pointer transition-all hover:border-[#ff6a00]/50 shadow-xs"
           >
             <div className="flex items-center gap-2 text-slate-400 flex-1 truncate">
               <Search className="w-4 h-4 text-slate-400" />

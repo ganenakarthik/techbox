@@ -35,7 +35,7 @@ export function CategoryNav({ selectedCategory, onSelectCategory }: CategoryNavP
               className={`p-3.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2.5 group ${
                 isSelected
                   ? "bg-orange-50/90 border-[#ff6a00] shadow-md shadow-orange-500/10"
-                  : "bg-white hover:bg-slate-50 border-slate-200/80 hover:border-slate-300 shadow-2xs"
+                  : "liquid-glass-pill hover:border-orange-300"
               }`}
             >
               <div
