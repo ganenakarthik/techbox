@@ -1,164 +1,161 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, CheckCircle2, MessageSquare, ShieldCheck, Clock, FileText, Send, X } from "lucide-react";
+import { Upload, CheckCircle2, FileText, Image as ImageIcon, FileSpreadsheet, File } from "lucide-react";
 
-interface SourcingSectionProps {
-  isOpenModal?: boolean;
-  onCloseModal?: () => void;
-}
-
-export function SourcingSection({ isOpenModal, onCloseModal }: SourcingSectionProps) {
+export function SourcingSection() {
   const [partNumber, setPartNumber] = useState("");
-  const [quantity, setQuantity] = useState("10");
+  const [quantity, setQuantity] = useState("100");
   const [description, setDescription] = useState("");
-  const [deliveryPreference, setDeliveryPreference] = useState("24h Express");
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [submittedStatus, setSubmittedStatus] = useState<string | null>(null);
+  const [preferredDelivery, setPreferredDelivery] = useState("Select delivery timeline...");
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
+  const handleFile = (type: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) {
+      setUploadedFiles((prev) => ({ ...prev, [type]: f.name }));
     }
   };
 
-  const handleSubmitSourcing = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmittedStatus("Checking availability with Partsly supplier network...");
-
+    setIsSubmitted(true);
     setTimeout(() => {
-      const msg = `Hi Partsly Sourcing Desk!\n\n*Part Sourcing Request*:\nPart Number: ${partNumber}\nQuantity: ${quantity}\nDelivery Preference: ${deliveryPreference}\nDescription: ${description}\nAttached File: ${fileName || "None"}`;
+      const msg = `Hi Partsly Sourcing!\n\nPart Number: ${partNumber || "N/A"}\nQuantity: ${quantity}\nDelivery: ${preferredDelivery}\nDescription: ${description}`;
       window.open(`https://wa.me/917032635858?text=${encodeURIComponent(msg)}`, "_blank");
     }, 1200);
   };
 
-  const mainContent = (
-    <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-zinc-200/90 shadow-xl space-y-8 relative overflow-hidden font-sans">
-      {/* Background Accent Glow */}
-      <div className="absolute right-0 top-0 w-80 h-80 bg-orange-400/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-
-      <div className="max-w-2xl space-y-2 relative z-10">
-        <span className="text-xs font-mono font-bold text-[#ff6a00] uppercase tracking-wider">
-          PARTSLY SOURCING NETWORK
-        </span>
-        <h2 className="text-2xl sm:text-4xl font-black text-zinc-950 tracking-tight">
-          Can't find your part?
-        </h2>
-        <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-medium">
-          Tell us what you need and our global supplier network will locate, verify lab specs, and quote within 2 hours.
+  return (
+    <section id="sourcing" className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xs space-y-6 font-sans">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-black text-slate-950">Can't find what you need?</h2>
+        <p className="text-xs text-slate-500 font-medium">
+          Tell us what you're looking for. We'll check our supplier network and get back to you.
         </p>
       </div>
 
-      {!submittedStatus ? (
-        <form onSubmit={handleSubmitSourcing} className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-          <div className="space-y-4">
-            <div className="space-y-1 text-xs font-mono">
-              <label className="font-bold text-zinc-800">Part Number / MPN *</label>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: 4 File Upload Boxes */}
+          <div className="lg:col-span-6 grid grid-cols-2 gap-4">
+            {/* Upload 1: Image */}
+            <label className="p-5 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-[#ff6a00] flex flex-col items-center justify-center text-center cursor-pointer transition-colors space-y-2">
+              <div className="p-2.5 rounded-xl bg-orange-100/80 text-[#ff6a00]">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <span className="font-bold text-xs text-slate-900">
+                {uploadedFiles.image ? uploadedFiles.image : "Upload Image"}
+              </span>
+              <span className="text-[10px] text-slate-400">JPG, PNG (Max 10MB)</span>
+              <input type="file" accept="image/*" onChange={(e) => handleFile("image", e)} className="hidden" />
+            </label>
+
+            {/* Upload 2: Datasheet */}
+            <label className="p-5 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-[#ff6a00] flex flex-col items-center justify-center text-center cursor-pointer transition-colors space-y-2">
+              <div className="p-2.5 rounded-xl bg-blue-100/80 text-blue-600">
+                <FileText className="w-5 h-5" />
+              </div>
+              <span className="font-bold text-xs text-slate-900">
+                {uploadedFiles.datasheet ? uploadedFiles.datasheet : "Upload Datasheet"}
+              </span>
+              <span className="text-[10px] text-slate-400">PDF, DOC (Max 15MB)</span>
+              <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleFile("datasheet", e)} className="hidden" />
+            </label>
+
+            {/* Upload 3: BOM */}
+            <label className="p-5 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-[#ff6a00] flex flex-col items-center justify-center text-center cursor-pointer transition-colors space-y-2">
+              <div className="p-2.5 rounded-xl bg-emerald-100/80 text-emerald-600">
+                <FileSpreadsheet className="w-5 h-5" />
+              </div>
+              <span className="font-bold text-xs text-slate-900">
+                {uploadedFiles.bom ? uploadedFiles.bom : "Upload BOM"}
+              </span>
+              <span className="text-[10px] text-slate-400">Excel, CSV (Max 15MB)</span>
+              <input type="file" accept=".xlsx,.csv,.xls" onChange={(e) => handleFile("bom", e)} className="hidden" />
+            </label>
+
+            {/* Upload 4: PDF */}
+            <label className="p-5 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-[#ff6a00] flex flex-col items-center justify-center text-center cursor-pointer transition-colors space-y-2">
+              <div className="p-2.5 rounded-xl bg-purple-100/80 text-purple-600">
+                <File className="w-5 h-5" />
+              </div>
+              <span className="font-bold text-xs text-slate-900">
+                {uploadedFiles.pdf ? uploadedFiles.pdf : "Upload PDF"}
+              </span>
+              <span className="text-[10px] text-slate-400">PDF (Max 15MB)</span>
+              <input type="file" accept=".pdf" onChange={(e) => handleFile("pdf", e)} className="hidden" />
+            </label>
+          </div>
+
+          {/* Right Column: Form Inputs */}
+          <div className="lg:col-span-6 space-y-4">
+            <div className="space-y-1 text-xs">
+              <label className="font-bold text-slate-700">Part Number (optional)</label>
               <input
                 type="text"
-                required
                 value={partNumber}
                 onChange={(e) => setPartNumber(e.target.value)}
-                placeholder="e.g. ESP32-WROOM-32U, STM32F401RET6, LM358..."
-                className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
+                placeholder="e.g. ESP32-WROOM-32"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
               />
             </div>
 
-            <div className="space-y-1 text-xs font-mono">
-              <label className="font-bold text-zinc-800">Required Quantity *</label>
+            <div className="space-y-1 text-xs">
+              <label className="font-bold text-slate-700">Required Quantity *</label>
               <input
                 type="text"
                 required
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                placeholder="e.g. 10 units, 500 pcs..."
-                className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
+                placeholder="e.g. 100"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
               />
             </div>
 
-            <div className="space-y-1 text-xs font-mono">
-              <label className="font-bold text-zinc-800">Preferred Delivery Timeline</label>
-              <select
-                value={deliveryPreference}
-                onChange={(e) => setDeliveryPreference(e.target.value)}
-                className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
-              >
-                <option value="24h Express">24h Express Campus Dispatch</option>
-                <option value="2-3 Days">2-3 Business Days Domestic</option>
-                <option value="1 Week Import">1 Week Global Import Sourcing</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="space-y-1 text-xs font-mono">
-              <label className="font-bold text-zinc-800">Description / Specs / Package Type</label>
+            <div className="space-y-1 text-xs">
+              <label className="font-bold text-slate-700">Description (optional)</label>
               <textarea
-                rows={3}
+                rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Mention pin count, SMD/DIP package, operating voltage, or special requirements..."
-                className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#ff6a00]"
+                placeholder="Add more details about your requirement..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
               />
             </div>
 
-            {/* File Upload Box */}
-            <div className="space-y-1 text-xs font-mono">
-              <label className="font-bold text-zinc-800">Upload Datasheet / BOM / Image (Optional)</label>
-              <label className="flex flex-col items-center justify-center p-4 rounded-xl bg-zinc-50 border-2 border-dashed border-zinc-300 hover:border-[#ff6a00] cursor-pointer transition-colors text-center">
-                <Upload className="w-5 h-5 text-[#ff6a00] mb-1" />
-                <span className="text-[11px] font-bold text-zinc-700">
-                  {fileName ? fileName : "Click to attach Gerber, PDF, Excel BOM, or Image"}
-                </span>
-                <span className="text-[10px] text-zinc-400">JPG, PNG, PDF, XLSX, CSV (Up to 25MB)</span>
-                <input type="file" onChange={handleFileUpload} className="hidden" />
-              </label>
+            <div className="space-y-1 text-xs">
+              <label className="font-bold text-slate-700">Preferred Delivery</label>
+              <select
+                value={preferredDelivery}
+                onChange={(e) => setPreferredDelivery(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#ff6a00]"
+              >
+                <option value="Select delivery timeline...">Select delivery timeline...</option>
+                <option value="Standard (3-5 days)">Standard (3-5 days)</option>
+                <option value="Express (1-2 days)">Express (1-2 days)</option>
+                <option value="Global Import (1-2 weeks)">Global Import (1-2 weeks)</option>
+              </select>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              className="w-full py-3.5 rounded-xl bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
             >
-              <Send className="w-4 h-4" />
-              <span>Submit Sourcing Request</span>
+              Request Sourcing
             </button>
           </div>
         </form>
       ) : (
-        <div className="text-center py-8 space-y-4 font-mono">
+        <div className="text-center py-10 space-y-3">
           <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-md">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-black text-zinc-950 font-sans">Sourcing Request Submitted!</h3>
-          <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 text-xs font-bold text-[#ff6a00] max-w-md mx-auto">
-            Status: {submittedStatus}
-          </div>
-          <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-            Redirecting to Partsly WhatsApp Helpdesk for real-time supplier availability updates...
-          </p>
+          <h3 className="text-xl font-black text-slate-950">Sourcing Request Sent!</h3>
+          <p className="text-xs text-slate-500">Redirecting to Partsly WhatsApp Helpdesk for supplier availability check...</p>
         </div>
       )}
-    </div>
+    </section>
   );
-
-  if (isOpenModal) {
-    return (
-      <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-        <div className="w-full max-w-3xl relative">
-          {onCloseModal && (
-            <button
-              onClick={onCloseModal}
-              className="absolute top-4 right-4 z-20 p-2 text-zinc-400 hover:text-zinc-900 rounded-full hover:bg-zinc-100 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
-          {mainContent}
-        </div>
-      </div>
-    );
-  }
-
-  return mainContent;
 }

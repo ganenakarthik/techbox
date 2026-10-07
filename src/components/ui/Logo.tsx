@@ -9,25 +9,19 @@ export function PartslyLogo({
   className?: string;
   isLight?: boolean;
 }) {
-  const textColor = isLight ? "text-zinc-950" : "text-white";
+  const textColor = isLight ? "text-slate-900" : "text-white";
 
   return (
-    <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      {/* PA Monogram Emblem */}
-      <div className="w-9 h-9 rounded-xl bg-white border border-zinc-200/90 shadow-sm flex items-center justify-center p-1 overflow-hidden transition-transform hover:scale-105">
-        <img
-          src="/pa-logo.png"
-          alt="Partsly PA Emblem"
-          className="w-full h-full object-contain"
-        />
+    <div className={`inline-flex items-center gap-2 select-none cursor-pointer ${className}`}>
+      {/* Orange Circle Emblem with P */}
+      <div className="w-8 h-8 rounded-full bg-[#ff6a00] text-white font-black text-sm flex items-center justify-center shadow-sm shadow-orange-500/30">
+        P
       </div>
 
-      {/* partsly Brand Wordmark */}
-      <div className="flex items-baseline">
-        <span className={`text-xl sm:text-2xl font-black tracking-tighter ${textColor}`}>
-          partsly
-        </span>
-      </div>
+      {/* Partsly Brand Wordmark */}
+      <span className={`text-xl font-extrabold tracking-tight ${textColor}`}>
+        Partsly
+      </span>
     </div>
   );
 }

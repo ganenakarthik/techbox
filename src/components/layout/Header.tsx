@@ -1,170 +1,134 @@
 "use client";
 
 import React from "react";
-import { Search, ShoppingCart, Heart, Package, User, Sparkles, ChevronDown } from "lucide-react";
+import { Search, ShoppingCart, Heart, Package, User } from "lucide-react";
 import { PartslyLogo } from "@/components/ui/Logo";
 
 interface HeaderProps {
+  currentView: string;
+  onNavigate: (view: string) => void;
   cartCount: number;
-  cartTotal: number;
   wishlistCount: number;
-  selectedCategory: string;
-  onSelectCategory: (category: string) => void;
-  onOpenSearch: () => void;
-  onOpenCart: () => void;
-  onOpenWishlist: () => void;
-  onOpenAccount: () => void;
-  onOpenSourcing: () => void;
-  onOpenServices: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  onOpenSearch: () => void;
+  onOpenCart: () => void;
 }
 
 export function Header({
+  currentView,
+  onNavigate,
   cartCount,
-  cartTotal,
   wishlistCount,
-  selectedCategory,
-  onSelectCategory,
-  onOpenSearch,
-  onOpenCart,
-  onOpenWishlist,
-  onOpenAccount,
-  onOpenSourcing,
-  onOpenServices,
   searchQuery,
   setSearchQuery,
+  onOpenSearch,
+  onOpenCart,
 }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-zinc-200/80 shadow-sm transition-all">
-      {/* Top Banner Notice */}
-      <div className="bg-[#0f172a] text-white text-[11px] py-1.5 px-4 font-mono flex items-center justify-between border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-          <div className="flex items-center gap-3 text-zinc-300">
-            <span className="inline-flex items-center gap-1.5 text-[#ff6a00] font-bold">
-              <span className="w-2 h-2 rounded-full bg-[#ff6a00] animate-ping" />
-              Express Hardware Platform
-            </span>
-            <span className="hidden sm:inline text-zinc-600">|</span>
-            <span className="hidden sm:inline text-emerald-400 font-bold">
-              10-30 Min Gate Delivery to Campus Labs
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 text-zinc-400 text-[11px]">
-            <button onClick={onOpenSourcing} className="hover:text-white transition-colors cursor-pointer">
-              Custom Part Sourcing
-            </button>
-            <span className="text-zinc-700">|</span>
-            <button onClick={onOpenServices} className="hover:text-white transition-colors cursor-pointer">
-              PCB & 3D Print Quote
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Bar */}
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <button
-          onClick={() => onSelectCategory("All Categories")}
-          className="cursor-pointer text-left shrink-0"
-        >
+        <div onClick={() => onNavigate("home")}>
           <PartslyLogo />
-        </button>
+        </div>
 
-        {/* Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-zinc-700">
+        {/* Center Navigation Links */}
+        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-700">
           <button
-            onClick={() => onSelectCategory("All Categories")}
+            onClick={() => onNavigate("home")}
             className={`transition-colors cursor-pointer ${
-              selectedCategory === "All Categories" ? "text-[#ff6a00]" : "hover:text-[#ff6a00]"
+              currentView === "home" ? "text-[#ff6a00] font-bold" : "hover:text-[#ff6a00]"
+            }`}
+          >
+            Categories
+          </button>
+
+          <button
+            onClick={() => onNavigate("search")}
+            className={`transition-colors cursor-pointer ${
+              currentView === "search" ? "text-[#ff6a00] font-bold" : "hover:text-[#ff6a00]"
             }`}
           >
             Shop
           </button>
+
           <button
-            onClick={() => onSelectCategory("Microcontrollers")}
-            className="hover:text-[#ff6a00] transition-colors cursor-pointer"
+            onClick={() => onNavigate("services")}
+            className={`transition-colors cursor-pointer ${
+              currentView === "services" ? "text-[#ff6a00] font-bold" : "hover:text-[#ff6a00]"
+            }`}
           >
-            Categories
+            Services
           </button>
+
           <button
-            onClick={onOpenServices}
-            className="hover:text-[#ff6a00] transition-colors cursor-pointer flex items-center gap-1"
+            onClick={() => onNavigate("sourcing")}
+            className={`transition-colors cursor-pointer ${
+              currentView === "sourcing" ? "text-[#ff6a00] font-bold" : "hover:text-[#ff6a00]"
+            }`}
           >
-            Services <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-orange-100 text-[#ff6a00]">Fab</span>
-          </button>
-          <button
-            onClick={onOpenSourcing}
-            className="hover:text-[#ff6a00] transition-colors cursor-pointer flex items-center gap-1"
-          >
-            Sourcing <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700">Request</span>
+            Sourcing
           </button>
         </nav>
 
-        {/* Central Search Bar */}
-        <div className="flex-1 max-w-xl mx-2 relative hidden md:block">
+        {/* Large Central Search Input Pill */}
+        <div className="flex-1 max-w-md mx-2 relative hidden lg:block">
           <div
             onClick={onOpenSearch}
-            className="w-full bg-zinc-100/80 hover:bg-zinc-100 border border-zinc-200/90 rounded-full py-2 px-4 flex items-center justify-between gap-3 text-xs text-zinc-500 cursor-pointer shadow-inner transition-all hover:shadow"
+            className="w-full bg-slate-100/90 hover:bg-slate-100 border border-slate-200/90 rounded-full py-2 px-4 flex items-center justify-between gap-2 text-xs text-slate-500 cursor-pointer transition-all"
           >
-            <div className="flex items-center gap-2 text-zinc-400 flex-1 truncate">
-              <Search className="w-4 h-4 text-[#ff6a00]" />
-              <span className="truncate">
-                {searchQuery || "Search components, modules, ICs, tools, laptop parts..."}
-              </span>
+            <div className="flex items-center gap-2 text-slate-400 flex-1 truncate">
+              <Search className="w-4 h-4 text-slate-400" />
+              <span className="truncate">Search components, modules, ICs, tools...</span>
             </div>
-            <kbd className="hidden xl:inline-flex items-center gap-1 font-mono text-[10px] bg-white border border-zinc-200 text-zinc-400 px-2 py-0.5 rounded-md shadow-xs">
-              ⌘K
-            </kbd>
           </div>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-          {/* Orders */}
+        {/* Right Icon Actions */}
+        <div className="flex items-center gap-4 text-xs font-semibold text-slate-700 shrink-0">
           <button
-            onClick={onOpenAccount}
-            className="hidden sm:flex flex-col text-right text-xs cursor-pointer group"
+            onClick={() => onNavigate("account")}
+            className="hidden sm:flex items-center gap-1.5 hover:text-[#ff6a00] transition-colors cursor-pointer"
           >
-            <span className="text-[10px] text-zinc-400 font-mono">My Account</span>
-            <span className="font-bold text-zinc-900 group-hover:text-[#ff6a00] transition-colors flex items-center gap-1">
-              Orders & Specs <ChevronDown className="w-3 h-3 text-zinc-400" />
-            </span>
+            <Package className="w-4 h-4 text-slate-600" />
+            <span>Orders</span>
           </button>
 
-          {/* Wishlist */}
           <button
-            onClick={onOpenWishlist}
-            className="p-2 text-zinc-600 hover:text-red-500 hover:bg-zinc-100 rounded-full transition-colors relative cursor-pointer"
-            title="Saved Components"
+            onClick={() => onNavigate("account")}
+            className="p-1.5 text-slate-600 hover:text-red-500 transition-colors relative cursor-pointer"
+            title="Wishlist"
           >
             <Heart className="w-5 h-5" />
             {wishlistCount > 0 && (
-              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow">
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow-xs">
                 {wishlistCount}
               </span>
             )}
           </button>
 
-          {/* Cart Button */}
+          {/* Cart Icon with Badge */}
           <button
             onClick={onOpenCart}
-            className="flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all cursor-pointer"
+            className="p-1.5 text-slate-700 hover:text-[#ff6a00] transition-colors relative cursor-pointer"
+            title="Cart"
           >
-            <div className="relative">
-              <ShoppingCart className="w-4 h-4" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2.5 bg-white text-[#ff6a00] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
-                  {cartCount}
-                </span>
-              )}
-            </div>
-            <span className="hidden sm:inline">Cart</span>
-            <span className="font-black border-l border-orange-400/80 pl-2">
-              ₹{cartTotal}
-            </span>
+            <ShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 rounded-full bg-[#ff6a00] text-white text-[10px] font-black flex items-center justify-center shadow-sm">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
+          {/* User Profile Avatar */}
+          <button
+            onClick={() => onNavigate("account")}
+            className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-[#ff6a00]/50 transition-all"
+            title="Account"
+          >
+            <User className="w-4 h-4 text-slate-600" />
           </button>
         </div>
       </div>

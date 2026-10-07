@@ -8,27 +8,19 @@ import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { FilterSidebar } from "@/components/catalog/FilterSidebar";
 import { ProductDetailModal } from "@/components/catalog/ProductDetailModal";
-import { SearchWorkspaceModal } from "@/components/search/SearchWorkspaceModal";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { CheckoutModal } from "@/components/checkout/CheckoutModal";
 import { SourcingSection } from "@/components/sourcing/SourcingSection";
 import { ServicesSection } from "@/components/services/ServicesSection";
 import { AccountModal } from "@/components/account/AccountModal";
 import { COMPONENTS_CATALOG, ComponentItem, filterProducts } from "@/data/componentsCatalog";
-import { Search, ArrowRight, Sparkles, MessageSquare, CheckCircle2 } from "lucide-react";
-
-const POPULAR_SEARCHES = [
-  "ESP32",
-  "Arduino",
-  "Raspberry Pi",
-  "Sensors",
-  "Motors",
-  "Connectors",
-  "Laptop parts",
-];
+import { Search, ArrowRight, Star, Heart, CheckCircle2 } from "lucide-react";
 
 export default function Page() {
-  // State Management
+  // Navigation View State
+  const [currentView, setCurrentView] = useState<string>("home");
+
+  // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState<number>(5000);
@@ -36,29 +28,22 @@ export default function Page() {
   const [minRating, setMinRating] = useState<number>(0);
   const [sortBy, setSortBy] = useState<string>("relevance");
 
-  // Cart State
+  // Cart & Wishlist States
   const [cartItems, setCartItems] = useState<{ [key: string]: number }>({
     "esp32-devkit-v1": 2,
     "arduino-uno-r3": 1,
     "mpu6050-sensor": 1,
   });
-
-  // Wishlist State
   const [wishlistIds, setWishlistIds] = useState<string[]>(["esp32-devkit-v1", "raspberry-pi-4b-4gb"]);
 
-  // Modal / Drawer States
-  const [isSearchWorkspaceOpen, setIsSearchWorkspaceOpen] = useState(false);
+  // Modal States
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [isSourcingModalOpen, setIsSourcingModalOpen] = useState(false);
-  const [isServicesModalOpen, setIsServicesModalOpen] = useState(false);
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
-  const [accountInitialTab, setAccountInitialTab] = useState<"account" | "wishlist">("account");
   const [quickViewProduct, setQuickViewProduct] = useState<ComponentItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Filter Catalog Items
+  // Filter Catalog
   const filteredProducts = useMemo(() => {
     return filterProducts(
       COMPONENTS_CATALOG,
@@ -79,7 +64,6 @@ export default function Page() {
     return sum + (item ? item.price * qty : 0);
   }, 0);
 
-  // Actions
   const handleAddToCart = (id: string, name: string) => {
     setCartItems((prev) => ({
       ...prev,
@@ -120,28 +104,17 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-zinc-900 font-sans selection:bg-[#ff6a00] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-[#fbfcfd] text-slate-900 font-sans selection:bg-[#ff6a00] selection:text-white flex flex-col justify-between">
       {/* 1. Header Navigation */}
       <Header
+        currentView={currentView}
+        onNavigate={setCurrentView}
         cartCount={totalCartCount}
-        cartTotal={totalCartPrice}
         wishlistCount={wishlistIds.length}
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        onOpenSearch={() => setIsSearchWorkspaceOpen(true)}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenWishlist={() => {
-          setAccountInitialTab("wishlist");
-          setIsAccountModalOpen(true);
-        }}
-        onOpenAccount={() => {
-          setAccountInitialTab("account");
-          setIsAccountModalOpen(true);
-        }}
-        onOpenSourcing={() => setIsSourcingModalOpen(true)}
-        onOpenServices={() => setIsServicesModalOpen(true)}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        onOpenSearch={() => setCurrentView("search")}
+        onOpenCart={() => setIsCartOpen(true)}
       />
 
       {/* Toast Notification */}
@@ -152,144 +125,98 @@ export default function Page() {
         </div>
       )}
 
-      {/* 2. Main Discovery & Catalog Area */}
+      {/* Main Container */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-10 w-full">
-        {/* Discovery Hero Section */}
-        <section className="bg-gradient-to-r from-white via-orange-50/40 to-white rounded-3xl p-6 sm:p-10 border border-zinc-200/80 shadow-sm relative overflow-hidden">
-          {/* Subtle Ambient Light Glow */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-            <div className="lg:col-span-7 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-100/80 text-[#ff6a00] text-[11px] font-mono font-bold uppercase tracking-wider border border-orange-200/60 shadow-2xs">
-                ENGINEERING HARDWARE STORE
-              </div>
-
-              <h1 className="text-4xl sm:text-6xl font-black text-zinc-950 tracking-tight leading-[1.1]">
-                Everything for your <span className="text-[#ff6a00]">project.</span>
-              </h1>
-
-              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal max-w-xl">
-                Find exact components, dev boards, sensors and hardware — or let Partsly source what you need. Fast campus gate dispatch & lab delivery.
-              </p>
-
-              {/* Functional Search Bar */}
-              <div className="pt-2 max-w-xl">
-                <div
-                  onClick={() => setIsSearchWorkspaceOpen(true)}
-                  className="w-full bg-white border border-zinc-300 hover:border-[#ff6a00] rounded-2xl p-2.5 sm:p-3 flex items-center justify-between gap-3 text-xs sm:text-sm text-zinc-500 shadow-md transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3 text-zinc-400 flex-1 truncate">
-                    <Search className="w-5 h-5 text-[#ff6a00] group-hover:scale-110 transition-transform" />
-                    <span className="font-medium text-zinc-700 truncate">
-                      Search ESP32, Arduino, sensor, IC, connector...
-                    </span>
+        {/* VIEW 1: HOME PAGE (Screen 1 in image) */}
+        {currentView === "home" && (
+          <div className="space-y-10 animate-in fade-in duration-200">
+            {/* Hero Section */}
+            <section className="bg-gradient-to-r from-white via-orange-50/30 to-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-2xs relative overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-7 space-y-4">
+                  <div className="inline-flex items-center gap-2 text-[#ff6a00] text-xs font-bold uppercase tracking-wider">
+                    ENGINEERING HARDWARE STORE
                   </div>
-                  <button className="px-5 py-2.5 rounded-xl bg-[#ff6a00] hover:bg-orange-600 text-white font-bold text-xs shadow-sm transition-colors shrink-0">
-                    Search Catalog
-                  </button>
-                </div>
-              </div>
 
-              {/* Popular Search Tags */}
-              <div className="flex items-center gap-2 flex-wrap text-xs font-mono pt-1">
-                <span className="text-zinc-400 font-bold">Popular:</span>
-                {POPULAR_SEARCHES.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => {
-                      setSearchQuery(tag);
-                      setIsSearchWorkspaceOpen(true);
-                    }}
-                    className="px-2.5 py-1 rounded-lg bg-white/90 hover:bg-orange-50 text-zinc-700 hover:text-[#ff6a00] border border-zinc-200 text-[11px] font-bold transition-colors cursor-pointer shadow-2xs"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
+                  <h1 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tight leading-[1.1]">
+                    Everything for <br />
+                    <span className="text-slate-700">your project</span>
+                    <span className="text-[#ff6a00]">.</span>
+                  </h1>
 
-            {/* Hardware Component Visual Feature */}
-            <div className="lg:col-span-5 hidden lg:block">
-              <div className="bg-white/80 backdrop-blur-md rounded-2xl p-5 border border-zinc-200/90 shadow-xl space-y-4">
-                <div className="flex items-center justify-between text-xs font-mono border-b border-zinc-100 pb-2">
-                  <span className="font-bold text-[#ff6a00]">LAB FEATURED COMPONENT</span>
-                  <span className="text-zinc-400">SKU: ESP32-DEVKIT-V1</span>
-                </div>
-                <div className="h-56 bg-zinc-50 rounded-xl overflow-hidden flex items-center justify-center p-3 border border-zinc-100">
-                  <img
-                    src={COMPONENTS_CATALOG[0].image}
-                    alt="ESP32 DevKit"
-                    className="w-full h-full object-contain rounded"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <div className="font-bold text-sm text-zinc-950">{COMPONENTS_CATALOG[0].name}</div>
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-emerald-700 font-bold">● In Stock (42 units)</span>
-                    <span className="text-xl font-black text-zinc-950">₹389</span>
+                  <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl leading-relaxed">
+                    Find the exact parts, components and hardware you need. Build, repair, innovate — with Partsly.
+                  </p>
+
+                  {/* Search Bar Input Pill */}
+                  <div className="pt-2 max-w-xl">
+                    <div className="w-full bg-white border border-slate-300 rounded-full p-2 flex items-center justify-between gap-3 shadow-sm hover:border-[#ff6a00] transition-colors">
+                      <div className="flex items-center gap-2.5 px-3 text-slate-400 flex-1">
+                        <Search className="w-4 h-4 text-slate-400" />
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") setCurrentView("search");
+                          }}
+                          placeholder="Search components, modules, ICs, tools..."
+                          className="w-full bg-transparent text-xs text-slate-900 font-medium focus:outline-none"
+                        />
+                      </div>
+                      <button
+                        onClick={() => setCurrentView("search")}
+                        className="w-9 h-9 rounded-full bg-[#ff6a00] hover:bg-orange-600 text-white flex items-center justify-center font-bold cursor-pointer transition-colors shadow-sm"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setQuickViewProduct(COMPONENTS_CATALOG[0])}
-                  className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-[#ff6a00] text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer font-mono"
-                >
-                  View Full Specs Sheet →
-                </button>
+
+                {/* Right Visual Floating Component */}
+                <div className="lg:col-span-5 hidden lg:block">
+                  <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/90 shadow-xl flex flex-col items-center text-center space-y-4">
+                    <div className="h-52 w-full bg-slate-50 rounded-2xl flex items-center justify-center p-4 border border-slate-100">
+                      <img
+                        src={COMPONENTS_CATALOG[0].image}
+                        alt="ESP32"
+                        className="h-full object-contain"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-extrabold text-sm text-slate-950">{COMPONENTS_CATALOG[0].name}</div>
+                      <div className="text-xs font-mono text-[#ff6a00] font-black">₹389 • In Stock</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
 
-        {/* 3. Category Navigation Grid */}
-        <CategoryNav
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-
-        {/* 4. Product Catalog Grid & Filters */}
-        <section id="catalog" className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-4">
-            <div>
-              <h2 className="text-xs font-mono font-bold tracking-widest text-[#ff6a00] uppercase">
-                ENGINEERING HARDWARE CATALOG ({filteredProducts.length} ITEMS)
-              </h2>
-              <h3 className="text-2xl font-black text-zinc-950">Browse Lab-Tested Components</h3>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* Mobile Filter Sheet Button */}
-              <button
-                onClick={() => setIsMobileFilterOpen(true)}
-                className="lg:hidden px-3.5 py-2 rounded-xl bg-white text-zinc-800 text-xs font-bold border border-zinc-300 shadow-2xs flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>Filter ({filteredProducts.length})</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-            {/* Desktop Left Filter Sidebar */}
-            <FilterSidebar
+            {/* Category Navigation Pills */}
+            <CategoryNav
               selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-              priceRange={priceRange}
-              onSetPriceRange={setPriceRange}
-              inStockOnly={inStockOnly}
-              onSetInStockOnly={setInStockOnly}
-              minRating={minRating}
-              onSetMinRating={setMinRating}
-              sortBy={sortBy}
-              onSetSortBy={setSortBy}
-              onResetFilters={resetFilters}
-              isMobileDrawerOpen={isMobileFilterOpen}
-              onCloseMobileDrawer={() => setIsMobileFilterOpen(false)}
+              onSelectCategory={(cat) => {
+                setSelectedCategory(cat);
+                setCurrentView("search");
+              }}
             />
 
-            {/* Product Cards Grid */}
-            <div className="lg:col-span-3 space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {filteredProducts.map((product) => (
+            {/* Popular Components Section */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-black text-slate-950">Popular Components</h3>
+                <button
+                  onClick={() => setCurrentView("search")}
+                  className="text-xs font-bold text-[#ff6a00] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View all</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {COMPONENTS_CATALOG.slice(0, 5).map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -298,48 +225,133 @@ export default function Page() {
                     onAddToCart={handleAddToCart}
                     onUpdateQuantity={handleUpdateQuantity}
                     onToggleWishlist={handleToggleWishlist}
-                    onQuickView={setQuickViewProduct}
+                    onSelectProduct={setQuickViewProduct}
                   />
                 ))}
               </div>
+            </section>
+          </div>
+        )}
 
-              {filteredProducts.length === 0 && (
-                <div className="bg-white rounded-2xl p-12 text-center border border-zinc-200 space-y-3">
-                  <Search className="w-10 h-10 mx-auto text-zinc-300" />
-                  <p className="text-base font-bold text-zinc-900">No components match your filter criteria.</p>
-                  <button
-                    onClick={resetFilters}
-                    className="px-4 py-2 rounded-xl bg-[#ff6a00] text-white text-xs font-bold shadow-sm"
-                  >
-                    Reset Filters
-                  </button>
+        {/* VIEW 2: SEARCH & SHOP WORKSPACE (Screen 2 in image) */}
+        {currentView === "search" && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            {/* Header Query Bar */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2">
+                <Search className="w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search components..."
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+                <span>{filteredProducts.length} results</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 rounded-xl p-2 font-bold text-slate-800 focus:outline-none cursor-pointer"
+                >
+                  <option value="relevance">Sort: Relevance</option>
+                  <option value="price-asc">Price: Low → High</option>
+                  <option value="price-desc">Price: High → Low</option>
+                  <option value="rating">Rating</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+              {/* Filter Sidebar */}
+              <FilterSidebar
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                priceRange={priceRange}
+                onSetPriceRange={setPriceRange}
+                inStockOnly={inStockOnly}
+                onSetInStockOnly={setInStockOnly}
+                minRating={minRating}
+                onSetMinRating={setMinRating}
+                sortBy={sortBy}
+                onSetSortBy={setSortBy}
+                onResetFilters={resetFilters}
+                isMobileDrawerOpen={isMobileFilterOpen}
+                onCloseMobileDrawer={() => setIsMobileFilterOpen(false)}
+              />
+
+              {/* Product Grid */}
+              <div className="lg:col-span-3 space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      cartQuantity={cartItems[product.id] || 0}
+                      isWishlisted={wishlistIds.includes(product.id)}
+                      onAddToCart={handleAddToCart}
+                      onUpdateQuantity={handleUpdateQuantity}
+                      onToggleWishlist={handleToggleWishlist}
+                      onSelectProduct={setQuickViewProduct}
+                    />
+                  ))}
                 </div>
-              )}
+
+                {filteredProducts.length === 0 && (
+                  <div className="bg-white rounded-2xl p-12 text-center border border-slate-200 space-y-3">
+                    <p className="text-sm font-bold text-slate-900">No components match your search filter.</p>
+                    <button onClick={resetFilters} className="px-4 py-2 rounded-xl bg-[#ff6a00] text-white text-xs font-bold">
+                      Reset Filters
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </section>
+        )}
 
-        {/* 5. Custom Sourcing Section */}
-        <SourcingSection />
+        {/* VIEW 3: SERVICES PAGE (Screen 6 in image) */}
+        {currentView === "services" && (
+          <div className="animate-in fade-in duration-200">
+            <ServicesSection />
+          </div>
+        )}
 
-        {/* 6. Engineering Services Section */}
-        <ServicesSection />
+        {/* VIEW 4: SOURCING PAGE (Screen 7 in image) */}
+        {currentView === "sourcing" && (
+          <div className="animate-in fade-in duration-200">
+            <SourcingSection />
+          </div>
+        )}
+
+        {/* VIEW 5: ACCOUNT & ORDERS PAGE (Screen 8 in image) */}
+        {currentView === "account" && (
+          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-2xs space-y-6 animate-in fade-in duration-200 max-w-3xl mx-auto">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="w-12 h-12 rounded-full bg-[#ff6a00] text-white font-black text-lg flex items-center justify-center">
+                KG
+              </div>
+              <div>
+                <div className="font-extrabold text-base text-slate-950">Karthik Ganena</div>
+                <div className="text-xs text-slate-500 font-medium">Campus Gate Handoff Account</div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="font-black text-sm text-slate-900">Orders & Active Dispatches</h3>
+              <div className="p-4 rounded-2xl bg-orange-50/80 border border-orange-200 text-xs font-mono space-y-1">
+                <div className="font-bold text-[#ff6a00]">Order #PTS-9812 — Gate Handoff Active</div>
+                <div className="text-slate-600">Items: ESP32 DevKit V1 (x2), Arduino Uno R3 (x1)</div>
+                <div className="font-black text-slate-950 pt-1">Total: ₹1,427</div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
-      {/* 7. Modals & Drawers */}
-      <SearchWorkspaceModal
-        isOpen={isSearchWorkspaceOpen}
-        onClose={() => setIsSearchWorkspaceOpen(false)}
-        catalog={COMPONENTS_CATALOG}
-        cartItems={cartItems}
-        wishlistIds={wishlistIds}
-        onAddToCart={handleAddToCart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onToggleWishlist={handleToggleWishlist}
-        onQuickView={setQuickViewProduct}
-        initialQuery={searchQuery}
-      />
-
+      {/* Product Detail Modal */}
       <ProductDetailModal
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
@@ -348,6 +360,7 @@ export default function Page() {
         onUpdateQuantity={handleUpdateQuantity}
       />
 
+      {/* Cart Drawer */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -357,6 +370,7 @@ export default function Page() {
         onProceedToCheckout={() => setIsCheckoutOpen(true)}
       />
 
+      {/* Checkout Modal */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
@@ -364,52 +378,28 @@ export default function Page() {
         catalog={COMPONENTS_CATALOG}
       />
 
-      {isSourcingModalOpen && (
-        <SourcingSection
-          isOpenModal={true}
-          onCloseModal={() => setIsSourcingModalOpen(false)}
-        />
-      )}
-
-      {isServicesModalOpen && (
-        <ServicesSection
-          isOpenModal={true}
-          onCloseModal={() => setIsServicesModalOpen(false)}
-        />
-      )}
-
-      <AccountModal
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-        initialTab={accountInitialTab}
-        wishlistIds={wishlistIds}
-        catalog={COMPONENTS_CATALOG}
-        cartItems={cartItems}
-        onAddToCart={handleAddToCart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onToggleWishlist={handleToggleWishlist}
-        onQuickView={setQuickViewProduct}
-      />
-
-      {/* 8. Mobile Navigation */}
+      {/* Mobile Bottom Navigation */}
       <MobileNav
         cartCount={totalCartCount}
         cartTotal={totalCartPrice}
-        onSelectCategory={setSelectedCategory}
-        onOpenSearch={() => setIsSearchWorkspaceOpen(true)}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenAccount={() => {
-          setAccountInitialTab("account");
-          setIsAccountModalOpen(true);
+        onSelectCategory={(cat) => {
+          setSelectedCategory(cat);
+          setCurrentView("search");
         }}
-        onOpenSourcing={() => setIsSourcingModalOpen(true)}
+        onOpenSearch={() => setCurrentView("search")}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenAccount={() => setCurrentView("account")}
+        onOpenSourcing={() => setCurrentView("sourcing")}
       />
 
-      {/* 9. Footer */}
+      {/* Footer */}
       <Footer
-        onSelectCategory={setSelectedCategory}
-        onOpenServices={() => setIsServicesModalOpen(true)}
-        onOpenSourcing={() => setIsSourcingModalOpen(true)}
+        onSelectCategory={(cat) => {
+          setSelectedCategory(cat);
+          setCurrentView("search");
+        }}
+        onOpenServices={() => setCurrentView("services")}
+        onOpenSourcing={() => setCurrentView("sourcing")}
       />
     </div>
   );
