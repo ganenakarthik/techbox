@@ -36,7 +36,7 @@ export default function Home() {
 
   // Cart & Wishlist State
   const [cartItems, setCartItems] = useState<CartItem[]>([
-    { product: COMPONENTS_CATALOG[0], quantity: 1 }, // Default ESP32 item for immediate evaluation
+    { product: COMPONENTS_CATALOG[0], quantity: 1 },
   ]);
   const [wishlistIds, setWishlistIds] = useState<string[]>(["esp32-devkit-v1"]);
 
@@ -141,7 +141,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-[#ff6a00] selection:text-white">
-      {/* Persistent Floating Liquid Glass Header */}
+      {/* Persistent Floating Header */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -154,16 +154,16 @@ export default function Home() {
         setSearchQuery={setSearchQuery}
       />
 
-      {/* Main Body Router */}
+      {/* Main Container */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 space-y-8">
         {/* VIEW 1: HOME CATALOG WORKSPACE */}
         {activeTab === "home" && (
           <>
-            {/* Engineering Hero & Discovery Area */}
+            {/* Header Banner */}
             <div className="liquid-card p-6 sm:p-8 space-y-4 relative overflow-hidden">
               <div className="max-w-2xl space-y-2 relative z-10">
                 <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ff6a00]/10 text-[#ff6a00] border border-[#ff6a00]/20">
-                  ENGINEERING HARDWARE MARKETPLACE
+                  ENGINEERING HARDWARE STORE
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
                   Everything for your project.
@@ -177,7 +177,7 @@ export default function Home() {
               <div className="pt-2 max-w-xl">
                 <div
                   onClick={() => setIsSearchOpen(true)}
-                  className="liquid-input p-3 flex items-center gap-3 cursor-pointer group text-slate-400"
+                  className="liquid-input p-3.5 flex items-center gap-3 cursor-pointer group text-slate-400"
                 >
                   <svg className="w-5 h-5 text-[#ff6a00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -185,7 +185,7 @@ export default function Home() {
                   <span className="text-xs font-semibold text-slate-600 truncate flex-1">
                     Search ESP32, Arduino, sensor, IC, connector, motor, laptop parts...
                   </span>
-                  <span className="px-2 py-1 bg-white border border-slate-200 rounded text-[10px] font-mono font-bold text-slate-400">
+                  <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-[10px] font-mono font-bold text-slate-400">
                     SEARCH
                   </span>
                 </div>
@@ -200,7 +200,7 @@ export default function Home() {
                         setSearchQuery(tag);
                         setIsSearchOpen(true);
                       }}
-                      className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white/80 text-slate-700 hover:text-[#ff6a00] hover:border-[#ff6a00] border border-slate-200/80 transition-colors shadow-2xs"
+                      className="px-3 py-1 rounded-full text-[11px] font-semibold bg-white/80 text-slate-700 hover:text-[#ff6a00] hover:border-[#ff6a00] border border-slate-200/80 transition-colors shadow-2xs"
                     >
                       {tag}
                     </button>
@@ -209,10 +209,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Category Navigation Bar */}
+            {/* Category Pill Navigation */}
             <CategoryNav activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
-            {/* Product Catalog Grid + Filter Sidebar */}
+            {/* Catalog Layout Grid */}
             <div className="flex flex-col lg:flex-row gap-8 items-start">
               {/* Filter Sidebar */}
               <FilterSidebar
@@ -237,14 +237,14 @@ export default function Home() {
                 resultCount={filteredProducts.length}
               />
 
-              {/* Hardware Product Grid */}
+              {/* Product Cards Grid */}
               <div className="flex-1 w-full space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                     {activeCategory} ({filteredProducts.length} products)
                   </h2>
                   <span className="text-xs font-semibold text-slate-500">
-                    Showing real stock from verified Indian distributor nodes
+                    Verified stock from Indian supplier network
                   </span>
                 </div>
 
@@ -279,17 +279,17 @@ export default function Home() {
           </>
         )}
 
-        {/* VIEW 2: PART SOURCING PORTAL */}
+        {/* VIEW 2: SOURCING PORTAL */}
         {activeTab === "sourcing" && <SourcingSection />}
 
-        {/* VIEW 3: ENGINEERING SERVICES PORTAL */}
+        {/* VIEW 3: SERVICES PORTAL */}
         {activeTab === "services" && <ServicesSection />}
       </main>
 
       {/* Footer */}
       <Footer />
 
-      {/* Global Modals & Drawers */}
+      {/* Global Modals */}
       <ProductDetailModal
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
