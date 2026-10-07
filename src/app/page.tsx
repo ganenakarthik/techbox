@@ -104,7 +104,12 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfcfd] text-slate-900 font-sans selection:bg-[#ff6a00] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen text-slate-900 font-sans selection:bg-[#ff6a00] selection:text-white flex flex-col justify-between relative overflow-x-hidden">
+      {/* Ambient Floating Glass Glow Spheres */}
+      <div className="fixed top-12 left-10 w-96 h-96 bg-[#ff6a00]/15 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="fixed top-1/3 right-10 w-[450px] h-[450px] bg-blue-500/10 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed bottom-10 left-1/3 w-[500px] h-[500px] bg-amber-400/10 rounded-full blur-[150px] pointer-events-none z-0" />
+
       {/* 1. Header Navigation */}
       <Header
         currentView={currentView}
