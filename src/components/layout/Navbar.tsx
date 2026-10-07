@@ -9,7 +9,7 @@ import { SearchModal } from "@/components/SearchModal";
 
 function Mark() {
   return (
-    <span className="brand-mark" aria-hidden="true">
+    <span className="brand-mark shrink-0" aria-hidden="true">
       <img src="/logo.png" alt="Partsly" className="h-full w-full object-contain rounded-md" />
     </span>
   );
@@ -35,6 +35,7 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header className="topbar">
+        {/* Brand Logo & Emblem Badge */}
         <Link href="/" className="logo shrink-0">
           <Mark />
           <span className="logo-copy">
@@ -43,21 +44,22 @@ export const Navbar: React.FC = () => {
           </span>
         </Link>
 
-        {/* Global Search Palette trigger button */}
+        {/* Global Search Palette Input Bar */}
         <div
           onClick={() => setIsSearchOpen(true)}
-          className="cursor-pointer hidden xl:flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--muted)] hover:border-[var(--text)] hover:text-[var(--text)] transition-all shrink-0"
+          className="cursor-pointer hidden xl:flex items-center gap-2.5 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)] transition-all shadow-sm shrink-0 min-w-[280px]"
         >
-          <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 fill-none stroke-current stroke-2 text-[var(--muted)]" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
-          <span>Search MPN, ICs, STM32, ESP32...</span>
-          <kbd className="rounded border border-[var(--line)] bg-[var(--bg)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--muted)]">
+          <span className="flex-1">Search MPN, ICs, STM32, ESP32...</span>
+          <kbd className="rounded-md border border-[var(--line)] bg-[var(--bg)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--muted)]">
             Ctrl K
           </kbd>
         </div>
 
+        {/* Header Actions & Navigation Links */}
         <div className="header-actions">
           {/* Multi-page Nav Links */}
           <div className="hidden lg:flex items-center gap-5 text-xs font-bold uppercase tracking-wider whitespace-nowrap">
@@ -100,11 +102,11 @@ export const Navbar: React.FC = () => {
           {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="relative shrink-0 inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--text)]"
+            className="relative shrink-0 inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2 text-xs font-bold text-[var(--text)] hover:border-[var(--accent)] transition-all shadow-sm"
           >
             🛒 Cart
             {totalItems > 0 && (
-              <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-black text-white">
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--accent)] px-1.5 text-[11px] font-black text-white">
                 {totalItems}
               </span>
             )}
@@ -121,7 +123,7 @@ export const Navbar: React.FC = () => {
               key={link.href}
               href={link.href}
               className={`shrink-0 rounded-lg px-3 py-1.5 whitespace-nowrap transition-colors ${
-                isActive ? "bg-[var(--accent)] text-white font-bold" : "bg-[var(--surface-2)] text-[var(--text)]"
+                isActive ? "bg-[var(--accent)] text-white font-bold shadow-sm" : "bg-[var(--surface-2)] text-[var(--text)]"
               }`}
             >
               {link.label}
