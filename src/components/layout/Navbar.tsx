@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { SearchModal } from "@/components/SearchModal";
+import { AuthModal } from "@/components/AuthModal";
 
 function Mark() {
   return (
@@ -18,6 +20,7 @@ function Mark() {
 export const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { cart, wishlist, pincode, setPincode, setIsCartOpen, grandTotal } = useCart();
+  const { user, isAdmin, openAuthModal, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -52,13 +55,26 @@ export const Navbar: React.FC = () => {
         {/* Main Top Header Bar */}
         <div className="wrap flex items-center justify-between gap-4 py-3">
           {/* Logo Lockup */}
-          <Link href="/" className="logo shrink-0">
-            <Mark />
-            <span className="logo-copy">
-              <strong>Partsly</strong>
-              <small>hardware network</small>
-            </span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="logo shrink-0">
+              <Mark />
+              <span className="logo-copy">
+                <strong>Partsly</strong>
+                <small>hardware network</small>
+              </span>
+            </Link>
+
+            {/* 👑 Exclusive Admin Portal Badge for ganenakartiks7@gmail.com */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="hidden xl:flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-500/50 px-3 py-1 text-xs font-black text-amber-500 hover:bg-amber-500 hover:text-black transition-all animate-pulse"
+              >
+                <span>👑</span>
+                <span>Admin Control</span>
+              </Link>
+            )}
+          </div>
 
           {/* Delivery Pincode Picker Button */}
           <button
@@ -123,17 +139,43 @@ export const Navbar: React.FC = () => {
               )}
             </Link>
 
-            {/* Account Link */}
-            <Link
-              href="/account"
-              className="flex items-center gap-1.5 rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--accent)] transition-all"
-            >
-              <span>👤</span>
-              <div className="text-left hidden md:block line-height-1">
-                <div className="text-[10px] text-[var(--muted)] font-normal">Hello, Sign In</div>
-                <div>Account & Orders</div>
+            {/* Auth / Account Link */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href={isAdmin ? "/admin" : "/account"}
+                  className="flex items-center gap-1.5 rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--accent)] transition-all"
+                >
+                  <span>{isAdmin ? "👑" : "👤"}</span>
+                  <div className="text-left hidden md:block line-height-1">
+                    <div className="text-[10px] text-[var(--muted)] font-normal truncate max-w-[100px]">
+                      {user.email}
+                    </div>
+                    <div className="font-extrabold text-[var(--accent)]">
+                      {isAdmin ? "Sole Admin" : "Customer"}
+                    </div>
+                  </div>
+                </Link>
+                <button
+                  onClick={logout}
+                  title="Sign Out"
+                  className="rounded-xl border border-[var(--line)] bg-[var(--surface-2)] p-2 text-xs font-bold text-[var(--muted)] hover:text-red-400 hover:border-red-400"
+                >
+                  🚪
+                </button>
               </div>
-            </Link>
+            ) : (
+              <button
+                onClick={() => openAuthModal("login")}
+                className="flex items-center gap-1.5 rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--accent)] transition-all"
+              >
+                <span>🔑</span>
+                <div className="text-left hidden md:block line-height-1">
+                  <div className="text-[10px] text-[var(--muted)] font-normal">Hello, Sign In</div>
+                  <div className="font-extrabold">Login / Sign Up</div>
+                </div>
+              </button>
+            )}
 
             {/* Theme Toggle */}
             <button
@@ -189,9 +231,20 @@ export const Navbar: React.FC = () => {
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="shrink-0 rounded-lg bg-amber-500/20 text-amber-500 border border-amber-500/40 px-3 py-1.5 font-black whitespace-nowrap hover:bg-amber-500 hover:text-black transition-all"
+              >
+                👑 Exclusive Admin Portal
+              </Link>
+            )}
           </div>
         </nav>
       </header>
+
+      {/* Auth Modal */}
+      <AuthModal />
 
       {/* Pincode Modal */}
       {isPincodeModalOpen && (

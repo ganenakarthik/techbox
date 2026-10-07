@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { Navbar } from "@/components/layout/Navbar";
 import { CartDrawerGlobal } from "@/components/layout/CartDrawerGlobal";
 
@@ -33,30 +34,32 @@ export default function RootLayout({
     <html lang="en" data-theme="dark">
       <body>
         <ThemeProvider>
-          <CartProvider>
-            <div className="site-shell min-h-screen flex flex-col justify-between">
-              <div>
-                <Navbar />
-                <main>{children}</main>
-              </div>
-
-              {/* Exact Pixel-Perfect Footer */}
-              <footer className="footer wrap text-xs text-[var(--muted)] border-t border-[var(--line)] pt-8 pb-12 mt-16">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <span className="brand-mark" aria-hidden="true">
-                      <img src="/logo.png" alt="Partsly" className="h-full w-full object-cover rounded-md" />
-                    </span>
-                    <span className="font-bold text-[var(--text)]">PARTSLY HARDWARE NETWORK</span>
-                  </div>
-                  <div>© 2026 Partsly TechBox Inc. All rights reserved. • ISO 9001 Certified Quality</div>
+          <AuthProvider>
+            <CartProvider>
+              <div className="site-shell min-h-screen flex flex-col justify-between">
+                <div>
+                  <Navbar />
+                  <main>{children}</main>
                 </div>
-              </footer>
 
-              {/* Persistent Cart & Checkout Drawer */}
-              <CartDrawerGlobal />
-            </div>
-          </CartProvider>
+                {/* Footer */}
+                <footer className="footer wrap text-xs text-[var(--muted)] border-t border-[var(--line)] pt-8 pb-12 mt-16">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="brand-mark" aria-hidden="true">
+                        <img src="/logo.png" alt="Partsly" className="h-full w-full object-cover rounded-md" />
+                      </span>
+                      <span className="font-bold text-[var(--text)]">PARTSLY HARDWARE NETWORK</span>
+                    </div>
+                    <div>© 2026 Partsly TechBox Inc. All rights reserved. • ISO 9001 Certified Quality</div>
+                  </div>
+                </footer>
+
+                {/* Persistent Cart & Checkout Drawer */}
+                <CartDrawerGlobal />
+              </div>
+            </CartProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
