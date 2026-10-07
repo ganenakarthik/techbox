@@ -34,14 +34,14 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <CartProvider>
-            <div className="app-shell min-h-screen flex flex-col justify-between">
+            <div className="site-shell min-h-screen flex flex-col justify-between">
               <div>
                 <Navbar />
-                <main>{children}</main>
+                <main className="wrap pb-16">{children}</main>
               </div>
 
-              {/* Global Footer */}
-              <footer className="footer border-t border-[var(--line)] mt-16 pt-8 pb-6 text-xs text-[var(--muted)]">
+              {/* Pixel Perfect Footer */}
+              <footer className="footer wrap text-xs text-[var(--muted)] border-t border-[var(--line)] pt-8 pb-12">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <span className="brand-mark" aria-hidden="true"><span /></span>

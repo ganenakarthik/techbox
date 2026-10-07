@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
 import { useCart } from "@/context/CartContext";
 import { SearchModal } from "@/components/SearchModal";
-import { useRouter } from "next/navigation";
 
 function Mark() {
   return (
@@ -26,46 +25,64 @@ export const Navbar: React.FC = () => {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const navLinks = [
-    { href: "/catalog", label: "🏬 Hardware Catalog" },
-    { href: "/pcb", label: "⚡ PCB Instant Quote" },
+    { href: "/catalog", label: "🏬 Hardware Store" },
+    { href: "/pcb", label: "⚡ PCB Fab Quote" },
     { href: "/3d-printing", label: "🧊 3D Printing Quote" },
-    { href: "/sourcing", label: "📋 BOM Sourcing & RFQ" },
+    { href: "/sourcing", label: "📋 BOM Sourcing" },
     { href: "/account", label: "👤 Account & Orders" },
   ];
 
   return (
     <>
-      <header className="top-nav">
-        <Link href="/" className="brand-strip">
+      <header className="topbar">
+        <Link href="/" className="logo">
           <Mark />
-          <div>
-            <div className="brand-name">PARTSLY</div>
-            <div className="brand-subtitle">HARDWARE DISTRIBUTOR</div>
-          </div>
+          <span className="logo-copy">
+            <strong>Partsly</strong>
+            <small>hardware network</small>
+          </span>
         </Link>
 
-        {/* Global Search palette button */}
-        <div className="search-bar cursor-pointer" onClick={() => setIsSearchOpen(true)}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M21 21l-5.2-5.2M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z" />
+        {/* Global Search Palette trigger button */}
+        <div
+          onClick={() => setIsSearchOpen(true)}
+          className="cursor-pointer hidden md:flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--muted)] hover:border-[var(--text)] hover:text-[var(--text)] transition-all"
+        >
+          <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
           </svg>
-          <input
-            type="text"
-            readOnly
-            placeholder="Search MPN, ICs, STM32, ESP32, 3D printing (Ctrl + K)..."
-            className="cursor-pointer"
-          />
-          <kbd className="hidden sm:inline-block rounded border border-[var(--line)] bg-[var(--surface-2)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--muted)]">
+          <span>Search MPN, ICs, STM32, ESP32...</span>
+          <kbd className="rounded border border-[var(--line)] bg-[var(--bg)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--muted)]">
             Ctrl K
           </kbd>
         </div>
 
-        <div className="nav-actions">
+        <div className="header-actions">
+          {/* Multi-page Nav Links */}
+          <div className="hidden lg:flex items-center gap-4 text-xs font-bold uppercase tracking-wider">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`transition-colors ${
+                    isActive ? "text-[var(--accent)] font-extrabold underline underline-offset-4" : "text-[var(--text)] hover:text-[var(--accent)]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+
           {/* Theme Switcher Toggle */}
           <button
             className="theme-toggle"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               {theme === "dark" ? (
@@ -80,41 +97,40 @@ export const Navbar: React.FC = () => {
             <span>{theme === "dark" ? "Light" : "Dark"}</span>
           </button>
 
-          <Link
-            href="/account"
-            className="rounded-xl border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2 text-xs font-bold text-[var(--text)] hover:border-[var(--muted)]"
+          {/* Cart Button */}
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-3.5 py-1.5 text-xs font-bold text-[var(--text)] hover:border-[var(--text)]"
           >
-            Account
-          </Link>
-
-          <button onClick={() => setIsCartOpen(true)} className="cart-chip">
             🛒 Cart
-            {totalItems > 0 && <span className="badge">{totalItems}</span>}
+            {totalItems > 0 && (
+              <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-black text-white">
+                {totalItems}
+              </span>
+            )}
           </button>
         </div>
       </header>
 
-      {/* Main Pages Sub-Header */}
-      <nav className="mb-6 flex flex-wrap gap-2 border-b border-[var(--line)] pb-3 pt-2">
+      {/* Mobile Sub-Navigation Bar */}
+      <div className="flex lg:hidden overflow-x-auto gap-2 border-b border-[var(--line)] pb-2 mb-4 px-4 text-xs font-bold uppercase tracking-wider">
         {navLinks.map((link) => {
           const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
-                isActive
-                  ? "bg-[var(--accent)] text-white shadow-md"
-                  : "border border-[var(--line)] bg-[var(--surface-2)] text-[var(--text)] hover:bg-[var(--line)]"
+              className={`shrink-0 rounded-lg px-3 py-1.5 transition-colors ${
+                isActive ? "bg-[var(--accent)] text-white font-bold" : "bg-[var(--surface-2)] text-[var(--text)]"
               }`}
             >
               {link.label}
             </Link>
           );
         })}
-      </nav>
+      </div>
 
-      {/* Search Modal Workspace */}
+      {/* Global Search Palette Modal */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
