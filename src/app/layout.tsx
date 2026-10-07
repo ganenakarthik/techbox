@@ -4,8 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://partsly.in"),
-  title: "Partsly - Hardware Engineering & Component Sourcing Platform",
-  description: "High-Speed Hardware Engineering & Component Sourcing Platform",
+  title: "Partsly Platform",
+  description: "Partsly Hardware Platform",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -27,9 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
