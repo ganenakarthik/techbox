@@ -29,7 +29,7 @@ export function CategoryNav({ activeCategory, setActiveCategory }: CategoryNavPr
   return (
     <section id="categories-section" className="w-full space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
+        <h2 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
           Browse Categories
         </h2>
         <button
@@ -49,12 +49,12 @@ export function CategoryNav({ activeCategory, setActiveCategory }: CategoryNavPr
               onClick={() => setActiveCategory(cat.name)}
               className={`p-3.5 rounded-2xl cursor-pointer transition-all flex flex-col items-center text-center gap-2 group ${
                 isActive
-                  ? "bg-white border-2 border-[#ff6a00] shadow-md scale-[1.02]"
-                  : "bg-white/90 hover:bg-white border border-slate-200/80 hover:border-slate-300 shadow-2xs"
+                  ? "liquid-card border-2 border-[#ff6a00] shadow-md scale-[1.02]"
+                  : "liquid-card hover:border-slate-300"
               }`}
             >
-              {/* Soft Orange Icon Circle */}
-              <div className="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+              {/* Soft Glass Icon Circle */}
+              <div className="w-10 h-10 rounded-full bg-white/80 border border-slate-200/80 flex items-center justify-center text-lg group-hover:scale-110 transition-transform shadow-2xs">
                 {categoryIcons[cat.name] || "📦"}
               </div>
 

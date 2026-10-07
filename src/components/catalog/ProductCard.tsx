@@ -55,10 +55,10 @@ export function ProductCard({
           </button>
         </div>
 
-        {/* Product Image Container */}
+        {/* Product Image Container inside Glass surface */}
         <div
           onClick={() => onSelect(product)}
-          className="w-full h-36 mb-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-3 cursor-pointer overflow-hidden group-hover:scale-[1.02] transition-transform duration-200"
+          className="w-full h-36 mb-3 rounded-xl bg-white/60 border border-white/80 flex items-center justify-center p-3 cursor-pointer overflow-hidden group-hover:scale-[1.02] transition-transform duration-200 shadow-2xs"
         >
           <img
             src={product.image}
@@ -70,7 +70,7 @@ export function ProductCard({
           />
           {!imageLoaded && (
             <div className="absolute inset-0 bg-slate-100 animate-pulse flex items-center justify-center text-slate-400 text-xs">
-              Loading...
+              Loading component...
             </div>
           )}
         </div>
@@ -85,12 +85,12 @@ export function ProductCard({
           </div>
         </div>
 
-        {/* Spec Badges */}
-        <div className="flex flex-wrap gap-1 my-2.5">
+        {/* Spec Glass Badges */}
+        <div className="flex flex-wrap gap-1.5 my-3">
           {specPills.slice(0, 3).map((pill, idx) => (
             <span
               key={idx}
-              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200/60"
+              className="glass-badge px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-700"
             >
               {pill}
             </span>
@@ -98,11 +98,11 @@ export function ProductCard({
         </div>
       </div>
 
-      {/* Footer: Price, Stock, & Add to Cart */}
-      <div className="pt-2 border-t border-slate-100 space-y-2.5">
+      {/* Footer: Price, Stock, Quantity & Add Button */}
+      <div className="pt-2 border-t border-slate-200/60 space-y-2.5">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-base font-black text-slate-900">
+            <div className="text-base font-black text-slate-900 tracking-tight">
               ₹{product.price.toLocaleString("en-IN")}
             </div>
             {product.originalPrice > product.price && (
@@ -119,8 +119,8 @@ export function ProductCard({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Quantity selector */}
-          <div className="flex items-center rounded-lg bg-slate-100 border border-slate-200 p-0.5">
+          {/* Quantity Controls */}
+          <div className="flex items-center rounded-lg bg-slate-100/80 border border-slate-200 p-0.5">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               className="w-5 h-5 rounded text-slate-600 hover:bg-white text-xs font-bold"
