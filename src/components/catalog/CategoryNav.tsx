@@ -9,48 +9,67 @@ interface CategoryNavProps {
 }
 
 export function CategoryNav({ activeCategory, setActiveCategory }: CategoryNavProps) {
+  const categoryIcons: Record<string, string> = {
+    Electronics: "⚡",
+    Microcontrollers: "🎛",
+    "Development Boards": "📟",
+    Sensors: "📡",
+    Modules: "📦",
+    ICs: "⚙️",
+    Connectors: "🔌",
+    Power: "🔋",
+    Motors: "⚙️",
+    Tools: "🛠",
+    "Laptop Parts": "💻",
+    "Bike Parts": "🚲",
+    "Industrial Parts": "🏭",
+    "3D Printing": "🖨",
+  };
+
   return (
-    <div id="categories-section" className="w-full py-4 overflow-x-auto no-scrollbar">
-      <div className="flex items-center gap-2 min-w-max pb-2">
-        {/* All Categories Option */}
+    <section id="categories-section" className="w-full space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
+          Browse Categories
+        </h2>
         <button
           onClick={() => setActiveCategory("All Categories")}
-          className={`liquid-pill px-4 py-2 text-xs font-bold transition-all flex items-center gap-2 ${
-            activeCategory === "All Categories" ? "liquid-pill-active" : "text-slate-700 hover:text-slate-900"
-          }`}
+          className="text-xs font-bold text-[#ff6a00] hover:underline"
         >
-          <span>All Hardware</span>
-          <span
-            className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-              activeCategory === "All Categories" ? "bg-[#ff6a00] text-white" : "bg-slate-100 text-slate-500"
-            }`}
-          >
-            750+
-          </span>
+          View All ({CATEGORIES.reduce((acc, c) => acc + c.count, 0)}+ products) →
         </button>
+      </div>
 
-        {CATEGORIES.map((cat) => {
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {CATEGORIES.slice(0, 8).map((cat) => {
           const isActive = activeCategory === cat.name;
           return (
-            <button
+            <div
               key={cat.id}
               onClick={() => setActiveCategory(cat.name)}
-              className={`liquid-pill px-4 py-2 text-xs font-semibold transition-all flex items-center gap-2 ${
-                isActive ? "liquid-pill-active" : "text-slate-700 hover:text-slate-900"
+              className={`p-3.5 rounded-2xl cursor-pointer transition-all flex flex-col items-center text-center gap-2 group ${
+                isActive
+                  ? "bg-white border-2 border-[#ff6a00] shadow-md scale-[1.02]"
+                  : "bg-white/90 hover:bg-white border border-slate-200/80 hover:border-slate-300 shadow-2xs"
               }`}
             >
-              <span>{cat.name}</span>
-              <span
-                className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-                  isActive ? "bg-[#ff6a00] text-white" : "bg-slate-200/60 text-slate-500"
-                }`}
-              >
-                {cat.count}
-              </span>
-            </button>
+              {/* Soft Orange Icon Circle */}
+              <div className="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                {categoryIcons[cat.name] || "📦"}
+              </div>
+
+              <div>
+                <div className="text-xs font-bold text-slate-900 group-hover:text-[#ff6a00] transition-colors leading-tight">
+                  {cat.name}
+                </div>
+                <div className="text-[10px] font-medium text-slate-400 mt-0.5">
+                  {cat.count}+ products
+                </div>
+              </div>
+            </div>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

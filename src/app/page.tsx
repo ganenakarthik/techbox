@@ -140,8 +140,8 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-[#ff6a00] selection:text-white">
-      {/* Persistent Floating Header */}
+    <div className="min-h-screen flex flex-col ambient-bg text-slate-900 selection:bg-[#ff6a00] selection:text-white">
+      {/* Header */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -154,67 +154,58 @@ export default function Home() {
         setSearchQuery={setSearchQuery}
       />
 
-      {/* Main Container */}
+      {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 space-y-8">
-        {/* VIEW 1: HOME CATALOG WORKSPACE */}
+        {/* VIEW 1: SHOP & HOME CATALOG */}
         {activeTab === "home" && (
           <>
-            {/* Header Banner */}
-            <div className="liquid-card p-6 sm:p-8 space-y-4 relative overflow-hidden">
-              <div className="max-w-2xl space-y-2 relative z-10">
-                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ff6a00]/10 text-[#ff6a00] border border-[#ff6a00]/20">
+            {/* Hero Section Matching Reference Layout */}
+            <div className="hero-glass-card p-6 sm:p-10 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="max-w-xl space-y-3 z-10">
+                <span className="text-[10px] font-black tracking-widest text-[#ff6a00] uppercase">
                   ENGINEERING HARDWARE STORE
                 </span>
-                <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-                  Everything for your project.
+                <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                  Everything for your project<span className="text-[#ff6a00]">.</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                  Find components, development boards, sensors, ICs, and hardware — or let Partsly source what you need.
+                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                  Find the exact parts, components and hardware you need. Build, repair, innovate — with Partsly.
                 </p>
+
+                {/* Hero Search Box */}
+                <div className="pt-2">
+                  <div
+                    onClick={() => setIsSearchOpen(true)}
+                    className="liquid-input p-2.5 flex items-center gap-3 cursor-pointer group bg-white shadow-sm border border-slate-200"
+                  >
+                    <svg className="w-5 h-5 text-slate-400 group-hover:text-[#ff6a00] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span className="text-xs font-semibold text-slate-500 truncate flex-1">
+                      Search components, modules, ICs, tools...
+                    </span>
+                    <button className="w-8 h-8 rounded-lg bg-[#ff6a00] text-white flex items-center justify-center font-bold text-sm shadow-sm group-hover:bg-[#e05d00]">
+                      →
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Functional Search Field */}
-              <div className="pt-2 max-w-xl">
-                <div
-                  onClick={() => setIsSearchOpen(true)}
-                  className="liquid-input p-3.5 flex items-center gap-3 cursor-pointer group text-slate-400"
-                >
-                  <svg className="w-5 h-5 text-[#ff6a00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <span className="text-xs font-semibold text-slate-600 truncate flex-1">
-                    Search ESP32, Arduino, sensor, IC, connector, motor, laptop parts...
-                  </span>
-                  <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-[10px] font-mono font-bold text-slate-400">
-                    SEARCH
-                  </span>
-                </div>
-
-                {/* Popular Tags */}
-                <div className="flex flex-wrap items-center gap-1.5 mt-3 text-xs">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Popular:</span>
-                  {["ESP32", "Arduino UNO", "Raspberry Pi", "Sensors", "Motors", "Connectors", "Laptop Parts"].map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => {
-                        setSearchQuery(tag);
-                        setIsSearchOpen(true);
-                      }}
-                      className="px-3 py-1 rounded-full text-[11px] font-semibold bg-white/80 text-slate-700 hover:text-[#ff6a00] hover:border-[#ff6a00] border border-slate-200/80 transition-colors shadow-2xs"
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
+              {/* Hardware Render Graphic */}
+              <div className="w-full lg:w-96 h-56 rounded-2xl bg-gradient-to-br from-white/90 to-orange-50/60 border border-white p-4 flex items-center justify-center relative overflow-hidden shadow-inner">
+                <img
+                  src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80"
+                  alt="Hardware Components"
+                  className="max-h-full max-w-full object-contain rounded-xl shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300"
+                />
               </div>
             </div>
 
-            {/* Category Pill Navigation */}
+            {/* Category Navigation Cards Row */}
             <CategoryNav activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
-            {/* Catalog Layout Grid */}
+            {/* Catalog Products & Filter Sidebar */}
             <div className="flex flex-col lg:flex-row gap-8 items-start">
-              {/* Filter Sidebar */}
               <FilterSidebar
                 selectedCategory={activeCategory}
                 setSelectedCategory={setActiveCategory}
@@ -237,31 +228,30 @@ export default function Home() {
                 resultCount={filteredProducts.length}
               />
 
-              {/* Product Cards Grid */}
               <div className="flex-1 w-full space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                     {activeCategory} ({filteredProducts.length} products)
                   </h2>
                   <span className="text-xs font-semibold text-slate-500">
-                    Verified stock from Indian supplier network
+                    Verified supplier inventory
                   </span>
                 </div>
 
                 {filteredProducts.length === 0 ? (
                   <div className="liquid-card p-12 text-center text-slate-400 space-y-3">
                     <div className="text-3xl">🔍</div>
-                    <h3 className="text-sm font-bold text-slate-800">No catalog products match your active filters</h3>
-                    <p className="text-xs">Try clearing filters or requesting a custom component sourcing quote.</p>
+                    <h3 className="text-sm font-bold text-slate-800">No components match your search filters</h3>
+                    <p className="text-xs">Clear your filters or request a custom part sourcing quote.</p>
                     <button
                       onClick={() => setActiveTab("sourcing")}
                       className="liquid-button-primary px-5 py-2 text-xs font-bold"
                     >
-                      Request Sourcing Quote
+                      Request Part Sourcing
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {filteredProducts.map((product) => (
                       <ProductCard
                         key={product.id}
