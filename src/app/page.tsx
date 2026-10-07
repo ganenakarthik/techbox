@@ -5,7 +5,7 @@ import Link from "next/link";
 import { COMPONENTS_CATALOG } from "@/data/componentsCatalog";
 import { useCart } from "@/context/CartContext";
 
-const heroImage = "https://images.unsplash.com/photo-1577962144759-8dec6b55c952?auto=format&fit=crop&w=1800&q=90";
+const heroImage = "/hero-team.jpg";
 const sourcingImage = "https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=1800&q=90";
 const manufacturingImage = "https://images.unsplash.com/photo-1603732551658-5fabbafa84eb?auto=format&fit=crop&w=1800&q=90";
 
